@@ -9,7 +9,7 @@ import java.util.Set;
 public class Item {
 	private String key;
 	private List<User> users;
-	private List<byte[]> values;
+	private Collection<byte[]> values;
 	private Set<String> keys;
 	private byte[] bytes;
 	private Args args;
@@ -30,11 +30,11 @@ public class Item {
 		this.users = users;
 	}
 
-	public List<byte[]> getValues() {
+	public Collection<byte[]> getValues() {
 		return values;
 	}
 
-	public void setValues(List<byte[]> values) {
+	public void setValues(Collection<byte[]> values) {
 		this.values = values;
 	}
 

@@ -312,7 +312,7 @@ public class ParserConfig {
 			return new StringFieldDeserializer(mapping, clazz, fieldInfo);
 		}
 
-		if (fieldClass == List.class || fieldClass == ArrayList.class) {
+		if (fieldClass == Collection.class || fieldClass == List.class || fieldClass == ArrayList.class) {
 			Type fieldType = method.getGenericParameterTypes()[0];
 			Type itemType = ((ParameterizedType) fieldType).getActualTypeArguments()[0];
 			if (itemType == String.class) {
