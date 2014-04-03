@@ -1,14 +1,16 @@
 package com.test.json;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class Item {
 	private String key;
 	private List<User> users;
 	private List<byte[]> values;
-	private Collection<String> keys;
+	private Set<String> keys;
 	private byte[] bytes;
 	private Args args;
 
@@ -56,7 +58,7 @@ public class Item {
 		return keys;
 	}
 
-	public void setKeys(Collection<String> keys) {
+	public void setKeys(Set<String> keys) {
 		this.keys = keys;
 	}
 

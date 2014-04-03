@@ -38,60 +38,7 @@ import java.util.regex.Pattern;
 import com.lamfire.json.JSONArray;
 import com.lamfire.json.JSONException;
 import com.lamfire.json.JSON;
-import com.lamfire.json.deserializer.ASMDeserializerFactory;
-import com.lamfire.json.deserializer.ASMJavaBeanDeserializer;
-import com.lamfire.json.deserializer.ArrayDeserializer;
-import com.lamfire.json.deserializer.ArrayListStringDeserializer;
-import com.lamfire.json.deserializer.ArrayListStringFieldDeserializer;
-import com.lamfire.json.deserializer.ArrayListTypeDeserializer;
-import com.lamfire.json.deserializer.ArrayListTypeFieldDeserializer;
-import com.lamfire.json.deserializer.AtomicIntegerArrayDeserializer;
-import com.lamfire.json.deserializer.AtomicLongArrayDeserializer;
-import com.lamfire.json.deserializer.AutowiredObjectDeserializer;
-import com.lamfire.json.deserializer.BigDecimalDeserializer;
-import com.lamfire.json.deserializer.BigIntegerDeserializer;
-import com.lamfire.json.deserializer.BooleanDeserializer;
-import com.lamfire.json.deserializer.BooleanFieldDeserializer;
-import com.lamfire.json.deserializer.ByteDeserializer;
-import com.lamfire.json.deserializer.CharacterDeserializer;
-import com.lamfire.json.deserializer.CharsetDeserializer;
-import com.lamfire.json.deserializer.CollectionDeserializer;
-import com.lamfire.json.deserializer.ConcurrentHashMapDeserializer;
-import com.lamfire.json.deserializer.DateDeserializer;
-import com.lamfire.json.deserializer.DefaultFieldDeserializer;
-import com.lamfire.json.deserializer.DefaultObjectDeserializer;
-import com.lamfire.json.deserializer.DoubleDeserializer;
-import com.lamfire.json.deserializer.EnumDeserializer;
-import com.lamfire.json.deserializer.FieldDeserializer;
-import com.lamfire.json.deserializer.FileDeserializer;
-import com.lamfire.json.deserializer.FloatDeserializer;
-import com.lamfire.json.deserializer.HashMapDeserializer;
-import com.lamfire.json.deserializer.InetAddressDeserializer;
-import com.lamfire.json.deserializer.InetSocketAddressDeserializer;
-import com.lamfire.json.deserializer.IntegerDeserializer;
-import com.lamfire.json.deserializer.IntegerFieldDeserializer;
-import com.lamfire.json.deserializer.JSONArrayDeserializer;
-import com.lamfire.json.deserializer.JSONObjectDeserializer;
-import com.lamfire.json.deserializer.JavaBeanDeserializer;
-import com.lamfire.json.deserializer.JavaObjectDeserializer;
-import com.lamfire.json.deserializer.LinkedHashMapDeserializer;
-import com.lamfire.json.deserializer.LocaleDeserializer;
-import com.lamfire.json.deserializer.LongDeserializer;
-import com.lamfire.json.deserializer.LongFieldDeserializer;
-import com.lamfire.json.deserializer.NumberDeserializer;
-import com.lamfire.json.deserializer.ObjectDeserializer;
-import com.lamfire.json.deserializer.PatternDeserializer;
-import com.lamfire.json.deserializer.ShortDeserializer;
-import com.lamfire.json.deserializer.SqlDateDeserializer;
-import com.lamfire.json.deserializer.StringDeserializer;
-import com.lamfire.json.deserializer.StringFieldDeserializer;
-import com.lamfire.json.deserializer.ThrowableDeserializer;
-import com.lamfire.json.deserializer.TimeZoneDeserializer;
-import com.lamfire.json.deserializer.TimestampDeserializer;
-import com.lamfire.json.deserializer.TreeMapDeserializer;
-import com.lamfire.json.deserializer.URIDeserializer;
-import com.lamfire.json.deserializer.URLDeserializer;
-import com.lamfire.json.deserializer.UUIDDeserializer;
+import com.lamfire.json.deserializer.*;
 import com.lamfire.json.util.ASMUtils;
 import com.lamfire.json.util.FieldInfo;
 import com.lamfire.json.util.IdentityHashMap;
@@ -371,9 +318,12 @@ public class ParserConfig {
 			if (itemType == String.class) {
 				return new ArrayListStringFieldDeserializer(mapping, clazz, fieldInfo);
 			}
-
 			return new ArrayListTypeFieldDeserializer(mapping, clazz, fieldInfo);
 		}
+
+        if (fieldClass == Set.class || fieldClass == HashSet.class) {
+            return new SetTypeFieldDeserializer(mapping, clazz, fieldInfo);
+        }
 
 		return new DefaultFieldDeserializer(mapping, clazz, fieldInfo);
 	}
