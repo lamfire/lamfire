@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -318,6 +319,26 @@ public class JSON extends JSONParser implements Map<String, Object>, JSONString,
         }
     }
 
+    public byte[] toBytes(){
+        SerializeWriter out = new SerializeWriter();
+        try {
+            new JSONSerializer(out).write(this);
+            return out.toBytes();
+        } finally {
+            out.close();
+        }
+    }
+
+    public byte[] toBytes(Charset charset){
+        SerializeWriter out = new SerializeWriter();
+        try {
+            new JSONSerializer(out).write(this);
+            return out.toBytes(charset);
+        } finally {
+            out.close();
+        }
+    }
+
     public void write(Appendable appendable) {
         SerializeWriter out = new SerializeWriter();
         try {
@@ -356,4 +377,14 @@ public class JSON extends JSONParser implements Map<String, Object>, JSONString,
 		String json =  toJSONString(bean);
 		return parseObject(json); 
 	}
+
+    public static JSON fromBytes(byte[] bytes){
+        String js = new String(bytes);
+        return fromJSONString(js);
+    }
+
+    public static JSON fromBytes(byte[] bytes,Charset charset){
+        String js = new String(bytes,charset);
+        return fromJSONString(js);
+    }
 }

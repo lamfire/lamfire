@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -329,6 +330,28 @@ public class JSONArray extends JSONParser implements List<Object>, JSONString, C
             out.close();
         }
     }
+
+
+    public byte[] toBytes(){
+        SerializeWriter out = new SerializeWriter();
+        try {
+            new JSONSerializer(out).write(this);
+            return out.toBytes();
+        } finally {
+            out.close();
+        }
+    }
+
+    public byte[] toBytes(Charset charset){
+        SerializeWriter out = new SerializeWriter();
+        try {
+            new JSONSerializer(out).write(this);
+            return out.toBytes(charset);
+        } finally {
+            out.close();
+        }
+    }
+
 
     public void writeJSONString(Appendable appendable) {
         SerializeWriter out = new SerializeWriter();

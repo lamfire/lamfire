@@ -242,6 +242,19 @@ public final class SerializeWriter extends Writer {
 		return encoder.encode(buf, 0, count);
 	}
 
+    public byte[] toBytes() {
+        return toBytes("UTF-8");
+    }
+
+    public byte[] toBytes(Charset charset) {
+        if (charset == null) {
+            charset = Charset.forName("UTF-8");
+        }
+
+        SerialWriterStringEncoder encoder = new SerialWriterStringEncoder(charset);
+        return encoder.encode(buf, 0, count);
+    }
+
 	/**
 	 * Returns the current size of the buffer.
 	 * 
