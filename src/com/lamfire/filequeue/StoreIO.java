@@ -9,7 +9,7 @@ import java.io.IOException;
  *
  */
 class StoreIO {
-	public static final String FILE_SUFFIX = ".d";
+	public static final String FILE_SUFFIX = ".data";
 	
 	public static File getStoreFile(String dir,String name,int page){
 		if(page ==0){

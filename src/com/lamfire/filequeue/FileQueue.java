@@ -144,7 +144,6 @@ public class FileQueue {
 			IndexIO pageIO = getWriteIndexIO();
 			pageIO.add(e);
 
-			meta.incWritedCount();
 			meta.setWriteOffset(pageIO.getWriteOffset());
 			meta.setWriteIndex(pageIO.getIndex());
 			meta.setWriteStore(store);
@@ -169,8 +168,8 @@ public class FileQueue {
 		try {
 			lock.lock();
 
-			IndexIO pageIO = getReadIndexIO();
-			Element e = pageIO.take();
+			IndexIO indexIO = getReadIndexIO();
+			Element e = indexIO.take();
 
 			StoreIO storeIO = getStoreIO(e.getStore());
 			byte[] bytes = new byte[e.getLength()];
@@ -184,7 +183,7 @@ public class FileQueue {
 		}
 	}
 
-	public  int size() {
+	public  long size() {
 		try {
 			lock.lock();
 			return meta.getWritedCount() - meta.getReadedCount();
@@ -202,7 +201,6 @@ public class FileQueue {
 			lock.lock();
 
 			byte[] bytes = peek();
-			meta.incReadedCount();
 			meta.setReadOffset(meta.getReadOffset() + Element.ELEMENT_LENGTH);
 			meta.flush();
 			return bytes;
@@ -239,6 +237,7 @@ public class FileQueue {
 			meta.clear();
 			realseStores();
 			realseIndexs();
+            initialize();
 		} catch (IOException e) {
 			throw new IOError(e);
 		} finally {

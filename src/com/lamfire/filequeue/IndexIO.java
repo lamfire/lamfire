@@ -9,7 +9,7 @@ import java.io.IOException;
  *
  */
 class IndexIO {
-	public static final String FILE_SUFFIX = ".i";
+	public static final String FILE_SUFFIX = ".idx";
 	public static final int ELEMENT_LENGTH = Element.ELEMENT_LENGTH;
 
 	public static File getIndexFile(String dir,String name,int page){

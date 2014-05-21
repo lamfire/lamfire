@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.lamfire.filequeue.FileQueue;
+import com.lamfire.utils.StringUtils;
 import com.lamfire.utils.Threads;
 
 
@@ -42,9 +43,15 @@ public class QueueReadTest  {
 			if(data == null){
 				System.out.println("[complated]:" + counter.get());
 				return;
-			}else{
-				bytes = data;
 			}
+			bytes = data;
+			String s = new String(bytes);
+            String[] dd = StringUtils.split(s,':');
+
+            int intVal = Integer.parseInt(dd[1]);
+            if(intVal != counter.get()){
+                System.out.println(counter.get() + " != " + intVal +" : " + s);
+            }
 			counter.getAndIncrement();
 			//System.out.println(new String(bytes));
 		}

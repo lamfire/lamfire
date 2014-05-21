@@ -11,20 +11,18 @@ import com.lamfire.utils.Bytes;
  *
  */
 class MetaIO {
-	public static final String META_FILE_SUFFIX = ".m";
-	public static final int META_FILE_LENGTH = 36;
+	public static final String META_FILE_SUFFIX = ".meta";
+	public static final int META_FILE_LENGTH = 32;
 	
 	private FileBuffer file=null;  
 	
 	private final byte[] buffer = new byte[META_FILE_LENGTH];
 	
 	int indexCount = 0; //页总数
-	
-	int readedCount = 0; //已读数
+
 	int readIndex = 0; //当前读取页
 	int readOffset = 0;//当前读取位置
-	
-	int writedCount = 0;//已写数
+
 	int writeIndex = 0;//当前写页
 	int writeOffset = 0;//当前写位置
 	
@@ -38,28 +36,25 @@ class MetaIO {
 	
 	private void reload()throws IOException{
 		this.indexCount = file.getInt(0);
-		this.readedCount = file.getInt(4);
-		this.readIndex = file.getInt(8);
-		this.readOffset = file.getInt(12);
+
+		this.readIndex = file.getInt(4);
+		this.readOffset = file.getInt(8);
+
+		this.writeIndex = file.getInt(12);
+		this.writeOffset = file.getInt(16);
 		
-		this.writedCount = file.getInt(16);
-		this.writeIndex = file.getInt(20);
-		this.writeOffset = file.getInt(24);
-		
-		this.writeStore = file.getInt(28);
-		this.writeStoreOffset = file.getInt(32);
+		this.writeStore = file.getInt(20);
+		this.writeStoreOffset = file.getInt(24);
 	}
 	
 	public void flush()throws IOException{
 		Bytes.putInt(buffer,0, indexCount);
-		Bytes.putInt(buffer,4, readedCount);
-		Bytes.putInt(buffer,8, readIndex);
-		Bytes.putInt(buffer,12, readOffset);
-		Bytes.putInt(buffer,16, writedCount);
-		Bytes.putInt(buffer,20, writeIndex);
-		Bytes.putInt(buffer,24,writeOffset);
-		Bytes.putInt(buffer,28,writeStore);
-		Bytes.putInt(buffer,32,writeStoreOffset);
+		Bytes.putInt(buffer,4, readIndex);
+		Bytes.putInt(buffer,8, readOffset);
+		Bytes.putInt(buffer,12, writeIndex);
+		Bytes.putInt(buffer,16,writeOffset);
+		Bytes.putInt(buffer,20,writeStore);
+		Bytes.putInt(buffer,24,writeStoreOffset);
 		file.put(0,buffer);
 	}
 	
@@ -90,15 +85,7 @@ class MetaIO {
 	public synchronized void setPageCount(int pageCount)throws IOException{
 		this.indexCount =pageCount;
 	}
-	
-	public synchronized void incReadedCount()throws IOException{
-		this.readedCount ++;
-	}
-	
-	public synchronized void setReadedCount(int readedElementCount)throws IOException{
-		this.readedCount =readedElementCount;
-	}
-	
+
 	public synchronized void incReadIndex()throws IOException{
 		this.readIndex ++;
 	}
@@ -110,15 +97,7 @@ class MetaIO {
 	public synchronized void setReadOffset(int offset)throws IOException{
 		this.readOffset = offset;
 	}
-	
-	public synchronized void incWritedCount()throws IOException{
-		this.writedCount ++;
-	}
-	
-	public synchronized void setWritedCount(int writedElementCount)throws IOException{
-		this.writedCount =writedElementCount;
-	}
-	
+
 	public synchronized void incWriteIndex()throws IOException{
 		this.writeIndex ++;
 	}
@@ -143,8 +122,8 @@ class MetaIO {
 		return indexCount;
 	}
 
-	public int getReadedCount() {
-		return readedCount;
+	public long getReadedCount() {
+        return (1l * FileBuffer.MAX_FILE_LENGTH * readIndex + readOffset) /  Element.ELEMENT_LENGTH;
 	}
 
 	public int getReadIndex() {
@@ -155,8 +134,8 @@ class MetaIO {
 		return readOffset;
 	}
 
-	public int getWritedCount() {
-		return writedCount;
+	public long getWritedCount() {
+		return (1l * FileBuffer.MAX_FILE_LENGTH * writeIndex + writeOffset) /  Element.ELEMENT_LENGTH;
 	}
 
 	public int getWriteIndex() {
@@ -175,14 +154,18 @@ class MetaIO {
 		return writeStoreOffset;
 	}
 
-	@Override
-	public String toString() {
-		return "MetaIO [indexCount=" + indexCount + ", readedCount=" + readedCount + ", readIndex=" + readIndex + ", readOffset=" + readOffset + ", writedCount="
-				+ writedCount + ", writeIndex=" + writeIndex + ", writeOffset=" + writeOffset + ", writeStore=" + writeStore + ", writeStoreOffset="
-				+ writeStoreOffset + "]";
-	}
-
-	
-	
-	
+    @Override
+    public String toString() {
+        return "MetaIO{" +
+                "writeCount=" + getWritedCount() +
+                "readCount=" + getReadedCount() +
+                "indexCount=" + indexCount +
+                ", writeStoreOffset=" + writeStoreOffset +
+                ", writeStore=" + writeStore +
+                ", writeOffset=" + writeOffset +
+                ", writeIndex=" + writeIndex +
+                ", readOffset=" + readOffset +
+                ", readIndex=" + readIndex +
+                '}';
+    }
 }
