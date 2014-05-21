@@ -145,6 +145,39 @@ public class Bytes {
 		return b2;
 	}
 
+    /**
+     public static int putInt(byte[] bytes, int offset, int val) {
+     if ((bytes == null) || (bytes.length - offset < 4)) {
+     return offset;
+     }
+     for (int i = offset + 3; i > offset; i--) {
+     bytes[i] = (byte) val;
+     val >>>= 8;
+     }
+     bytes[offset] = (byte) val;
+     return offset + 4;
+     } **/
+
+    public static int putInt(byte[] buffer, int offset, int value) {
+        buffer[offset] = (byte) (value >> 24);
+        buffer[offset + 1] = (byte) (value >> 16);
+        buffer[offset + 2] = (byte) (value >> 8);
+        buffer[offset + 3] = (byte) value;
+        return offset +4;
+    }
+
+    public static void putInts(byte[] buffer, int... values) {
+        int offset = 0;
+        for (int value : values) {
+            putInt(buffer, offset, value);
+            offset += 4;
+        }
+    }
+
+    public static int toInt(byte[] buffer, int offset) {
+        return ((buffer[offset] & 0xff) << 24) + ((buffer[offset + 1] & 0xff) << 16) + ((buffer[offset + 2] & 0xff) << 8) + (buffer[offset + 3] & 0xff);
+    }
+
 	public static byte[] toBytes(String s) {
 		if (s == null) {
 			throw new IllegalArgumentException("string cannot be null");
@@ -265,9 +298,7 @@ public class Bytes {
 		return toInt(bytes, 0);
 	}
 
-	public static int toInt(byte[] bytes, int offset) {
-		return toInt(bytes, offset, 4);
-	}
+
 
 	public static int toInt(byte[] bytes, int offset, int length) {
 		if ((bytes == null) || (length != 4) || (offset + length > bytes.length)) {
@@ -281,17 +312,7 @@ public class Bytes {
 		return n;
 	}
 
-	public static int putInt(byte[] bytes, int offset, int val) {
-		if ((bytes == null) || (bytes.length - offset < 4)) {
-			return offset;
-		}
-		for (int i = offset + 3; i > offset; i--) {
-			bytes[i] = (byte) val;
-			val >>>= 8;
-		}
-		bytes[offset] = (byte) val;
-		return offset + 4;
-	}
+
 
 	public static byte[] toBytes(short val) {
 		byte[] b = new byte[2];
