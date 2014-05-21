@@ -59,22 +59,25 @@ class MetaIO {
 	}
 	
 	public void clear()throws IOException{
-		Bytes.putInt(buffer,0, 0);
-		Bytes.putInt(buffer,4, 0);
-		Bytes.putInt(buffer,8, 0);
-		Bytes.putInt(buffer,12, 0);
-		Bytes.putInt(buffer,16, 0);
-		Bytes.putInt(buffer,20, 0);
-		Bytes.putInt(buffer,24,0);
-		Bytes.putInt(buffer,28,0);
-		Bytes.putInt(buffer,32,0);
-		file.put(0,buffer);
+        this.indexCount = 0;
+        this.readIndex = 0;
+        this.readOffset =0;
+        this.writeIndex = 0;
+        this.writeOffset = 0;
+        this.writeStore = 0;
+        this.writeStoreOffset = 0;
+        flush();
 	}
 	
 	public void close(){
 		this.file.close();
 		this.file = null;
 	}
+
+    public void closeAndDeleteFile(){
+        this.file.closeAndDeleteFile();
+        this.file = null;
+    }
 
 	
 	public synchronized int incIndexCount()throws IOException{

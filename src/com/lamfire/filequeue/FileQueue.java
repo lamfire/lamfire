@@ -211,22 +211,42 @@ public class FileQueue {
 		}
 	}
 
-	private void realseIndexs() {
+    private void closeIndexs() {
+        if (indexs.isEmpty()) {
+            return;
+        }
+        for (IndexIO io : indexs) {
+            io.close();
+        }
+        indexs.clear();
+    }
+
+    private void closeStores() {
+        if (stores.isEmpty()) {
+            return;
+        }
+        for (StoreIO io : stores.values()) {
+            io.close();
+        }
+        stores.clear();
+    }
+
+	private void clearIndexs() {
 		if (indexs.isEmpty()) {
 			return;
 		}
 		for (IndexIO io : indexs) {
-			io.close();
+			io.closeAndDeleteFile();
 		}
 		indexs.clear();
 	}
 
-	private void realseStores() {
+	private void clearStores() {
 		if (stores.isEmpty()) {
 			return;
 		}
 		for (StoreIO io : stores.values()) {
-			io.close();
+			io.closeAndDeleteFile();
 		}
 		stores.clear();
 	}
@@ -235,8 +255,8 @@ public class FileQueue {
 		try {
 			lock.lock();
 			meta.clear();
-			realseStores();
-			realseIndexs();
+			clearStores();
+            clearIndexs();
             initialize();
 		} catch (IOException e) {
 			throw new IOError(e);
@@ -248,8 +268,8 @@ public class FileQueue {
 	public void close() {
 		try {
 			lock.lock();
-			realseStores();
-			realseIndexs();
+            closeIndexs();
+            closeStores();
 			this.meta.close();
 		} finally {
 			lock.unlock();

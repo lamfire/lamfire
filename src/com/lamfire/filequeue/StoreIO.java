@@ -57,6 +57,11 @@ class StoreIO {
 		this.buffer = null;
 	}
 
+    public void closeAndDeleteFile(){
+        this.buffer.closeAndDeleteFile();
+        this.buffer = null;
+    }
+
 
 	public int getWriteOffset() {
 		return this.buffer.getWritePostion();

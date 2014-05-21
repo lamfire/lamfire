@@ -11,6 +11,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.lamfire.logger.Logger;
+import com.lamfire.utils.FileUtils;
 
 
 /**
@@ -98,6 +99,20 @@ public class FileBuffer {
 			file.getParentFile().mkdirs();
 		}
 	}
+
+    public void closeAndDeleteFile(){
+        try {
+            lock.lock();
+            this.close();
+            try {
+                file.deleteOnExit();
+            } catch (Exception e) {
+                throw new IOError(e);
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
 
 	/**
 	 * 调整读内存映射地址
@@ -194,18 +209,28 @@ public class FileBuffer {
 	public void close() {
 		try {
 			this.lock.lock();
-			unmap(this.writeBuffer);
-			unmap(this.readBuffer);
-			this.raf.close();
+            if(this.writeBuffer != null){
+			    unmap(this.writeBuffer);
+                this.writeBuffer = null;
+            }
+
+            if(this.writeBuffer != null){
+                unmap(this.readBuffer);
+                this.readBuffer = null;
+            }
+			if(this.raf != null){
+			    this.raf.close();
+                this.raf = null;
+            }
+            if (shutdownCloseThread != null) {
+                Runtime.getRuntime().removeShutdownHook(shutdownCloseThread);
+                shutdownCloseThread = null;
+            }
+
 		} catch (IOException e) {
 			throw new IOError(e);
 		} finally {
-			this.writeBuffer = null;
-			this.readBuffer = null;
-			this.raf = null;
-			if (shutdownCloseThread != null) {
-				Runtime.getRuntime().removeShutdownHook(shutdownCloseThread);
-			}
+
 			lock.unlock();
 		}
 	}
