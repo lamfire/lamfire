@@ -1,5 +1,7 @@
 package com.lamfire.filequeue;
 
+import com.lamfire.utils.FilenameUtils;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -12,15 +14,28 @@ class IndexIO {
 	public static final String FILE_SUFFIX = ".idx";
 	public static final int ELEMENT_LENGTH = Element.ELEMENT_LENGTH;
 
-	public static File getIndexFile(String dir,String name,int page){
-		if(page ==0){
-			return new File(dir+ File.separator +name + FILE_SUFFIX);
-		}
-		return new File(dir+ File.separator +name + FILE_SUFFIX +"." + page);
+    public static String getIndexFileName(String dir,String name,int index){
+        dir = FilenameUtils.normalizeNoEndSeparator(dir);
+        if(index ==0){
+            return (dir+ File.separator +name + FILE_SUFFIX);
+        }
+        return (dir+ File.separator +name + FILE_SUFFIX +"." + index);
+    }
+
+	public static File getIndexFile(String dir,String name,int index){
+		return new File(getIndexFileName(dir,name,index));
 	}
 
+    public static boolean deleteIndexFile(String dir,String name,int index){
+        File file = getIndexFile(dir, name, index);
+        if(file.exists() && file.isFile()){
+            return file.getAbsoluteFile().delete();
+        }
+        return false;
+    }
+
 	FileBuffer buffer;
-	int index = 0;
+	final int index;
 	
 	public IndexIO(File file,int page) throws IOException {
 		this.buffer = new FileBuffer(file);
@@ -57,6 +72,9 @@ class IndexIO {
 	}
 
     public void closeAndDeleteFile(){
+        if(this.buffer == null){
+            return;
+        }
         this.buffer.closeAndDeleteFile();
         this.buffer = null;
     }
@@ -69,14 +87,27 @@ class IndexIO {
 		return this.buffer.getReadPostion();
 	}
 	
-	public int getFreeElementSpace(){
-		return this.buffer.getFreeWriteSpace() / ELEMENT_LENGTH;
+	public int getFreeElementSize(){
+        int freeSpace = this.buffer.getFreeWriteSpace();
+		return (freeSpace - freeSpace % ELEMENT_LENGTH ) / ELEMENT_LENGTH;
 	}
 
+
+    public int getUnreadElementSize(){
+        int unreadSpace = (FileBuffer.MAX_FILE_LENGTH - this.buffer.getReadPostion());
+        return (unreadSpace - unreadSpace % ELEMENT_LENGTH ) / ELEMENT_LENGTH;
+    }
 
 	public int getIndex() {
 		return index;
 	}
-	
-	
+
+    @Override
+    public String toString() {
+        return "IndexIO{" +
+                "index=" + index +
+                ",unreadElementSize=" + getUnreadElementSize() +
+                ",freeElementSize=" + getFreeElementSize() +
+                '}';
+    }
 }

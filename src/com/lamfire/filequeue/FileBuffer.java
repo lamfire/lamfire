@@ -30,7 +30,7 @@ public class FileBuffer {
 	/**
 	 * 文件的最大SIZE:1GB
 	 */
-	public static final int MAX_FILE_LENGTH = 1024 * 1024 * 1024; // 1G
+	public static final int MAX_FILE_LENGTH = 128 * 1024 * 1024; // 1G
 
 	private final Lock lock = new ReentrantLock();
 
@@ -44,6 +44,7 @@ public class FileBuffer {
 
 	private File file;
 	private RandomAccessFile raf = null;
+    private FileChannel channel;
 
 	private final int bufferSize;
 
@@ -54,16 +55,37 @@ public class FileBuffer {
 	public FileBuffer(File file, int bufferSize) throws IOException {
 		this.bufferSize = bufferSize;
 		this.file = file;
-		if (!file.exists()) {
-			initialize(file);
-		}
-		raf = new RandomAccessFile(file, "rw");
+        initialize();
 	}
+
+    protected synchronized   FileChannel getFileChannel(){
+       if(this.channel == null){
+           this.channel = getRandomAccessFile().getChannel();
+       }
+       return this.channel;
+    }
+
+    protected synchronized RandomAccessFile getRandomAccessFile(){
+        if(this.raf == null){
+            try{
+                this.raf = new RandomAccessFile(file,"rwd");
+            }catch (IOException e){
+                throw new IOError(e);
+            }
+        }
+
+        return this.raf;
+    }
 
 	protected MappedByteBuffer mmap(int postion) {
 		try {
 			lock.lock();
-			return raf.getChannel().map(FileChannel.MapMode.READ_WRITE, postion, bufferSize);
+            int mapLength = bufferSize;
+            int remaining = MAX_FILE_LENGTH - postion;
+            if(remaining < bufferSize){
+                mapLength = remaining;
+            }
+			return getFileChannel().map(FileChannel.MapMode.READ_WRITE, postion, mapLength);
 		} catch (IOException e) {
 			throw new IOError(e);
 		} finally {
@@ -94,21 +116,21 @@ public class FileBuffer {
 		}
 	}
 
-	private void initialize(File file) throws IOException {
+	private synchronized void initialize() throws IOException {
 		if (!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
 		}
+        if(raf == null){
+            raf = new RandomAccessFile(file, "rwd");
+            channel = raf.getChannel();
+        }
 	}
 
     public void closeAndDeleteFile(){
         try {
             lock.lock();
-            this.close();
-            try {
-                file.deleteOnExit();
-            } catch (Exception e) {
-                throw new IOError(e);
-            }
+            close();
+            file.getAbsoluteFile().delete();
         } finally {
             lock.unlock();
         }
@@ -214,10 +236,16 @@ public class FileBuffer {
                 this.writeBuffer = null;
             }
 
-            if(this.writeBuffer != null){
+            if(this.readBuffer != null){
                 unmap(this.readBuffer);
                 this.readBuffer = null;
             }
+
+            if(this.channel != null){
+                this.channel.close();
+                this.channel = null;
+            }
+
 			if(this.raf != null){
 			    this.raf.close();
                 this.raf = null;
@@ -230,7 +258,6 @@ public class FileBuffer {
 		} catch (IOException e) {
 			throw new IOError(e);
 		} finally {
-
 			lock.unlock();
 		}
 	}

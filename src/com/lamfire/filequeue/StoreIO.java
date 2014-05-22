@@ -1,5 +1,7 @@
 package com.lamfire.filequeue;
 
+import com.lamfire.utils.FilenameUtils;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -11,15 +13,28 @@ import java.io.IOException;
 class StoreIO {
 	public static final String FILE_SUFFIX = ".data";
 	
-	public static File getStoreFile(String dir,String name,int page){
-		if(page ==0){
-			return new File(dir+ File.separator +name + FILE_SUFFIX);
-		}
-		return new File(dir+ File.separator +name + FILE_SUFFIX +"." + page);
+	public static File getStoreFile(String dir,String name,int index){
+		return new File(getStoreFileName(dir,name,index));
 	}
 
+    public static String getStoreFileName(String dir,String name,int index){
+        dir = FilenameUtils.normalizeNoEndSeparator(dir);
+        if(index ==0){
+            return (dir+ File.separator +name + FILE_SUFFIX);
+        }
+        return (dir+ File.separator +name + FILE_SUFFIX +"." + index);
+    }
+
+    public static boolean deleteStoreFile(String dir,String name,int index){
+          File file = getStoreFile(dir,name,index);
+          if(file.exists() && file.isFile()){
+              return file.getAbsoluteFile().delete();
+          }
+        return false;
+    }
+
 	FileBuffer buffer;
-	int store;
+	final int store;
 	
 	public StoreIO(File file,int store) throws IOException {
 		this.buffer = new FileBuffer(file);
@@ -58,6 +73,9 @@ class StoreIO {
 	}
 
     public void closeAndDeleteFile(){
+        if(this.buffer == null){
+            return;
+        }
         this.buffer.closeAndDeleteFile();
         this.buffer = null;
     }
