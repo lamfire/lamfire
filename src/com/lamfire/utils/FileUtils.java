@@ -407,7 +407,7 @@ public class FileUtils {
 			if (!file.exists()) {
 				throw new FileNotFoundException("File does not exist: " + file);
 			}
-			if (!file.delete()) {
+			if (!file.getAbsoluteFile().delete()) {
 				String message = "Unable to delete file: " + file;
 
 				throw new IOException(message);
@@ -419,7 +419,7 @@ public class FileUtils {
 		if (file.isDirectory())
 			deleteDirectoryOnExit(file);
 		else
-			file.deleteOnExit();
+			file.getAbsoluteFile().deleteOnExit();
 	}
 
 	private static void deleteDirectoryOnExit(File directory) throws IOException {

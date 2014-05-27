@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
-public class IndexManager {
+class IndexManager {
     private static final Logger LOGGER = Logger.getLogger(IndexManager.class);
     private MetaIO metaIO;
     private String dir;
@@ -72,7 +72,10 @@ public class IndexManager {
         return io;
     }
 
-    public void close(){
+    public synchronized void close(){
+        if(indexs.isEmpty()){
+            return;
+        }
         for(IndexIO io :indexs.values()){
             io.close();
         }

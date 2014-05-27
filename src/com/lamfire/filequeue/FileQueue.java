@@ -23,6 +23,7 @@ import com.lamfire.utils.Threads;
 public class FileQueue {
 	private static final Logger LOGGER = Logger.getLogger(FileQueue.class);
 	private static final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;
+    private static final int AUTO_CLEAR_INTERVAL  = 300; //s
 	private int indexBufferSize = DEFAULT_BUFFER_SIZE;
 	private int storeBufferSize = DEFAULT_BUFFER_SIZE;
 
@@ -37,6 +38,9 @@ public class FileQueue {
 
     private QueueReader reader;
     private QueueWriter writer;
+
+    private int indexOfLastDeleteStoreFile = 0 ;
+    private int indexOfLastDeleteIndexFile = 0;
 
 	public FileQueue(String dirPath, String name) throws IOException {
 		this(dirPath, name, DEFAULT_BUFFER_SIZE, DEFAULT_BUFFER_SIZE);
@@ -56,19 +60,26 @@ public class FileQueue {
 			dir.mkdirs();
 		}
 		initialize();
+        Threads.scheduleWithFixedDelay(autoClearExpiredFileMonitor,AUTO_CLEAR_INTERVAL,AUTO_CLEAR_INTERVAL, TimeUnit.SECONDS);
 	}
 
 	void initialize() throws IOException {
         if(meta != null){
             return;
         }
-        meta = new MetaIO(MetaIO.getMetaFile(dir,name));
-        indexMgr = new IndexManager(this.meta,dir,name);
-        storeMgr = new StoreManager(this.meta,dir,name);
-        reader = new QueueReaderImpl(this.meta,indexMgr,storeMgr) ;
-        writer = new QueueWriterImpl(this.meta,indexMgr,storeMgr);
+        try {
+            lock.lock();
+            meta = new MetaIO(MetaIO.getMetaFile(dir,name));
+            indexMgr = new IndexManager(this.meta,dir,name);
+            storeMgr = new StoreManager(this.meta,dir,name);
+            reader = new QueueReaderImpl(this.meta,indexMgr,storeMgr) ;
+            writer = new QueueWriterImpl(this.meta,indexMgr,storeMgr);
 
-        Threads.scheduleWithFixedDelay(expiredFileRemover,60,60, TimeUnit.SECONDS);
+            indexOfLastDeleteStoreFile = 0 ;
+            indexOfLastDeleteIndexFile = 0;
+        } finally {
+            lock.unlock();
+        }
 	}
 
 
@@ -136,6 +147,8 @@ public class FileQueue {
 		try {
 			lock.lock();
             meta.clear();
+            deleteAllIndexFiles();
+            deleteAllStoreFiles();
             initialize();
 		} catch (IOException e) {
 			throw new IOError(e);
@@ -147,7 +160,9 @@ public class FileQueue {
 	public void close() {
 		try {
 			lock.lock();
-
+            storeMgr.close();
+            indexMgr.close();
+            meta.close();
 		} finally {
 			lock.unlock();
 		}
@@ -156,26 +171,50 @@ public class FileQueue {
 
     private void deleteExpiredStoreFiles(){
         int store = meta.getReadStore();
-        for(int i=0;i<store;i++){
+        for(int i=indexOfLastDeleteStoreFile;i<store;i++){
             storeMgr.deleteStoreFile(i);
+            indexOfLastDeleteStoreFile = i;
         }
     }
 
     private void deleteExpiredIndexFiles(){
         int index = meta.getReadIndex();
-        for(int i=0;i<index;i++){
+        for(int i=indexOfLastDeleteIndexFile;i<index;i++){
             indexMgr.deleteIndexFile(i);
+            indexOfLastDeleteIndexFile = i;
         }
     }
 
-    Runnable expiredFileRemover = new Runnable() {
+    private void deleteAllStoreFiles(){
+        int store = meta.getWriteStore();
+        for(int i=indexOfLastDeleteStoreFile;i<=store;i++){
+            storeMgr.deleteStoreFile(i);
+            indexOfLastDeleteStoreFile = i;
+        }
+    }
+
+    private void deleteAllIndexFiles(){
+        int index = meta.getWriteIndex();
+        for(int i=indexOfLastDeleteIndexFile;i<=index;i++){
+            indexMgr.deleteIndexFile(i);
+            indexOfLastDeleteIndexFile = i;
+        }
+    }
+
+    Runnable autoClearExpiredFileMonitor = new Runnable() {
         @Override
         public void run() {
             try{
+                lock.lock();
                 deleteExpiredStoreFiles();
                 deleteExpiredIndexFiles();
+                if(size() == 0){
+                    clear();
+                }
             }catch (Throwable t){
 
+            } finally {
+                lock.unlock();
             }
         }
     } ;

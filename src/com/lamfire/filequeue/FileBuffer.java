@@ -30,7 +30,7 @@ public class FileBuffer {
 	/**
 	 * 文件的最大SIZE:1GB
 	 */
-	public static final int MAX_FILE_LENGTH = 128 * 1024 * 1024; // 1G
+	public static final int MAX_FILE_LENGTH = 1024 * 1024 * 1024; // 1G
 
 	private final Lock lock = new ReentrantLock();
 
@@ -220,8 +220,8 @@ public class FileBuffer {
 			}
 
 			if (this.writeMapOffset + this.writeBuffer.position() != this.writePostion) {
-				int postion = this.writePostion - this.writeMapOffset;
-				this.writeBuffer.position(postion);
+				int position = this.writePostion - this.writeMapOffset;
+				this.writeBuffer.position(position);
 			}
 		} finally {
 			lock.unlock();

@@ -7,16 +7,16 @@ import com.lamfire.utils.Bytes;
  * @author lamfire
  *
  */
-public class Element {
+class Element {
 	public static final int  ELEMENT_LENGTH = 12;
 
 	public static final Element NULL = new Element(0,0,0);
 	
-	int store;
+	private int store;
 
-	int position;
+	private int position;
 
-	int length;
+	private int length;
 	
 	public Element(){
 		

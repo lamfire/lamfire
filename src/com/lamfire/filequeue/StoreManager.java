@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
-public class StoreManager {
+class StoreManager {
     private static final Logger LOGGER = Logger.getLogger(StoreManager.class);
     private MetaIO metaIO;
     private String dir;
@@ -82,7 +82,10 @@ public class StoreManager {
         return io;
     }
 
-    public void close(){
+    public synchronized void close(){
+        if(stores.isEmpty()){
+            return;
+        }
         for(StoreIO io :stores.values()){
             io.close();
         }

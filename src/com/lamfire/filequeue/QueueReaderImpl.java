@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class QueueReaderImpl implements QueueReader {
+class QueueReaderImpl implements QueueReader {
     private Lock lock = new ReentrantLock();
     private MetaIO meta;
     private IndexManager indexMgr;
