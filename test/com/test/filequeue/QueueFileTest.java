@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.lamfire.filequeue.FileQueue;
 import com.lamfire.utils.Asserts;
-
+import com.lamfire.utils.Bytes;
 
 
 /**
@@ -14,19 +14,50 @@ import com.lamfire.utils.Asserts;
  */
 public class QueueFileTest  {
 	public static void main(String[] args) throws Exception {
-		String source = "12345";
-		FileQueue queue = new FileQueue("/data/FileQueue/" ,"test1");
-		queue.add(source.getBytes());
-		byte[] bytes = queue.peek();
-		String value = new String(bytes);
-		System.out.println(value);
-		Asserts.assertEquals(source, value);
-		
-		System.out.println(queue.size());
-
+        int buffSize = 8 * 1024 * 1024;
+		FileQueue queue = new FileQueue("/data/FileQueue/" ,"test1",buffSize,buffSize);
         queue.clear();
-        queue.add(source.getBytes());
-        System.out.println(queue.size());
+        int count = 100000000;
 
+        //add
+        for(int i=0;i<count;i++){
+		    queue.add(Bytes.toBytes(i));
+            if(i % 100000 == 0){
+                System.out.println("[add]"+i);
+            }
+        }
+
+        System.out.println("[size]:"+queue.size());
+
+		byte[] bytes = queue.peek();
+		Asserts.assertEquals(0, Bytes.toInt(bytes));
+
+        //peek
+        for(int i=0;i<count;i++){
+            bytes = queue.peek(i);
+            Asserts.assertEquals(i, Bytes.toInt(bytes));
+            if(i % 100000 == 0){
+                System.out.println("[peek]"+i);
+            }
+        }
+		
+		//size
+        Asserts.assertEquals(count,queue.size());
+
+
+        System.out.println("[size]:"+queue.size());
+
+        //poll
+        for(int i=0;i<count;i++){
+            bytes = queue.poll();
+            Asserts.assertEquals(i, Bytes.toInt(bytes));
+            if(i % 100000 == 0){
+                System.out.println("[poll]"+i);
+            }
+        }
+
+
+        System.out.println("[size]:"+queue.size());
+        Asserts.assertEquals(0,queue.size());
 	}
 }

@@ -13,6 +13,7 @@ import java.io.IOException;
 class IndexIO {
 	public static final String FILE_SUFFIX = ".idx";
 	public static final int ELEMENT_LENGTH = Element.ELEMENT_LENGTH;
+    public static final int MAX_AVAILABLE_FILE_SPACE = FileBuffer.MAX_FILE_LENGTH - FileBuffer.MAX_FILE_LENGTH  % Element.ELEMENT_LENGTH;
 
     public static String getIndexFileName(String dir,String name,int index){
         dir = FilenameUtils.normalizeNoEndSeparator(dir);

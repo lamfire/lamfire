@@ -23,7 +23,24 @@ class QueueReaderImpl implements QueueReader {
         return meta.getWritedCount() > meta.getReadedCount();
     }
 
-    public byte[] read(boolean moveToNext) throws IOException{
+    private byte[] read(int index,int indexOffset) throws IOException{
+        try{
+            lock.lock();
+            IndexIO indexIO = indexMgr.getIndexIO(index);
+            indexIO.setReadOffset(indexOffset);
+
+            Element element = indexIO.take();
+            StoreIO storeIO = storeMgr.getStoreIO(element.getStore());
+            storeIO.setReadOffset(element.getPosition());
+            byte[] bytes = new byte[element.getLength()];
+            storeIO.read(bytes);
+            return bytes;
+        }finally {
+            lock.unlock();
+        }
+    }
+
+    public byte[] poll() throws IOException{
         if(!hashMore()){
             return null;
         }
@@ -45,13 +62,11 @@ class QueueReaderImpl implements QueueReader {
             byte[] bytes = new byte[element.getLength()];
             storeIO.read(bytes);
 
-            if(moveToNext){
-                meta.setReadStore(element.getStore());
-                meta.setReadStoreOffset(element.getPosition());
-                meta.setReadIndex(indexIO.getIndex());
-                meta.setReadIndexOffset(meta.getReadIndexOffset() + Element.ELEMENT_LENGTH);
-                meta.flush();
-            }
+            meta.setReadStore(element.getStore());
+            meta.setReadStoreOffset(element.getPosition());
+            meta.setReadIndex(indexIO.getIndex());
+            meta.setReadIndexOffset(meta.getReadIndexOffset() + Element.ELEMENT_LENGTH);
+            meta.flush();
 
             return bytes;
         }finally {
@@ -60,12 +75,48 @@ class QueueReaderImpl implements QueueReader {
     }
 
     public byte[] peek() throws IOException{
-        return read(false);
+        if(!hashMore()){
+            return null;
+        }
+        try{
+            lock.lock();
+            int index = meta.getReadIndex();
+            int indexOffset = meta.getReadIndexOffset();
+
+            if((indexOffset + Element.ELEMENT_LENGTH) > FileBuffer.MAX_FILE_LENGTH){
+                index++;
+                indexOffset = 0;
+            }
+            return read(index,indexOffset);
+        }finally {
+            lock.unlock();
+        }
     }
 
+    public byte[] peek(int i) throws IOException{
+        if(!hashMore()){
+            return null;
+        }
+        try{
+            lock.lock();
+            int index = meta.getReadIndex();
+            int indexOffset = meta.getReadIndexOffset();
 
-    public byte[] poll() throws IOException{
-        return read(true);
+            int skipOffset = i * Element.ELEMENT_LENGTH;
+            int maxAvailableSpace = IndexIO.MAX_AVAILABLE_FILE_SPACE;
+            int skipIdx = skipOffset / maxAvailableSpace;
+            skipOffset = skipOffset % maxAvailableSpace ;
+            index+= skipIdx;
+            indexOffset += skipOffset;
+
+            if(indexOffset > maxAvailableSpace) {
+                index ++;
+                indexOffset = indexOffset - maxAvailableSpace;
+            }
+            return read(index,indexOffset);
+        }finally {
+            lock.unlock();
+        }
     }
 
 }

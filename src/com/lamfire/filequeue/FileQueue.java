@@ -50,8 +50,8 @@ public class FileQueue {
 		this(dirPath, name, DEFAULT_BUFFER_SIZE, storeBufferSize);
 	}
 
-	public FileQueue(String dirPath, String name, int pageBufferSize, int storeBufferSize) throws IOException {
-		this.indexBufferSize = pageBufferSize;
+	public FileQueue(String dirPath, String name, int indexBufferSize, int storeBufferSize) throws IOException {
+		this.indexBufferSize = indexBufferSize;
 		this.storeBufferSize = storeBufferSize;
 		this.dir = dirPath;
 		this.name = name;
@@ -74,6 +74,9 @@ public class FileQueue {
             storeMgr = new StoreManager(this.meta,dir,name);
             reader = new QueueReaderImpl(this.meta,indexMgr,storeMgr) ;
             writer = new QueueWriterImpl(this.meta,indexMgr,storeMgr);
+
+            indexMgr.setBufferSize(indexBufferSize);
+            storeMgr.setBufferSize(storeBufferSize);
 
             indexOfLastDeleteStoreFile = 0 ;
             indexOfLastDeleteIndexFile = 0;
@@ -115,6 +118,20 @@ public class FileQueue {
 			lock.unlock();
 		}
 	}
+
+    public  byte[] peek(int i) {
+        if (isEmpty()) {
+            return null;
+        }
+        try {
+            lock.lock();
+            return reader.peek(i);
+        } catch (IOException e) {
+            throw new IOError(e);
+        } finally {
+            lock.unlock();
+        }
+    }
 
     public  byte[] poll() {
         if (isEmpty()) {

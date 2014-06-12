@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class QueuePreformaceTest {
     private static final Logger LOGGER = Logger.getLogger(QueuePreformaceTest.class);
-    private final String TEXT = RandomUtils.randomTextWithFixedLength(1000);
+    private final String TEXT = RandomUtils.randomTextWithFixedLength(10);
 
     private FileQueue queue;
 
@@ -32,7 +32,7 @@ public class QueuePreformaceTest {
     AtomicInteger errorCounter = new AtomicInteger();
 
     QueuePreformaceTest() throws Exception{
-        queue = new FileQueue("/data/FileQueue/" ,"preformance");
+        queue = new FileQueue("k:/data/FileQueue/" ,"preformance");
         queue.clear();
     }
 
