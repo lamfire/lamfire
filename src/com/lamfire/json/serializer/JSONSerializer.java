@@ -16,7 +16,6 @@ import java.util.TimeZone;
 import com.lamfire.json.JSONString;
 import com.lamfire.json.JSONException;
 import com.lamfire.json.JSONWriter;
-import com.lamfire.json.util.ServiceLoader;
 
 public class JSONSerializer {
 
@@ -179,13 +178,6 @@ public class JSONSerializer {
         ObjectSerializer writer = config.get(clazz);
 
         if (writer == null) {
-            final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            for (AutowiredObjectSerializer autowired : ServiceLoader.load(AutowiredObjectSerializer.class, classLoader)) {
-                for (Type forType : autowired.getAutowiredFor()) {
-                    config.put(forType, autowired);
-                }
-            }
-            
             writer = config.get(clazz);
         }
 

@@ -19,7 +19,6 @@ import com.lamfire.json.parser.DefaultExtJSONParser;
 import com.lamfire.json.parser.Feature;
 import com.lamfire.json.parser.JSONScanner;
 import com.lamfire.json.parser.JSONToken;
-import com.lamfire.json.util.ASMClassLoader;
 
 @SuppressWarnings( { "unchecked" })
 public class DefaultObjectDeserializer implements ObjectDeserializer {
@@ -275,9 +274,6 @@ public class DefaultObjectDeserializer implements ObjectDeserializer {
 				return null;
 			}
 
-			if (classValue instanceof String) {
-				return (T) ASMClassLoader.forName((String) classValue);
-			}
 		}
 
 		try {

@@ -1,97 +1,90 @@
 package com.lamfire.json.util;
 
-public class SymbolTable {
-
+/**
+ * Created with IntelliJ IDEA.
+ * User: lamfire
+ * Date: 14-7-11
+ * Time: 下午2:37
+ * To change this template use File | Settings | File Templates.
+ */
+public class SymbolTable
+{
     public static final int DEFAULT_TABLE_SIZE = 128;
+    private final Entry[] buckets;
+    private final String[] symbols;
+    private final char[][] symbols_char;
+    private final int indexMask;
 
-    private final Entry[]   buckets;
-    private final String[]  symbols;
-    private final char[][]  symbols_char;
-
-    private final int       indexMask;
-
-    public SymbolTable(){
-        this(DEFAULT_TABLE_SIZE);
+    public SymbolTable()
+    {
+        this(128);
     }
 
-    public SymbolTable(int tableSize){
-        this.indexMask = tableSize - 1;
+    public SymbolTable(int tableSize) {
+        this.indexMask = (tableSize - 1);
         this.buckets = new Entry[tableSize];
         this.symbols = new String[tableSize];
         this.symbols_char = new char[tableSize][];
     }
 
-    /**
-     * Adds the specified symbol to the symbol table and returns a reference to the unique symbol. If the symbol already
-     * exists, the previous symbol reference is returned instead, in order guarantee that symbol references remain
-     * unique.
-     * 
-     * @param symbol The new symbol.
-     */
-    public String addSymbol(String symbol) {
+    public String addSymbol(String symbol)
+    {
         return addSymbol(symbol.toCharArray(), 0, symbol.length(), symbol.hashCode());
     }
 
-
-    public String addSymbol(char[] buffer, int offset, int len) {
-        // search for identical symbol
+    public String addSymbol(char[] buffer, int offset, int len)
+    {
         int hash = hash(buffer, offset, len);
         return addSymbol(buffer, offset, len, hash);
     }
 
-    /**
-     * Adds the specified symbol to the symbol table and returns a reference to the unique symbol. If the symbol already
-     * exists, the previous symbol reference is returned instead, in order guarantee that symbol references remain
-     * unique.
-     * 
-     * @param buffer The buffer containing the new symbol.
-     * @param offset The offset into the buffer of the new symbol.
-     * @param len The length of the new symbol in the buffer.
-     */
-    public String addSymbol(char[] buffer, int offset, int len, int hash) {
-        // int bucket = indexFor(hash, tableSize);
-        final int bucket = hash & indexMask;
+    public String addSymbol(char[] buffer, int offset, int len, int hash)
+    {
+        int bucket = hash & this.indexMask;
 
-        String sym = symbols[bucket];
+        String sym = this.symbols[bucket];
 
         boolean match = true;
 
         if (sym != null) {
             if (sym.length() == len) {
-                char[] characters = symbols_char[bucket];
+                char[] characters = this.symbols_char[bucket];
 
                 for (int i = 0; i < len; i++) {
-                    if (buffer[offset + i] != characters[i]) {
+                    if (buffer[(offset + i)] != characters[i]) {
                         match = false;
                         break;
                     }
                 }
 
-                if (match) {
+                if (match)
                     return sym;
-                }
-            } else {
+            }
+            else {
                 match = false;
             }
         }
 
-        OUTER: for (Entry entry = buckets[bucket]; entry != null; entry = entry.next) {
+        for (Entry entry = this.buckets[bucket]; entry != null; entry = entry.next) {
             char[] characters = entry.characters;
-            if (len == characters.length && hash == entry.hashCode) {
-                for (int i = 0; i < len; i++) {
-                    if (buffer[offset + i] != characters[i]) {
-                        continue OUTER;
-                    }
+            if ((len == characters.length) && (hash == entry.hashCode)) {
+                int i = 0;
+                while (true) if (i < len) {
+                    if (buffer[(offset + i)] != characters[i])
+                        break;
+                    i++; continue;
                 }
-                return entry.symbol;
+                else
+                {
+                    return entry.symbol;
+                }
             }
         }
-
-        Entry entry = new Entry(buffer, offset, len, hash, buckets[bucket]);
-        buckets[bucket] = entry; // 并发是处理时会导致缓存丢失，但不影响正确性
+        Entry entry = new Entry(buffer, offset, len, hash, this.buckets[bucket]);
+        this.buckets[bucket] = entry;
         if (match) {
-            symbols[bucket] = entry.symbol;
-            symbols_char[bucket] = entry.characters;
+            this.symbols[bucket] = entry.symbol;
+            this.symbols_char[bucket] = entry.characters;
         }
         return entry.symbol;
     }
@@ -101,33 +94,26 @@ public class SymbolTable {
         int off = offset;
 
         for (int i = 0; i < len; i++) {
-            h = 31 * h + buffer[off++];
+            h = 31 * h + buffer[(off++)];
         }
         return h;
     }
 
-    protected static final class Entry {
-
+    protected static final class Entry
+    {
         public final String symbol;
-        public final int    hashCode;
-
+        public final int hashCode;
         public final char[] characters;
         public final byte[] bytes;
+        public Entry next;
 
-        public Entry        next;
-
-        /**
-         * Constructs a new entry from the specified symbol information and next entry reference.
-         */
-        public Entry(char[] ch, int offset, int length, int hash, Entry next){
-            characters = new char[length];
-            System.arraycopy(ch, offset, characters, 0, length);
-            symbol = new String(characters).intern();
+        public Entry(char[] ch, int offset, int length, int hash, Entry next) {
+            this.characters = new char[length];
+            System.arraycopy(ch, offset, this.characters, 0, length);
+            this.symbol = new String(this.characters).intern();
             this.next = next;
             this.hashCode = hash;
             this.bytes = null;
         }
-
     }
-
 }

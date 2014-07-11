@@ -39,10 +39,8 @@ import com.lamfire.json.JSONArray;
 import com.lamfire.json.JSONException;
 import com.lamfire.json.JSON;
 import com.lamfire.json.deserializer.*;
-import com.lamfire.json.util.ASMUtils;
 import com.lamfire.json.util.FieldInfo;
 import com.lamfire.json.util.IdentityHashMap;
-import com.lamfire.json.util.ServiceLoader;
 import com.lamfire.json.util.SymbolTable;
 
 public class ParserConfig {
@@ -58,8 +56,6 @@ public class ParserConfig {
 	private final IdentityHashMap<Type, ObjectDeserializer> derializers = new IdentityHashMap<Type, ObjectDeserializer>();
 
 	private DefaultObjectDeserializer defaultSerializer = new DefaultObjectDeserializer();
-
-	private boolean asmEnable = !ASMUtils.isAndroid();
 
 	protected final SymbolTable symbolTable = new SymbolTable();
 
@@ -158,13 +154,6 @@ public class ParserConfig {
 
 	}
 
-	public boolean isAsmEnable() {
-		return asmEnable;
-	}
-
-	public void setAsmEnable(boolean asmEnable) {
-		this.asmEnable = asmEnable;
-	}
 
 	public SymbolTable getSymbolTable() {
 		return symbolTable;
@@ -203,12 +192,6 @@ public class ParserConfig {
 			return derializer;
 		}
 
-		final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		for (AutowiredObjectDeserializer autowired : ServiceLoader.load(AutowiredObjectDeserializer.class, classLoader)) {
-			for (Type forType : autowired.getAutowiredFor()) {
-				derializers.put(forType, autowired);
-			}
-		}
 
 		derializer = derializers.get(type);
 		if (derializer != null) {
@@ -250,49 +233,13 @@ public class ParserConfig {
 			return this.defaultSerializer;
 		}
 
-		if (!Modifier.isPublic(clazz.getModifiers())) {
-			return new JavaBeanDeserializer(this, clazz);
-		}
 
-		if (!asmEnable) {
-			return new JavaBeanDeserializer(this, clazz);
-		}
+		return new JavaBeanDeserializer(this, clazz);
 
-		try {
-			return ASMDeserializerFactory.getInstance().createJavaBeanDeserializer(this, clazz);
-		} catch (Exception e) {
-			throw new JSONException("create asm deserializer error, " + clazz.getName(), e);
-		}
+
 	}
 
 	public FieldDeserializer createFieldDeserializer(ParserConfig mapping, Class<?> clazz, FieldInfo fieldInfo) {
-		boolean asmEnable = this.asmEnable;
-
-		Method method = fieldInfo.getMethod();
-
-		if (!Modifier.isPublic(clazz.getModifiers())) {
-			asmEnable = false;
-		}
-
-		if (method.getParameterTypes()[0] == Class.class) {
-			asmEnable = false;
-		}
-
-		if (!asmEnable) {
-			return createFieldDeserializerWithoutASM(mapping, clazz, fieldInfo);
-		}
-
-		try {
-			return ASMDeserializerFactory.getInstance().createFieldDeserializer(mapping, clazz, fieldInfo);
-		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return createFieldDeserializerWithoutASM(mapping, clazz, fieldInfo);
-	}
-
-	public FieldDeserializer createFieldDeserializerWithoutASM(ParserConfig mapping, Class<?> clazz, FieldInfo fieldInfo) {
 		Method method = fieldInfo.getMethod();
 		Class<?> fieldClass = method.getParameterTypes()[0];
 
@@ -353,8 +300,6 @@ public class ParserConfig {
 
 		if (deserizer instanceof JavaBeanDeserializer) {
 			return ((JavaBeanDeserializer) deserizer).getFieldDeserializerMap();
-		} else if (deserizer instanceof ASMJavaBeanDeserializer) {
-			return ((ASMJavaBeanDeserializer) deserizer).getInnterSerializer().getFieldDeserializerMap();
 		} else {
 			return Collections.emptyMap();
 		}

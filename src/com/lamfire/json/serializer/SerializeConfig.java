@@ -24,43 +24,19 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import com.lamfire.json.JSONException;
-import com.lamfire.json.util.ASMUtils;
 import com.lamfire.json.util.IdentityHashMap;
 
 public class SerializeConfig extends IdentityHashMap<Type, ObjectSerializer> {
 
 	private final static SerializeConfig globalInstance = new SerializeConfig();
 
-	private boolean asm = !ASMUtils.isAndroid();
-
-	private final ASMSerializerFactory asmFactory = new ASMSerializerFactory();
-
-	public final ObjectSerializer createASMSerializer(Class<?> clazz) throws Exception {
-		return asmFactory.createJavaBeanSerializer(clazz);
-	}
-
 	public ObjectSerializer createJavaBeanSerializer(Class<?> clazz) {
 		if (!Modifier.isPublic(clazz.getModifiers())) {
 			return new JavaBeanSerializer(clazz);
 		}
 
-		if (asm) {
-			try {
-				return createASMSerializer(clazz);
-			} catch (Throwable e) {
-				throw new JSONException("create asm serilizer error, class " + clazz, e);
-			}
-		}
 
 		return new JavaBeanSerializer(clazz);
-	}
-
-	public boolean isAsmEnable() {
-		return asm;
-	}
-
-	public void setAsmEnable(boolean asmEnable) {
-		this.asm = asmEnable;
 	}
 
 	public final static SerializeConfig getGlobalInstance() {
