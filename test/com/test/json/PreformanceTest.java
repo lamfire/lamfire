@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.lamfire.json.JSON;
+import com.lamfire.utils.Threads;
 
 public class PreformanceTest {
+
 
 	public static Item getItem() {
 		Item item = new Item();
@@ -46,34 +50,48 @@ public class PreformanceTest {
 		return item;
 	}
 
-	public static void serializeTest( ) {
+    AtomicInteger counter = new AtomicInteger();
+
+    Runnable statusThread = new Runnable() {
+        int preOops = 0;
+        @Override
+        public void run() {
+            int opsCount = counter.get();
+            System.out.println("[count] = " +opsCount + " "+"[ops/s] = " + (opsCount - preOops));
+            preOops = opsCount;
+        }
+    };
+
+    public PreformanceTest(){
+        Threads.scheduleWithFixedDelay(statusThread, 1, 1, TimeUnit.SECONDS);
+    }
+
+	public void serializeTest( ) {
 		Item item = getItem();
-		long startAt = System.currentTimeMillis();
 		for(int i=0;i<10000000;i++){
 			String js = JSON.toJSONString(item);
-			if(i % 100000 == 0){
-				long now = System.currentTimeMillis();
-				System.out.println(i+ " items serialized,time :" + (now - startAt) +"ms => " + js);
-				startAt = now;
+            counter.incrementAndGet();
+			if(i  == 0){
+				System.out.println(i+ "[serialized]:"  + js);
 			}
 		}
 	}
 	
-	public static void deserializeTest() {
+	public void deserializeTest() {
 		Item item = getItem();
-		long startAt = System.currentTimeMillis();
 		String js = JSON.toJSONString(item);
+        System.out.println("[deserialized]:" + js);
 		for(int i=0;i<1000000000;i++){
-			item = JSON.toJavaObject(js, Item.class); 
-			if(i % 100000 == 0){
-				long now = System.currentTimeMillis();
-				System.out.println(i+ " items deserialized,time :" + (now - startAt) +"ms => " + item);
-				startAt = now;
+			item = JSON.toJavaObject(js, Item.class);
+            counter.incrementAndGet();
+			if(i == 0){
+                System.out.println(i+ "[deserialized]:"  + item);
 			}
 		}
 	}
 	
 	public static void main(String[] args) {
-		deserializeTest();
+        PreformanceTest test = new PreformanceTest();
+        test.deserializeTest();
 	}
 }
