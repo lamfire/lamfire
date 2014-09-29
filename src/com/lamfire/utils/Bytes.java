@@ -552,7 +552,20 @@ public class Bytes {
 	}
 
 	public static boolean equals(byte[] left, byte[] right) {
-		return (left == null) && (right == null);
+        if(left == null || right == null){
+            return false;
+        }
+
+        if(left.length != right.length){
+            return false;
+        }
+
+        for(int i=0;i< left.length;i++){
+            if(left[i] != right[i]){
+                return false;
+            }
+        }
+		return true;
 	}
 	
 	public static byte[] add(byte[] a, byte[] b) {
