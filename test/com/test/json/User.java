@@ -1,9 +1,12 @@
 package com.test.json;
 
+import java.util.Date;
+
 public class User {
 
 	private String name;
 	private int age;
+    private Date date;
 
     public String getName() {
         return name;
@@ -19,6 +22,14 @@ public class User {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     @Override

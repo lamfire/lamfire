@@ -51,6 +51,26 @@ public class TypeConverters {
         throw new JSONException("can not cast to byte, value : " + value);
     }
 
+    public static final byte[] castToByteArray(Object value){
+        if (value == null) {
+            return null;
+        }
+
+        if (value instanceof Collection) {
+            Collection collection = (Collection) value;
+            int index = 0;
+            byte[] array = new byte[collection.size()];
+            for (Object item : collection) {
+                byte obj = castToByte(item);
+                array[index] =obj;
+                index++;
+            }
+
+            return   array;
+        }
+        throw new JSONException("can not cast to byte array, value : " + value);
+    }
+
     public static final Character castToChar(Object value) {
         if (value == null) {
             return null;

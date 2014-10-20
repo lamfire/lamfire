@@ -4,6 +4,7 @@ import static com.lamfire.json.util.TypeConverters.castToBigDecimal;
 import static com.lamfire.json.util.TypeConverters.castToBigInteger;
 import static com.lamfire.json.util.TypeConverters.castToBoolean;
 import static com.lamfire.json.util.TypeConverters.castToByte;
+import static com.lamfire.json.util.TypeConverters.castToByteArray;
 import static com.lamfire.json.util.TypeConverters.castToDate;
 import static com.lamfire.json.util.TypeConverters.castToDouble;
 import static com.lamfire.json.util.TypeConverters.castToFloat;
@@ -132,6 +133,12 @@ public class JSON extends JSONParser implements Map<String, Object>, JSONString,
 
 		return castToByte(value);
 	}
+
+    public byte[] getByteArray(String key) {
+        Object value = get(key);
+
+        return castToByteArray(value);
+    }
 
 	public byte getByteValue(String key) {
 		Object value = get(key);
