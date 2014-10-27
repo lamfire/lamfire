@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="lamfire-2.2.3">
+  <artifact type="jar" name="lamfire-2.2.4">
     <output-path>$PROJECT_DIR$/build</output-path>
-    <root id="archive" name="lamfire-2.2.3.jar">
+    <root id="archive" name="lamfire-2.2.４.jar">
       <element id="module-output" name="lamfire" />
     </root>
   </artifact>
