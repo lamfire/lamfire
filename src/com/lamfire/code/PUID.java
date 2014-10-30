@@ -61,7 +61,7 @@ public class PUID implements Comparable<PUID>, Serializable {
 	
 	public PUID(String source) {
 		if (!isValid(source)) {
-			throw new IllegalArgumentException("invalid ObjectId [" + source + "]");
+			throw new IllegalArgumentException("invalid PUID [" + source + "]");
 		}
 
 		byte[] b = new byte[12];
