@@ -173,6 +173,7 @@ class FileQueueImpl implements FileQueue{
 	public void close() {
 		try {
 			lock.lock();
+            Threads.removeScheduledTask(autoClearExpiredFileMonitor);
             storeMgr.close();
             indexMgr.close();
             meta.close();
@@ -184,6 +185,7 @@ class FileQueueImpl implements FileQueue{
     public void delete(){
         try {
             lock.lock();
+            Threads.removeScheduledTask(autoClearExpiredFileMonitor);
             meta.clear();
             deleteAllIndexFiles();
             deleteAllStoreFiles();

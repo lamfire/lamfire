@@ -1,18 +1,12 @@
 package com.lamfire.utils;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import com.lamfire.logger.Logger;
+
+import java.util.concurrent.*;
 
 public class Threads {
 	protected static final Logger LOG = Logger.getLogger(Threads.class.getName());
-	private static ScheduledExecutorService scheduler;
+	private static ScheduledThreadPoolExecutor scheduler;
 	private static ThreadPoolExecutor executor;
 
 	protected static synchronized ThreadPoolExecutor getThreadPoolExecutor() {
@@ -22,9 +16,9 @@ public class Threads {
 		return executor;
 	}
 
-	protected static synchronized ScheduledExecutorService getScheduledExecutorService() {
+	protected static synchronized ScheduledThreadPoolExecutor getScheduledExecutorService() {
 		if (scheduler == null) {
-			scheduler = Executors.newSingleThreadScheduledExecutor(makeThreadFactory("scheduler"));
+			scheduler = new ScheduledThreadPoolExecutor(1,makeThreadFactory("scheduler"));
 		}
 		return scheduler;
 	}
@@ -126,6 +120,10 @@ public class Threads {
 	public static ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit){
 		return getScheduledExecutorService().scheduleWithFixedDelay(command, initialDelay, delay, unit);
 	}
+
+    public static void removeScheduledTask(Runnable task){
+        getScheduledExecutorService().remove(task);
+    }
 	
     public static <T> Future<T> submit(Runnable task, T result){
     	return getThreadPoolExecutor().submit(task, result);

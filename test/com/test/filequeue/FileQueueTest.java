@@ -60,5 +60,7 @@ public class FileQueueTest {
 
         System.out.println("[size]:"+queue.size());
         Asserts.assertEquals(0,queue.size());
+
+        queue.delete();
 	}
 }
