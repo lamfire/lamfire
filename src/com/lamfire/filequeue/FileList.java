@@ -1,16 +1,15 @@
 package com.lamfire.filequeue;
 
 /**
- * 一个高性能持久化对列,支持先进先出
+ * 一个高性能持久化的列表，不支持删除元素操作
  * 
  * @author lamfire
  * 
  */
-public interface FileQueue {
+public interface FileList {
 	public boolean add(byte[] bytes);
-    public  byte[] peek();
-    public  byte[] peek(int i);
-    public  byte[] poll();
+	public  boolean isEmpty();
+    public  byte[] get(int index);
 	public  long size();
 	public void clear();
 	public void close();

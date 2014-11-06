@@ -1,11 +1,12 @@
 package com.test.filequeue;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.lamfire.filequeue.FileQueue;
+import com.lamfire.filequeue.FileQueueBuilder;
 import com.lamfire.utils.StringUtils;
 import com.lamfire.utils.Threads;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 
@@ -34,7 +35,9 @@ public class QueueReadTest  {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		FileQueue queue = new FileQueue("/data/FileQueue/","test2");
+        FileQueueBuilder builder = new FileQueueBuilder();
+        builder.dataDir("/data/FileQueue/").name("queue1");
+		FileQueue queue = builder.build();
 
 		System.out.println("[SIZE]:"+queue.size());
 		

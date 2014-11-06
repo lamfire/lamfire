@@ -1,9 +1,8 @@
 package com.test.filequeue;
 
-import com.lamfire.filequeue.FileBuffer;
 import com.lamfire.filequeue.FileQueue;
+import com.lamfire.filequeue.FileQueueBuilder;
 import com.lamfire.logger.Logger;
-import com.lamfire.utils.Asserts;
 import com.lamfire.utils.RandomUtils;
 import com.lamfire.utils.StringUtils;
 import com.lamfire.utils.Threads;
@@ -32,7 +31,9 @@ public class QueuePreformaceTest {
     AtomicInteger errorCounter = new AtomicInteger();
 
     QueuePreformaceTest() throws Exception{
-        queue = new FileQueue("k:/data/FileQueue/" ,"preformance");
+        FileQueueBuilder builder = new FileQueueBuilder();
+        builder.dataDir("/data/FileQueue/").name("queue3");
+        queue = builder.build();
         queue.clear();
     }
 

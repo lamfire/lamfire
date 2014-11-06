@@ -1,8 +1,7 @@
 package com.test.filequeue;
 
-import java.io.File;
-
 import com.lamfire.filequeue.FileQueue;
+import com.lamfire.filequeue.FileQueueBuilder;
 import com.lamfire.utils.Asserts;
 import com.lamfire.utils.Bytes;
 
@@ -12,12 +11,14 @@ import com.lamfire.utils.Bytes;
  * 
  * @author Bob Lee (bob@squareup.com)
  */
-public class QueueFileTest  {
+public class FileQueueTest {
 	public static void main(String[] args) throws Exception {
         int buffSize = 8 * 1024 * 1024;
-		FileQueue queue = new FileQueue("/data/FileQueue/" ,"test1",buffSize,buffSize);
+        FileQueueBuilder builder = new FileQueueBuilder();
+        builder.dataDir("/data/FileQueue/").name("queue2").indexBufferSize(buffSize).storeBufferSize(buffSize);
+        FileQueue queue = builder.build();
         queue.clear();
-        int count = 100000000;
+        int count = 1000000;
 
         //add
         for(int i=0;i<count;i++){
