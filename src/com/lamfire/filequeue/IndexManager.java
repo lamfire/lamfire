@@ -11,15 +11,15 @@ import java.util.Map;
 
 class IndexManager {
     private static final Logger LOGGER = Logger.getLogger(IndexManager.class);
-    private MetaIO metaIO;
+    private MetaBuffer metaBuffer;
     private String dir;
     private String name;
     private int bufferSize = FileBuffer.DEFAULT_BUFFER_SIZE;
 
-    private final Map<Integer,IndexIO> indexs = Maps.newHashMap();
+    private final Map<Integer,IndexBuffer> indexs = Maps.newHashMap();
 
-    public IndexManager (MetaIO metaIO,String dir,String name){
-        this.metaIO = metaIO;
+    public IndexManager (MetaBuffer metaBuffer,String dir,String name){
+        this.metaBuffer = metaBuffer;
         this.dir = dir;
         this.name = name;
     }
@@ -29,46 +29,46 @@ class IndexManager {
     }
 
     public boolean expired(int index){
-        return index < metaIO.getReadIndex();
+        return index < metaBuffer.getReadIndex();
     }
 
-    public synchronized IndexIO getIndexIO(int index) throws IOException {
+    public synchronized IndexBuffer getIndexBuffer(int index) throws IOException {
         if(expired(index)){
-            throw new ExpiredException("The index file was expired : "+IndexIO.getIndexFileName(dir,name,index));
+            throw new ExpiredException("The index file was expired : "+ IndexBuffer.getIndexFileName(dir, name, index));
         }
 
-        if(index > metaIO.getWriteIndex()){
-            throw new FileNotFoundException("The index file out of size : "+IndexIO.getIndexFileName(dir,name,index));
+        if(index > metaBuffer.getWriteIndex()){
+            throw new FileNotFoundException("The index file out of size : "+ IndexBuffer.getIndexFileName(dir, name, index));
         }
 
-        IndexIO io = indexs.get(index);
+        IndexBuffer io = indexs.get(index);
         if (io == null) {
-            File pageFile = IndexIO.getIndexFile(dir, name, index);
-            io = new IndexIO(pageFile, index, bufferSize);
+            File pageFile = IndexBuffer.getIndexFile(dir, name, index);
+            io = new IndexBuffer(pageFile, index, bufferSize);
             indexs.put(index, io);
         }
         return io;
     }
 
     public void deleteIndexFile(int index){
-        IndexIO io = indexs.remove(index);
+        IndexBuffer io = indexs.remove(index);
         if (io != null) {
-            LOGGER.info("deleting index file : " + IndexIO.getIndexFileName(dir,name,index));
+            LOGGER.info("deleting index file : " + IndexBuffer.getIndexFileName(dir, name, index));
             io.closeAndDeleteFile();
             return;
         }
 
-         if(IndexIO.deleteIndexFile(dir,name,index)){
-             LOGGER.info("deleting index file : " + IndexIO.getIndexFileName(dir,name,index));
+         if(IndexBuffer.deleteIndexFile(dir, name, index)){
+             LOGGER.info("deleting index file : " + IndexBuffer.getIndexFileName(dir, name, index));
          }
     }
 
-    public synchronized IndexIO createNextIndexFile()throws IOException{
-        int index = metaIO.getWriteIndex() + 1;
-        File pageFile = IndexIO.getIndexFile(dir, name, index);
-        IndexIO io = new IndexIO(pageFile, index, bufferSize);
+    public synchronized IndexBuffer createNextIndexFile()throws IOException{
+        int index = metaBuffer.getWriteIndex() + 1;
+        File pageFile = IndexBuffer.getIndexFile(dir, name, index);
+        IndexBuffer io = new IndexBuffer(pageFile, index, bufferSize);
         indexs.put(index, io);
-        metaIO.setWriteIndex(index);
+        metaBuffer.setWriteIndex(index);
         return io;
     }
 
@@ -76,7 +76,7 @@ class IndexManager {
         if(indexs.isEmpty()){
             return;
         }
-        for(IndexIO io :indexs.values()){
+        for(IndexBuffer io :indexs.values()){
             io.close();
         }
         indexs.clear();

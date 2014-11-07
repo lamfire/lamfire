@@ -74,7 +74,7 @@ class Element {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[" + "store = " + store + ", position = " + position + ", length = " + length + "]";
+		return getClass().getSimpleName() + "[" + "index = " + store + ", position = " + position + ", length = " + length + "]";
 	}
 
 	@Override

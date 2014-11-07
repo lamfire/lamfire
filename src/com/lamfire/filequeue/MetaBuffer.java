@@ -1,17 +1,17 @@
 package com.lamfire.filequeue;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.lamfire.utils.Bytes;
 import com.lamfire.utils.FilenameUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * 队列元数据读写
  * @author lamfire
  *
  */
-class MetaIO {
+class MetaBuffer {
 	public static final String FILE_SUFFIX = ".meta";
 	public static final int META_FILE_LENGTH = 32;
 
@@ -37,15 +37,15 @@ class MetaIO {
 
     private int readIndex = 0; //当前读取页
     private int readIndexOffset = 0;//当前读取位置
-    private int readStore = 0;
-    private int readStoreOffset = 0;
+    private int readDataIndex = 0;
+    private int readDataOffset = 0;
 
     private int writeIndex = 0;//当前写页
     private int writeIndexOffset = 0;//当前写位置
-    private int writeStore = 0; //最后写入Store 号
-    private int writeStoreOffset = 0;//最后写入数据位置
+    private int writeDataIndex = 0; //最后写入Store 号
+    private int writeDataOffset = 0;//最后写入数据位置
 	
-	public MetaIO(File file) throws IOException{
+	public MetaBuffer(File file) throws IOException{
 		this.file = new FileBuffer(file,META_FILE_LENGTH);
 		reload();
 	}
@@ -53,39 +53,39 @@ class MetaIO {
 	private void reload()throws IOException{
 		this.readIndex = file.getInt(0);
 		this.readIndexOffset = file.getInt(4);
-        this.readStore = file.getInt(8);
-        this.readStoreOffset = file.getInt(12);
+        this.readDataIndex = file.getInt(8);
+        this.readDataOffset = file.getInt(12);
 
 		this.writeIndex = file.getInt(16);
 		this.writeIndexOffset = file.getInt(20);
-		this.writeStore = file.getInt(24);
-		this.writeStoreOffset = file.getInt(28);
+		this.writeDataIndex = file.getInt(24);
+		this.writeDataOffset = file.getInt(28);
 	}
 	
 	public void flush()throws IOException{
 
 		Bytes.putInt(buffer,0, readIndex);
 		Bytes.putInt(buffer,4, readIndexOffset);
-        Bytes.putInt(buffer,8, readStore);
-        Bytes.putInt(buffer,12, readStoreOffset);
+        Bytes.putInt(buffer,8, readDataIndex);
+        Bytes.putInt(buffer,12, readDataOffset);
 
 		Bytes.putInt(buffer,16, writeIndex);
 		Bytes.putInt(buffer,20,writeIndexOffset);
-		Bytes.putInt(buffer,24,writeStore);
-		Bytes.putInt(buffer,28,writeStoreOffset);
+		Bytes.putInt(buffer,24, writeDataIndex);
+		Bytes.putInt(buffer,28, writeDataOffset);
 		file.put(0,buffer);
 	}
 	
 	public void clear()throws IOException{
         this.readIndex = 0;
         this.readIndexOffset =0;
-        this.readStore = 0;
-        this.readStoreOffset = 0;
+        this.readDataIndex = 0;
+        this.readDataOffset = 0;
 
         this.writeIndex = 0;
         this.writeIndexOffset = 0;
-        this.writeStore = 0;
-        this.writeStoreOffset = 0;
+        this.writeDataIndex = 0;
+        this.writeDataOffset = 0;
         flush();
 	}
 	
@@ -130,20 +130,20 @@ class MetaIO {
         this.readIndexOffset = readIndexOffset;
     }
 
-    public int getReadStore() {
-        return readStore;
+    public int getReadDataIndex() {
+        return readDataIndex;
     }
 
-    public void setReadStore(int readStore) {
-        this.readStore = readStore;
+    public void setReadDataIndex(int readStore) {
+        this.readDataIndex = readStore;
     }
 
-    public int getReadStoreOffset() {
-        return readStoreOffset;
+    public int getReadDataOffset() {
+        return readDataOffset;
     }
 
-    public void setReadStoreOffset(int readStoreOffset) {
-        this.readStoreOffset = readStoreOffset;
+    public void setReadDataOffset(int readDataOffset) {
+        this.readDataOffset = readDataOffset;
     }
 
     public int getWriteIndex() {
@@ -162,20 +162,20 @@ class MetaIO {
         this.writeIndexOffset = writeIndexOffset;
     }
 
-    public int getWriteStore() {
-        return writeStore;
+    public int getWriteDataIndex() {
+        return writeDataIndex;
     }
 
-    public void setWriteStore(int writeStore) {
-        this.writeStore = writeStore;
+    public void setWriteDataIndex(int writeDataIndex) {
+        this.writeDataIndex = writeDataIndex;
     }
 
-    public int getWriteStoreOffset() {
-        return writeStoreOffset;
+    public int getWriteDataOffset() {
+        return writeDataOffset;
     }
 
-    public void setWriteStoreOffset(int writeStoreOffset) {
-        this.writeStoreOffset = writeStoreOffset;
+    public void setWriteDataOffset(int writeDataOffset) {
+        this.writeDataOffset = writeDataOffset;
     }
 
     @Override
@@ -183,14 +183,14 @@ class MetaIO {
         return "MetaIO{" +
                 "writeCount=" + getWritedCount() +
                 ", readCount=" + getReadedCount() +
-                ", writeStoreOffset=" + writeStoreOffset +
-                ", writeStore=" + writeStore +
+                ", writeDataOffset=" + writeDataOffset +
+                ", writeDataIndex=" + writeDataIndex +
                 ", writeOffset=" + writeIndexOffset +
                 ", writeIndex=" + writeIndex +
                 ", readIndexOffset=" + readIndexOffset +
                 ", readIndex=" + readIndex +
-                ", readStore=" + readStore +
-                ", readStoreOffset=" + readStoreOffset +
+                ", readDataIndex=" + readDataIndex +
+                ", readDataOffset=" + readDataOffset +
                 '}';
     }
 }

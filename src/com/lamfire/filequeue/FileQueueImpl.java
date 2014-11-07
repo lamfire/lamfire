@@ -28,12 +28,12 @@ class FileQueueImpl implements FileQueue{
 	private String dir;
 	private String name;
 
-	private MetaIO meta;
+	private MetaBuffer meta;
     private IndexManager indexMgr;
-    private StoreManager storeMgr;
+    private DataManager dataMgr;
 
-    private QueueReader reader;
-    private QueueWriter writer;
+    private Reader reader;
+    private Writer writer;
 
     private int indexOfLastDeleteStoreFile = 0 ;
     private int indexOfLastDeleteIndexFile = 0;
@@ -65,14 +65,14 @@ class FileQueueImpl implements FileQueue{
         }
         try {
             lock.lock();
-            meta = new MetaIO(MetaIO.getMetaFile(dir,name));
+            meta = new MetaBuffer(MetaBuffer.getMetaFile(dir, name));
             indexMgr = new IndexManager(this.meta,dir,name);
-            storeMgr = new StoreManager(this.meta,dir,name);
-            reader = new QueueReaderImpl(this.meta,indexMgr,storeMgr) ;
-            writer = new QueueWriterImpl(this.meta,indexMgr,storeMgr);
+            dataMgr = new DataManager(this.meta,dir,name);
+            reader = new ReaderImpl(this.meta,indexMgr, dataMgr) ;
+            writer = new WriterImpl(this.meta,indexMgr, dataMgr);
 
             indexMgr.setBufferSize(indexBufferSize);
-            storeMgr.setBufferSize(storeBufferSize);
+            dataMgr.setBufferSize(storeBufferSize);
 
             indexOfLastDeleteStoreFile = 0 ;
             indexOfLastDeleteIndexFile = 0;
@@ -161,7 +161,7 @@ class FileQueueImpl implements FileQueue{
 			lock.lock();
             meta.clear();
             deleteAllIndexFiles();
-            deleteAllStoreFiles();
+            deleteAllDataFiles();
             initialize();
 		} catch (IOException e) {
 			throw new IOError(e);
@@ -174,7 +174,7 @@ class FileQueueImpl implements FileQueue{
 		try {
 			lock.lock();
             Threads.removeScheduledTask(autoClearExpiredFileMonitor);
-            storeMgr.close();
+            dataMgr.close();
             indexMgr.close();
             meta.close();
 		} finally {
@@ -188,7 +188,7 @@ class FileQueueImpl implements FileQueue{
             Threads.removeScheduledTask(autoClearExpiredFileMonitor);
             meta.clear();
             deleteAllIndexFiles();
-            deleteAllStoreFiles();
+            deleteAllDataFiles();
             meta.closeAndDeleteFile();
         } catch (IOException e) {
             throw new IOError(e);
@@ -197,10 +197,10 @@ class FileQueueImpl implements FileQueue{
         }
     }
 
-    private void deleteExpiredStoreFiles(){
-        int store = meta.getReadStore();
+    private void deleteExpiredDataFiles(){
+        int store = meta.getReadDataIndex();
         for(int i=indexOfLastDeleteStoreFile;i<store;i++){
-            storeMgr.deleteStoreFile(i);
+            dataMgr.deleteDataFile(i);
             indexOfLastDeleteStoreFile = i;
         }
     }
@@ -213,10 +213,10 @@ class FileQueueImpl implements FileQueue{
         }
     }
 
-    private void deleteAllStoreFiles(){
-        int store = meta.getWriteStore();
+    private void deleteAllDataFiles(){
+        int store = meta.getWriteDataIndex();
         for(int i=indexOfLastDeleteStoreFile;i<=store;i++){
-            storeMgr.deleteStoreFile(i);
+            dataMgr.deleteDataFile(i);
             indexOfLastDeleteStoreFile = i;
         }
     }
@@ -234,7 +234,7 @@ class FileQueueImpl implements FileQueue{
         public void run() {
             try{
                 lock.lock();
-                deleteExpiredStoreFiles();
+                deleteExpiredDataFiles();
                 deleteExpiredIndexFiles();
                 if(size() == 0){
                     clear();

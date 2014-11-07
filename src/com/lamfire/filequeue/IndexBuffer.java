@@ -10,7 +10,7 @@ import java.io.IOException;
  * @author lamfire
  *
  */
-class IndexIO {
+class IndexBuffer {
 	public static final String FILE_SUFFIX = ".idx";
 	public static final int ELEMENT_LENGTH = Element.ELEMENT_LENGTH;
     public static final int MAX_AVAILABLE_FILE_SPACE = FileBuffer.MAX_FILE_LENGTH - FileBuffer.MAX_FILE_LENGTH  % Element.ELEMENT_LENGTH;
@@ -38,12 +38,12 @@ class IndexIO {
 	FileBuffer buffer;
 	final int index;
 	
-	public IndexIO(File file,int page) throws IOException {
+	public IndexBuffer(File file, int page) throws IOException {
 		this.buffer = new FileBuffer(file);
 		this.index = page;
 	}
 	
-	public IndexIO(File file,int page,int bufferSize) throws IOException {
+	public IndexBuffer(File file, int page, int bufferSize) throws IOException {
 		this.buffer = new FileBuffer(file,bufferSize);
 		this.index = page;
 	}

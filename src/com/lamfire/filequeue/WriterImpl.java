@@ -5,16 +5,16 @@ import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-class QueueWriterImpl implements QueueWriter {
+class WriterImpl implements Writer {
     private Lock lock = new ReentrantLock();
-    private MetaIO meta;
+    private MetaBuffer meta;
     private IndexManager indexMgr;
-    private StoreManager storeMgr;
+    private DataManager dataMgr;
 
-    public QueueWriterImpl(MetaIO meta, IndexManager indexMgr, StoreManager storeMgr){
+    public WriterImpl(MetaBuffer meta, IndexManager indexMgr, DataManager dataMgr){
         this.meta = meta;
         this.indexMgr = indexMgr;
-        this.storeMgr = storeMgr;
+        this.dataMgr = dataMgr;
     }
 
 
@@ -23,18 +23,18 @@ class QueueWriterImpl implements QueueWriter {
         try{
             lock.lock();
 
-            StoreIO io = storeMgr.getStoreIO(meta.getWriteStore());
-            io.setWriteOffset(meta.getWriteStoreOffset());
+            DataBuffer dataIO = dataMgr.getDataBuffer(meta.getWriteDataIndex());
+            dataIO.setWriteOffset(meta.getWriteDataOffset());
 
-            if(io.getFreeWriteSpace() < bytes.length){
-                  io = storeMgr.createNextStoreFile();
+            if(dataIO.getFreeWriteSpace() < bytes.length){
+                dataIO = dataMgr.createNextDataFile();
             }
-            int writeStoreOffset = io.getWriteOffset();
-            io.write(bytes);
-            int writeStore = io.getStore();
+            int writeStoreOffset = dataIO.getWriteOffset();
+            dataIO.write(bytes);
+            int writeStore = dataIO.getIndex();
 
             int writeIndex = meta.getWriteIndex();
-            IndexIO indexIO = indexMgr.getIndexIO(writeIndex);
+            IndexBuffer indexIO = indexMgr.getIndexBuffer(writeIndex);
             indexIO.setWriteOffset(meta.getWriteIndexOffset());
 
             if(indexIO.getFreeElementSize() <= 0){
@@ -48,8 +48,8 @@ class QueueWriterImpl implements QueueWriter {
 
             meta.setWriteIndex(indexIO.getIndex());
             meta.setWriteIndexOffset(meta.getWriteIndexOffset() + Element.ELEMENT_LENGTH);
-            meta.setWriteStoreOffset(meta.getWriteStoreOffset() + bytes.length);
-            meta.setWriteStore(io.getStore());
+            meta.setWriteDataOffset(meta.getWriteDataOffset() + bytes.length);
+            meta.setWriteDataIndex(dataIO.getIndex());
             meta.flush();
         }finally {
             lock.unlock();

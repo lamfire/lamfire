@@ -5,17 +5,17 @@ import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-class QueueReaderImpl implements QueueReader {
+class ReaderImpl implements Reader {
     private Lock lock = new ReentrantLock();
-    private MetaIO meta;
+    private MetaBuffer meta;
     private IndexManager indexMgr;
-    private StoreManager storeMgr;
+    private DataManager dataMgr;
 
 
-    public  QueueReaderImpl(MetaIO meta,IndexManager indexMgr,StoreManager storeMgr)throws IOException{
+    public ReaderImpl(MetaBuffer meta, IndexManager indexMgr, DataManager dataMgr)throws IOException{
         this.meta = meta;
         this.indexMgr = indexMgr;
-        this.storeMgr = storeMgr;
+        this.dataMgr = dataMgr;
     }
 
     @Override
@@ -26,11 +26,11 @@ class QueueReaderImpl implements QueueReader {
     private byte[] read(int index,int indexOffset) throws IOException{
         try{
             lock.lock();
-            IndexIO indexIO = indexMgr.getIndexIO(index);
+            IndexBuffer indexIO = indexMgr.getIndexBuffer(index);
             indexIO.setReadOffset(indexOffset);
 
             Element element = indexIO.take();
-            StoreIO storeIO = storeMgr.getStoreIO(element.getStore());
+            DataBuffer storeIO = dataMgr.getDataBuffer(element.getStore());
             storeIO.setReadOffset(element.getPosition());
             byte[] bytes = new byte[element.getLength()];
             storeIO.read(bytes);
@@ -47,23 +47,23 @@ class QueueReaderImpl implements QueueReader {
         try{
             lock.lock();
 
-            IndexIO indexIO = indexMgr.getIndexIO(meta.getReadIndex());
+            IndexBuffer indexIO = indexMgr.getIndexBuffer(meta.getReadIndex());
             indexIO.setReadOffset(meta.getReadIndexOffset());
             if(indexIO.getUnreadElementSize() <= 0){
                 meta.setReadIndex(meta.getReadIndex() + 1);
                 meta.setReadIndexOffset(0);
-                indexIO =indexMgr.getIndexIO(meta.getReadIndex());
+                indexIO =indexMgr.getIndexBuffer(meta.getReadIndex());
                 indexIO.setReadOffset(0);
             }
 
             Element element = indexIO.take();
-            StoreIO storeIO = storeMgr.getStoreIO(element.getStore());
+            DataBuffer storeIO = dataMgr.getDataBuffer(element.getStore());
             storeIO.setReadOffset(element.getPosition());
             byte[] bytes = new byte[element.getLength()];
             storeIO.read(bytes);
 
-            meta.setReadStore(element.getStore());
-            meta.setReadStoreOffset(element.getPosition());
+            meta.setReadDataIndex(element.getStore());
+            meta.setReadDataOffset(element.getPosition());
             meta.setReadIndex(indexIO.getIndex());
             meta.setReadIndexOffset(meta.getReadIndexOffset() + Element.ELEMENT_LENGTH);
             meta.flush();
@@ -103,7 +103,7 @@ class QueueReaderImpl implements QueueReader {
             int indexOffset = meta.getReadIndexOffset();
 
             int skipOffset = i * Element.ELEMENT_LENGTH;
-            int maxAvailableSpace = IndexIO.MAX_AVAILABLE_FILE_SPACE;
+            int maxAvailableSpace = IndexBuffer.MAX_AVAILABLE_FILE_SPACE;
             int skipIdx = skipOffset / maxAvailableSpace;
             skipOffset = skipOffset % maxAvailableSpace ;
             index+= skipIdx;

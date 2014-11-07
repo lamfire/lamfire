@@ -10,14 +10,14 @@ import java.io.IOException;
  * @author lamfire
  *
  */
-class StoreIO {
+class DataBuffer {
 	public static final String FILE_SUFFIX = ".data";
 	
-	public static File getStoreFile(String dir,String name,int index){
-		return new File(getStoreFileName(dir,name,index));
+	public static File getDataFile(String dir, String name, int index){
+		return new File(getDataFileName(dir, name, index));
 	}
 
-    public static String getStoreFileName(String dir,String name,int index){
+    public static String getDataFileName(String dir, String name, int index){
         dir = FilenameUtils.normalizeNoEndSeparator(dir);
         if(index ==0){
             return (dir+ File.separator +name + FILE_SUFFIX);
@@ -25,8 +25,8 @@ class StoreIO {
         return (dir+ File.separator +name + FILE_SUFFIX +"." + index);
     }
 
-    public static boolean deleteStoreFile(String dir,String name,int index){
-          File file = getStoreFile(dir,name,index);
+    public static boolean deleteDataFile(String dir, String name, int index){
+          File file = getDataFile(dir, name, index);
           if(file.exists() && file.isFile()){
               return file.getAbsoluteFile().delete();
           }
@@ -34,16 +34,16 @@ class StoreIO {
     }
 
 	FileBuffer buffer;
-	final int store;
+	final int index;
 	
-	public StoreIO(File file,int store) throws IOException {
+	public DataBuffer(File file, int index) throws IOException {
 		this.buffer = new FileBuffer(file);
-		this.store = store;
+		this.index = index;
 	}
 
-	public StoreIO(File file,int store,int bufferSize) throws IOException {
+	public DataBuffer(File file, int index, int bufferSize) throws IOException {
 		this.buffer = new FileBuffer(file,bufferSize);
-		this.store = store;
+		this.index = index;
 	}
 
 	public void setWriteOffset(int offset) {
@@ -93,8 +93,8 @@ class StoreIO {
 		return this.buffer.getFreeWriteSpace();
 	}
 
-	public int getStore() {
-		return store;
+	public int getIndex() {
+		return index;
 	}
 	
 	

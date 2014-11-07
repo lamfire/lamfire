@@ -3,7 +3,7 @@ package com.lamfire.filequeue;
 
 import java.io.IOException;
 
-interface QueueReader {
+interface Reader {
 
     public boolean hashMore();
 
