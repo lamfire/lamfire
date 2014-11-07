@@ -150,7 +150,7 @@ class FileQueueImpl implements FileQueue{
 	public  long size() {
 		try {
 			lock.lock();
-			return meta.getWritedCount() - meta.getReadedCount();
+			return meta.getWriteCount() - meta.getReadCount();
 		} finally {
 			lock.unlock();
 		}

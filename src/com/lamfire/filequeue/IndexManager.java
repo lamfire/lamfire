@@ -11,15 +11,15 @@ import java.util.Map;
 
 class IndexManager {
     private static final Logger LOGGER = Logger.getLogger(IndexManager.class);
-    private MetaBuffer metaBuffer;
+    private MetaBuffer meta;
     private String dir;
     private String name;
     private int bufferSize = FileBuffer.DEFAULT_BUFFER_SIZE;
 
     private final Map<Integer,IndexBuffer> indexs = Maps.newHashMap();
 
-    public IndexManager (MetaBuffer metaBuffer,String dir,String name){
-        this.metaBuffer = metaBuffer;
+    public IndexManager (MetaBuffer meta,String dir,String name){
+        this.meta = meta;
         this.dir = dir;
         this.name = name;
     }
@@ -29,7 +29,7 @@ class IndexManager {
     }
 
     public boolean expired(int index){
-        return index < metaBuffer.getReadIndex();
+        return index < meta.getReadIndex();
     }
 
     public synchronized IndexBuffer getIndexBuffer(int index) throws IOException {
@@ -37,7 +37,7 @@ class IndexManager {
             throw new ExpiredException("The index file was expired : "+ IndexBuffer.getIndexFileName(dir, name, index));
         }
 
-        if(index > metaBuffer.getWriteIndex()){
+        if(index > meta.getWriteIndex()){
             throw new FileNotFoundException("The index file out of size : "+ IndexBuffer.getIndexFileName(dir, name, index));
         }
 
@@ -64,11 +64,11 @@ class IndexManager {
     }
 
     public synchronized IndexBuffer createNextIndexFile()throws IOException{
-        int index = metaBuffer.getWriteIndex() + 1;
+        meta.moveToNextWriteIndex();
+        int index = meta.getWriteIndex();
         File pageFile = IndexBuffer.getIndexFile(dir, name, index);
         IndexBuffer io = new IndexBuffer(pageFile, index, bufferSize);
         indexs.put(index, io);
-        metaBuffer.setWriteIndex(index);
         return io;
     }
 

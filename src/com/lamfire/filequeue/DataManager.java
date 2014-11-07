@@ -11,15 +11,15 @@ import java.util.Map;
 
 class DataManager {
     private static final Logger LOGGER = Logger.getLogger(DataManager.class);
-    private MetaBuffer metaBuffer;
+    private MetaBuffer meta;
     private String dir;
     private String name;
     private int bufferSize = FileBuffer.DEFAULT_BUFFER_SIZE;
 
     private final Map<Integer,DataBuffer> stores = Maps.newHashMap();
 
-    public DataManager(MetaBuffer metaBuffer, String dir, String name){
-        this.metaBuffer = metaBuffer;
+    public DataManager(MetaBuffer meta, String dir, String name){
+        this.meta = meta;
         this.dir = dir;
         this.name = name;
     }
@@ -29,7 +29,7 @@ class DataManager {
     }
 
     public boolean expired(int index){
-        return index < metaBuffer.getReadDataIndex();
+        return index < meta.getReadDataIndex();
     }
 
 
@@ -49,7 +49,7 @@ class DataManager {
             throw new ExpiredException("The index file was expired : "+ IndexBuffer.getIndexFileName(dir, name, index));
         }
 
-        if(index > metaBuffer.getWriteDataIndex()){
+        if(index > meta.getWriteDataIndex()){
             throw new FileNotFoundException("The index file out of size : "+ IndexBuffer.getIndexFileName(dir, name, index));
         }
 
@@ -73,12 +73,11 @@ class DataManager {
     }
 
     public synchronized DataBuffer createNextDataFile()throws IOException{
-        int index = metaBuffer.getWriteDataIndex() +1;
+        meta.moveToNextDataWriteIndex();
+        int index = meta.getWriteDataIndex();
         File file = DataBuffer.getDataFile(dir, name, index);
         DataBuffer io = new DataBuffer(file, index, bufferSize);
         stores.put(index, io);
-        metaBuffer.setWriteDataIndex(index);
-        metaBuffer.setWriteDataOffset(0);
         return io;
     }
 

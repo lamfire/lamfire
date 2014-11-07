@@ -20,7 +20,7 @@ class ReaderImpl implements Reader {
 
     @Override
     public boolean hashMore() {
-        return meta.getWritedCount() > meta.getReadedCount();
+        return meta.getWriteCount() > meta.getReadCount();
     }
 
     private byte[] read(int index,int indexOffset) throws IOException{
@@ -50,8 +50,7 @@ class ReaderImpl implements Reader {
             IndexBuffer indexIO = indexMgr.getIndexBuffer(meta.getReadIndex());
             indexIO.setReadOffset(meta.getReadIndexOffset());
             if(indexIO.getUnreadElementSize() <= 0){
-                meta.setReadIndex(meta.getReadIndex() + 1);
-                meta.setReadIndexOffset(0);
+                meta.moveToNextReadIndex();
                 indexIO =indexMgr.getIndexBuffer(meta.getReadIndex());
                 indexIO.setReadOffset(0);
             }
@@ -64,7 +63,6 @@ class ReaderImpl implements Reader {
 
             meta.setReadDataIndex(element.getStore());
             meta.setReadDataOffset(element.getPosition());
-            meta.setReadIndex(indexIO.getIndex());
             meta.setReadIndexOffset(meta.getReadIndexOffset() + Element.ELEMENT_LENGTH);
             meta.flush();
 

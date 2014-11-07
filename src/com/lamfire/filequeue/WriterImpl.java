@@ -39,17 +39,12 @@ class WriterImpl implements Writer {
 
             if(indexIO.getFreeElementSize() <= 0){
                 indexIO = indexMgr.createNextIndexFile();
-                meta.setWriteIndex(indexIO.getIndex());
-                meta.setWriteIndexOffset(0);
             }
 
             Element element = new Element(writeStore,writeStoreOffset,bytes.length);
             indexIO.add(element);
-
-            meta.setWriteIndex(indexIO.getIndex());
             meta.setWriteIndexOffset(meta.getWriteIndexOffset() + Element.ELEMENT_LENGTH);
             meta.setWriteDataOffset(meta.getWriteDataOffset() + bytes.length);
-            meta.setWriteDataIndex(dataIO.getIndex());
             meta.flush();
         }finally {
             lock.unlock();

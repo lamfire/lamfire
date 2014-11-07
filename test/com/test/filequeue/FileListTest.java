@@ -39,7 +39,7 @@ public class FileListTest {
             bytes = list.get(i);
             Asserts.assertEquals(i, Bytes.toInt(bytes));
             if(i % 100000 == 0){
-                System.out.println("[peek]"+i);
+                System.out.println("[get]"+i);
             }
         }
 		
