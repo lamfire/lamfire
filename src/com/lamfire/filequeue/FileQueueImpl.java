@@ -107,7 +107,7 @@ class FileQueueImpl implements FileQueue{
 		}
 		try {
 			lock.lock();
-			return reader.peek();
+			return reader.read();
 		} catch (IOException e) {
 			throw new IOError(e);
 		} finally {
@@ -121,7 +121,8 @@ class FileQueueImpl implements FileQueue{
         }
         try {
             lock.lock();
-            return reader.peek(i);
+            reader.moveTo(i);
+            return reader.read();
         } catch (IOException e) {
             throw new IOError(e);
         } finally {
@@ -136,7 +137,10 @@ class FileQueueImpl implements FileQueue{
         try {
             lock.lock();
             if(reader.hashMore()){
-                byte[] bytes = reader.poll();
+                reader.moveTo(0);
+                byte[] bytes = reader.read();
+                reader.moveNext();
+                reader.commit();
                 return bytes;
             }
             return null;

@@ -7,9 +7,15 @@ interface Reader {
 
     public boolean hashMore();
 
-    public byte[] peek() throws IOException;
+    public int index();
 
-    public byte[] peek(int i) throws IOException;
+    public int offset();
 
-    public byte[] poll() throws IOException;
+    public byte[] read() throws IOException;
+
+    public void moveTo(int i) throws IOException;
+
+    public void moveNext() throws IOException;
+
+    public void commit()throws IOException;
 }

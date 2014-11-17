@@ -102,7 +102,8 @@ class FileListImpl implements FileList{
         }
         try {
             lock.lock();
-            return reader.peek(i);
+            reader.moveTo(i);
+            return reader.read();
         } catch (IOException e) {
             throw new IOError(e);
         } finally {

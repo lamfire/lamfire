@@ -121,6 +121,10 @@ class MetaBuffer {
         return readIndex.get();
     }
 
+    public void setReadIndex(int index){
+        readIndex.set(index);
+    }
+
     public synchronized void moveToNextReadIndex()throws IOException{
         int index = readIndex.incrementAndGet();
         if(index > writeIndex.get() ){

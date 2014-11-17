@@ -36,7 +36,8 @@ public class FileQueueTest {
         //peek
         for(int i=0;i<count;i++){
             bytes = queue.peek(i);
-            Asserts.assertEquals(i, Bytes.toInt(bytes));
+            int val = Bytes.toInt(bytes);
+            Asserts.assertEquals(i, val);
             if(i % 100000 == 0){
                 System.out.println("[peek]"+i);
             }
@@ -51,7 +52,8 @@ public class FileQueueTest {
         //poll
         for(int i=0;i<count;i++){
             bytes = queue.poll();
-            Asserts.assertEquals(i, Bytes.toInt(bytes));
+            int val = Bytes.toInt(bytes);
+            Asserts.assertEquals(i, val);
             if(i % 100000 == 0){
                 System.out.println("[poll]"+i);
             }
