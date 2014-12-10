@@ -60,16 +60,27 @@ class FileQueueImpl implements FileQueue{
 	}
 
 	void initialize() throws IOException {
-        if(meta != null){
-            return;
-        }
         try {
             lock.lock();
-            meta = new MetaBuffer(MetaBuffer.getMetaFile(dir, name));
-            indexMgr = new IndexManager(this.meta,dir,name);
-            dataMgr = new DataManager(this.meta,dir,name);
-            reader = new ReaderImpl(this.meta,indexMgr, dataMgr) ;
-            writer = new WriterImpl(this.meta,indexMgr, dataMgr);
+            if(meta == null){
+                meta = new MetaBuffer(MetaBuffer.getMetaFile(dir, name));
+            }
+
+            if(indexMgr == null){
+                indexMgr = new IndexManager(this.meta,dir,name);
+            }
+
+            if(dataMgr == null){
+                dataMgr = new DataManager(this.meta,dir,name);
+            }
+
+            if(reader == null){
+                reader = new ReaderImpl(this.meta,indexMgr, dataMgr) ;
+            }
+
+            if(writer == null){
+                writer = new WriterImpl(this.meta,indexMgr, dataMgr);
+            }
 
             indexMgr.setBufferSize(indexBufferSize);
             dataMgr.setBufferSize(storeBufferSize);
@@ -166,6 +177,8 @@ class FileQueueImpl implements FileQueue{
             meta.clear();
             deleteAllIndexFiles();
             deleteAllDataFiles();
+            this.reader = null;
+            this.writer = null;
             initialize();
 		} catch (IOException e) {
 			throw new IOError(e);
@@ -240,7 +253,7 @@ class FileQueueImpl implements FileQueue{
                 lock.lock();
                 deleteExpiredDataFiles();
                 deleteExpiredIndexFiles();
-                if(size() == 0){
+                if(size() == 0 && meta.getWriteIndex() > 0){
                     clear();
                 }
             }catch (Throwable t){
