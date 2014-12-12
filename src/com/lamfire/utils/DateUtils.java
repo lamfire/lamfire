@@ -29,13 +29,95 @@ public class DateUtils {
 
 	private static AtomicInteger atomic = new AtomicInteger(0);
 	private static long lastMillis = 0;
+
+    public static void setYearMonthDay(Date date,int year,int month,int day){
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(date.getTime());
+        c.set(Calendar.YEAR,year);
+        c.set(Calendar.MONTH,month-1);
+        c.set(Calendar.DAY_OF_MONTH,day);
+        date.setTime( c.getTimeInMillis());
+    }
+
+    public static void setHourMinuteSecond(Date date,int hour,int minute,int second){
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(date.getTime());
+        c.set(Calendar.HOUR_OF_DAY,hour);
+        c.set(Calendar.MINUTE,minute);
+        c.set(Calendar.SECOND,second);
+        date.setTime( c.getTimeInMillis());
+    }
+
+    public static void setYear(Date date,int year){
+        date.setTime(setYear(date.getTime(),year));
+    }
+
+    public static void setMonth(Date date,int month){
+        date.setTime(setMonth(date.getTime(),month));
+    }
+
+    public static void setDay(Date date,int day){
+        date.setTime(setDay(date.getTime(),day));
+    }
+
+    public static void setHour(Date date,int hour){
+        date.setTime(setHour(date.getTime(),hour));
+    }
+
+    public static void setMinute(Date date,int minute){
+        date.setTime(setMinute(date.getTime(),minute));
+    }
+
+    public static void setSecond(Date date,int second){
+        date.setTime(setSecond(date.getTime(),second));
+    }
+
+    public static long setYear(long millis,int year){
+        return set(millis,Calendar.YEAR,year);
+    }
+
+    public static long setMonth(long millis,int month){
+        return set(millis,Calendar.MONTH,month-1);
+    }
+
+    public static long setDay(long millis,int day){
+        return set(millis,Calendar.DAY_OF_MONTH,day);
+    }
+
+    public static long setHour(long millis,int hour){
+        return set(millis,Calendar.HOUR_OF_DAY,hour);
+
+    }
+
+    public static long setMinute(long millis,int minute){
+        return set(millis,Calendar.MINUTE,minute);
+    }
+
+    public static long setSecond(long millis,int second){
+        return set(millis,Calendar.SECOND,second);
+    }
 	
 	public static int get(long millis,int field,TimeZone timeZone){
 		Calendar c = Calendar.getInstance();
 		c.setTimeZone(timeZone);
 		c.setTimeInMillis(millis);
-		return c.get(Calendar.YEAR);
+		return c.get(field);
 	}
+
+    public static long set(long millis,int field,int value){
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(millis);
+        c.set(field,value);
+        return c.getTimeInMillis();
+    }
+
+    public static long set(long millis,int field,int value,TimeZone timeZone){
+        Calendar c = Calendar.getInstance();
+        c.setTimeZone(timeZone);
+        c.setTimeInMillis(millis);
+        c.set(field,value);
+        return c.getTimeInMillis();
+    }
 	
 	public static int getSecond(long millis,TimeZone timeZone){
 		Calendar c = Calendar.getInstance();

@@ -1,12 +1,12 @@
 package com.test;
 
+import com.lamfire.utils.DateFormatUtils;
+import com.lamfire.utils.DateUtils;
+
 import java.util.Date;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
-
-import com.lamfire.utils.DateFormatUtils;
-import com.lamfire.utils.DateUtils;
 
 public class DateTest {
 
@@ -25,13 +25,32 @@ public class DateTest {
 		}
 	}
 
+    static void print(Date date){
+        System.out.println(DateFormatUtils.format(date,"yyyy-MM-dd HH:mm:ss"));
+    }
+
 	public static void main(String[] args) {
-		printTimeZone();
-		long millis = DateUtils.getZeroHourMillis(new Date());
-		System.out.println(String.format("%d-%d-%d", DateUtils.getYear(millis), DateUtils.getMonth(millis), DateUtils.getDay(millis)));
-		
-		TimeZone timeZone = TimeZone.getTimeZone("Asia/Tokyo");
-		System.out.println(String.format("%d-%d-%d", DateUtils.getYear(millis,timeZone), DateUtils.getMonth(millis,timeZone), DateUtils.getDay(millis,timeZone)));
+		Date date = new Date();
+        print(date);
+
+        DateUtils.setYear(date,1980);
+        DateUtils.setMonth(date,9);
+        DateUtils.setDay(date, 27);
+
+        DateUtils.setHour(date, 14);
+        DateUtils.setMinute(date,15);
+        DateUtils.setSecond(date,16);
+
+
+        print(date);
+
+        DateUtils.setYearMonthDay(date,2012,9,1);
+        DateUtils.setHourMinuteSecond(date,1,2,3);
+        print(date);
+
+        System.out.println(DateUtils.getHour(date.getTime()));
+        System.out.println(DateUtils.getHour(date.getTime(),TimeZone.getTimeZone("Asia/Tokyo")));
+
 		
 	}
 }
