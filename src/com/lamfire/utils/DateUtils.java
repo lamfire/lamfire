@@ -20,12 +20,13 @@ public class DateUtils {
 	public static final long MILLIS_PER_DAY = 86400000L;
 	public static final int SEMI_MONTH = 1001;
 	private static final int[][] fields = { { 14 }, { 13 }, { 12 }, { 11, 10 }, { 5, 5, 9 }, { 2, 1001 }, { 1 }, { 0 } };
-	public static final int RANGE_WEEK_SUNDAY = 1;
-	public static final int RANGE_WEEK_MONDAY = 2;
-	public static final int RANGE_WEEK_RELATIVE = 3;
-	public static final int RANGE_WEEK_CENTER = 4;
-	public static final int RANGE_MONTH_SUNDAY = 5;
-	public static final int RANGE_MONTH_MONDAY = 6;
+	public static final int WEEK_SUNDAY = 1;
+	public static final int WEEK_MONDAY = 2;
+	public static final int WEEK_TUESDAY = 3;
+	public static final int WEEK_WEDNESDAY = 4;
+	public static final int WEEK_THURSDAY = 5;
+	public static final int WEEK_FRIDAY = 6;
+    public static final int WEEK_SATURDAY = 7;
 
 	private static AtomicInteger atomic = new AtomicInteger(0);
 	private static long lastMillis = 0;
@@ -47,6 +48,8 @@ public class DateUtils {
         c.set(Calendar.SECOND,second);
         date.setTime( c.getTimeInMillis());
     }
+
+
 
     public static void setYear(Date date,int year){
         date.setTime(setYear(date.getTime(),year));
@@ -253,6 +256,99 @@ public class DateUtils {
 	public static long getZeroHourMillis(Date date){
 		return getZeroHourMillis(date.getTime());
 	}
+
+    public static int getDayOfWeek(long millis){
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(millis);
+        return cal.get(Calendar.DAY_OF_WEEK);
+    }
+
+    public static boolean isDayOfWeek(long millis,int dayOfWeek){
+        return getDayOfWeek(millis) == dayOfWeek;
+    }
+
+    public static boolean isWorkdays(long millis){
+        int dayOfWeek = getDayOfWeek(millis);
+        if(dayOfWeek >=WEEK_MONDAY && dayOfWeek <= WEEK_FRIDAY){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isSunday(long millis){
+        return isDayOfWeek(millis,WEEK_SUNDAY);
+    }
+
+    public static boolean isMonday(long millis){
+        return isDayOfWeek(millis,WEEK_MONDAY);
+    }
+
+    public static boolean isTuesday(long millis){
+        return isDayOfWeek(millis,WEEK_TUESDAY);
+    }
+
+    public static boolean isWednesday(long millis){
+        return isDayOfWeek(millis,WEEK_WEDNESDAY);
+    }
+
+    public static boolean isThursday(long millis){
+        return isDayOfWeek(millis,WEEK_THURSDAY);
+    }
+
+    public static boolean isFriday(long millis){
+        return isDayOfWeek(millis,WEEK_FRIDAY);
+    }
+
+    public static boolean isSaturday(long millis){
+        return isDayOfWeek(millis,WEEK_SATURDAY);
+    }
+
+    public static int getDayOfWeek(long millis,TimeZone timeZone){
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(timeZone);
+        cal.setTimeInMillis(millis);
+        return cal.get(Calendar.DAY_OF_WEEK);
+    }
+
+    public static boolean isDayOfWeek(long millis,TimeZone timeZone,int dayOfWeek){
+        return getDayOfWeek(millis,timeZone) == dayOfWeek;
+    }
+
+    public static boolean isWorkdays(long millis,TimeZone timeZone){
+        int dayOfWeek = getDayOfWeek(millis,timeZone);
+        if(dayOfWeek > 1 && dayOfWeek < 6){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isSunday(long millis,TimeZone timeZone){
+        return isDayOfWeek(millis,timeZone,WEEK_SUNDAY);
+    }
+
+    public static boolean isMonday(long millis,TimeZone timeZone){
+        return isDayOfWeek(millis,timeZone,WEEK_MONDAY);
+    }
+
+    public static boolean isTuesday(long millis,TimeZone timeZone){
+        return isDayOfWeek(millis,timeZone,WEEK_TUESDAY);
+    }
+
+    public static boolean isWednesday(long millis,TimeZone timeZone){
+        return isDayOfWeek(millis,timeZone,WEEK_WEDNESDAY);
+    }
+
+    public static boolean isThursday(long millis,TimeZone timeZone){
+        return isDayOfWeek(millis,timeZone,WEEK_THURSDAY);
+    }
+
+    public static boolean isFriday(long millis,TimeZone timeZone){
+        return isDayOfWeek(millis,timeZone,WEEK_FRIDAY);
+    }
+
+    public static boolean isSaturday(long millis,TimeZone timeZone){
+        return isDayOfWeek(millis,timeZone,WEEK_SATURDAY);
+    }
 
 	public static boolean isSameDay(Date date1, Date date2) {
 		if ((date1 == null) || (date2 == null)) {

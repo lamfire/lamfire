@@ -522,7 +522,6 @@ public class AES {
 	/**
 	 * 加密
 	 * @param datas
-	 * @param key
 	 * @return
 	 */
 	public byte[] encode(byte[] datas){
@@ -533,7 +532,6 @@ public class AES {
 	/**
 	 * 解密
 	 * @param datas
-	 * @param key
 	 * @return
 	 */
 	public byte[] decode(byte[] datas){
@@ -544,9 +542,9 @@ public class AES {
 	/**
 	 * 加密
 	 * 
-	 * @param src
+	 * @param source
 	 *            要加密的字串
-	 * @param password
+	 * @param key
 	 *            密钥
 	 * @return 加密后的字串
 	 */
@@ -560,9 +558,9 @@ public class AES {
 	/**
 	 * 解密
 	 * 
-	 * @param src
+	 * @param source
 	 *            要解密的字串
-	 * @param password
+	 * @param key
 	 *            密钥
 	 * @return 解密后的字串
 	 */
@@ -576,9 +574,9 @@ public class AES {
 	/**
 	 * 加密
 	 * 
-	 * @param src
-	 *            要加密的字串
-	 * @param password
+	 * @param source
+	 *            要加密的数据
+	 * @param key
 	 *            密钥
 	 * @return 加密后的字串
 	 */
@@ -590,9 +588,9 @@ public class AES {
 	/**
 	 * 解密
 	 * 
-	 * @param src
-	 *            要解密的字串
-	 * @param password
+	 * @param datas
+	 *            要解密的数据
+	 * @param key
 	 *            密钥
 	 * @return 解密后的字串
 	 */

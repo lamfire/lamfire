@@ -3,10 +3,7 @@ package com.test;
 import com.lamfire.utils.DateFormatUtils;
 import com.lamfire.utils.DateUtils;
 
-import java.util.Date;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.TreeSet;
+import java.util.*;
 
 public class DateTest {
 
@@ -51,6 +48,12 @@ public class DateTest {
         System.out.println(DateUtils.getHour(date.getTime()));
         System.out.println(DateUtils.getHour(date.getTime(),TimeZone.getTimeZone("Asia/Tokyo")));
 
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        cal.set(Calendar.DAY_OF_MONTH,20);
+        System.out.println(cal.getTime() + "  WEEK : " + cal.get(Calendar.DAY_OF_WEEK));
+
+        System.out.println(DateUtils.isWorkdays(cal.getTimeInMillis()));
 		
 	}
 }
