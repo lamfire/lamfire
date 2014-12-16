@@ -267,7 +267,7 @@ public class DateUtils {
         return getDayOfWeek(millis) == dayOfWeek;
     }
 
-    public static boolean isWorkdays(long millis){
+    public static boolean isInWorkdays(long millis){
         int dayOfWeek = getDayOfWeek(millis);
         if(dayOfWeek >=WEEK_MONDAY && dayOfWeek <= WEEK_FRIDAY){
             return true;
