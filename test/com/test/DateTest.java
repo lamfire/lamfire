@@ -53,7 +53,7 @@ public class DateTest {
         cal.set(Calendar.DAY_OF_MONTH,20);
         System.out.println(cal.getTime() + "  WEEK : " + cal.get(Calendar.DAY_OF_WEEK));
 
-        System.out.println(DateUtils.isWorkdays(cal.getTimeInMillis()));
+        System.out.println(DateUtils.isInWorkdays(cal.getTimeInMillis()));
 		
 	}
 }
