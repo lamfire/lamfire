@@ -14,6 +14,9 @@ class ReaderImpl implements Reader {
     private int _index;
     private int _offset;
 
+    private int _readDataIndex;
+    private int _readDataOffset;
+
 
     public ReaderImpl(MetaBuffer meta, IndexManager indexMgr, DataManager dataMgr)throws IOException{
         this.meta = meta;
@@ -48,6 +51,8 @@ class ReaderImpl implements Reader {
             storeIO.setReadOffset(element.getPosition());
             byte[] bytes = new byte[element.getLength()];
             storeIO.read(bytes);
+            _readDataIndex = element.getStore();
+            _readDataOffset = element.getPosition();
             return bytes;
         }finally {
             lock.unlock();
@@ -83,17 +88,20 @@ class ReaderImpl implements Reader {
             int index = meta.getReadIndex();
             int indexOffset = meta.getReadIndexOffset();
 
-            int skipOffset = i * Element.ELEMENT_LENGTH;
-            int maxAvailableSpace = IndexBuffer.MAX_AVAILABLE_FILE_SPACE;
-            int skipIdx = skipOffset / maxAvailableSpace;
-            skipOffset = skipOffset % maxAvailableSpace ;
-            index+= skipIdx;
-            indexOffset += skipOffset;
+            if(i > 0){
+                int skipOffset = i * Element.ELEMENT_LENGTH;
+                int maxAvailableSpace = IndexBuffer.MAX_AVAILABLE_FILE_SPACE;
+                int skipIdx = skipOffset / maxAvailableSpace;
+                skipOffset = skipOffset % maxAvailableSpace ;
+                index+= skipIdx;
+                indexOffset += skipOffset;
 
-            if(indexOffset >= maxAvailableSpace) {
-                index ++;
-                indexOffset = indexOffset - maxAvailableSpace;
+                if(indexOffset >= maxAvailableSpace) {
+                    index ++;
+                    indexOffset = indexOffset - maxAvailableSpace;
+                }
             }
+
             this._index = index;
             this._offset = indexOffset;
         }finally {
@@ -112,6 +120,8 @@ class ReaderImpl implements Reader {
     public void commit()throws IOException{
         meta.setReadIndex(index());
         meta.setReadIndexOffset(offset());
+        meta.setReadDataIndex(_readDataIndex);
+        meta.setReadDataOffset(_readDataOffset);
         meta.flush();
     }
 }

@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 class FileQueueImpl implements FileQueue{
 	private static final Logger LOGGER = Logger.getLogger(FileQueueImpl.class);
 	private static final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;
-    private static final int AUTO_CLEAR_INTERVAL  = 300; //s
+    private static final int AUTO_CLEAR_INTERVAL  = 30; //s
 	private int indexBufferSize = DEFAULT_BUFFER_SIZE;
 	private int storeBufferSize = DEFAULT_BUFFER_SIZE;
 
