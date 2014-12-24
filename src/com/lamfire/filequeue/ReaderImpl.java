@@ -60,11 +60,11 @@ class ReaderImpl implements Reader {
         }
         try{
             lock.lock();
+            _offset += Element.ELEMENT_LENGTH;
             if((FileBuffer.MAX_FILE_LENGTH - _offset) < Element.ELEMENT_LENGTH){
                 _index ++;
                 _offset = 0;
             }
-            _offset += Element.ELEMENT_LENGTH;
         }finally {
             lock.unlock();
         }
@@ -90,7 +90,7 @@ class ReaderImpl implements Reader {
             index+= skipIdx;
             indexOffset += skipOffset;
 
-            if(indexOffset > maxAvailableSpace) {
+            if(indexOffset >= maxAvailableSpace) {
                 index ++;
                 indexOffset = indexOffset - maxAvailableSpace;
             }

@@ -113,17 +113,7 @@ class FileQueueImpl implements FileQueue{
 
 
     public  byte[] peek() {
-		if (isEmpty()) {
-			return null;
-		}
-		try {
-			lock.lock();
-			return reader.read();
-		} catch (IOException e) {
-			throw new IOError(e);
-		} finally {
-			lock.unlock();
-		}
+		return peek(0);
 	}
 
     public  byte[] peek(int i) {
@@ -174,11 +164,11 @@ class FileQueueImpl implements FileQueue{
 	public void clear() {
 		try {
 			lock.lock();
-            meta.clear();
             deleteAllIndexFiles();
             deleteAllDataFiles();
             this.reader = null;
             this.writer = null;
+            meta.clear();
             initialize();
 		} catch (IOException e) {
 			throw new IOError(e);

@@ -123,9 +123,9 @@ class FileListImpl implements FileList{
 	public void clear() {
 		try {
 			lock.lock();
-            meta.clear();
             deleteAllIndexFiles();
             deleteAllDataFiles();
+            meta.clear();
             initialize();
 		} catch (IOException e) {
 			throw new IOError(e);

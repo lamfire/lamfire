@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class QueuePreformaceTest {
     private static final Logger LOGGER = Logger.getLogger(QueuePreformaceTest.class);
-    private final String TEXT = RandomUtils.randomTextWithFixedLength(10);
+    private final String TEXT = RandomUtils.randomTextWithFixedLength(2);
 
     private FileQueue queue;
 
@@ -34,7 +34,7 @@ public class QueuePreformaceTest {
         FileQueueBuilder builder = new FileQueueBuilder();
         builder.dataDir("/data/FileQueue/").name("queue3");
         queue = builder.build();
-        queue.clear();
+        //queue.clear();
     }
 
     Runnable statusThread = new Runnable() {
@@ -48,7 +48,7 @@ public class QueuePreformaceTest {
             int writeCount = writeCounter.get();
             int iopsCount = iops.get();
 
-            System.out.println("[read/write] = " +readCount +"/" +writeCount +" [error/queues] = "+ errorCounter.get() +"/" + queue.size() +" [read/s] = " + (readCount - preReadCount) +" [write/s] = " + (writeCount - preWriteCount) +" [iops/s] = " +(iopsCount - preIops));
+            System.out.println("[read/write = " +readCount +"/" +writeCount +"] [error/queues = "+ errorCounter.get() +"/" + queue.size() +"] [read/s = " + (readCount - preReadCount) +"] [write/s = " + (writeCount - preWriteCount) +"] [iops/s = " +(iopsCount - preIops)+"]");
 
             preReadCount = readCount;
             preWriteCount = writeCount;
@@ -94,7 +94,7 @@ public class QueuePreformaceTest {
                 int val = Integer.parseInt(ds[1]);
                 int index = readCounter.get();
                 if(val != index)     {
-                    LOGGER.error("[ERROR]:" + index + " != " + val + " - " + txt);
+                    //LOGGER.error("[ERROR]:" + index + " != " + val + " - " + txt);
                     errorCounter.incrementAndGet();
                 }
                 readCounter.incrementAndGet();
