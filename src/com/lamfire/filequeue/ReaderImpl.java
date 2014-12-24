@@ -28,6 +28,9 @@ class ReaderImpl implements Reader {
     public boolean hashMore() {
         int wIndex = meta.getWriteIndex();
         int wOffset = meta.getWriteIndexOffset();
+        if(wIndex > _index){
+            return true;
+        }
         if(wIndex >= _index && wOffset > _offset){
             return true;
         }
