@@ -1,47 +1,24 @@
 package com.lamfire.json.parser;
 
+import com.lamfire.json.JSON;
+import com.lamfire.json.JSONArray;
+import com.lamfire.json.deserializer.*;
+import com.lamfire.json.util.FieldInfo;
+import com.lamfire.json.util.IdentityHashMap;
+import com.lamfire.json.util.SymbolTable;
+
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URL;
+import java.net.*;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicLongArray;
 import java.util.regex.Pattern;
-
-import com.lamfire.json.JSONArray;
-import com.lamfire.json.JSONException;
-import com.lamfire.json.JSON;
-import com.lamfire.json.deserializer.*;
-import com.lamfire.json.util.FieldInfo;
-import com.lamfire.json.util.IdentityHashMap;
-import com.lamfire.json.util.SymbolTable;
 
 public class ParserConfig {
 
@@ -113,6 +90,7 @@ public class ParserConfig {
 
 		derializers.put(Collection.class, CollectionDeserializer.instance);
 		derializers.put(List.class, CollectionDeserializer.instance);
+        derializers.put(Set.class, CollectionDeserializer.instance);
 		derializers.put(ArrayList.class, CollectionDeserializer.instance);
 
 		derializers.put(Object.class, JavaObjectDeserializer.instance);
@@ -268,7 +246,7 @@ public class ParserConfig {
 			return new ArrayListTypeFieldDeserializer(mapping, clazz, fieldInfo);
 		}
 
-        if (fieldClass == Set.class || fieldClass == HashSet.class) {
+        if (fieldClass == Set.class || fieldClass == HashSet.class || fieldClass == TreeSet.class) {
             return new SetTypeFieldDeserializer(mapping, clazz, fieldInfo);
         }
 
