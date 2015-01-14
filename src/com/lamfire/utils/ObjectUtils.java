@@ -2,6 +2,7 @@ package com.lamfire.utils;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -56,35 +57,70 @@ public class ObjectUtils {
 	 * @return
 	 */
 	public static Object getPropertyValue(Object target, String propertyName) {
-
 		PropertyDescriptor pd = ClassUtils.getPropertyDescriptor(target.getClass(), propertyName);
-
 		if (pd == null){
 			throw new RuntimeException("the property '" + propertyName + "' not found");
 		}
-
-		return getPropertyValue(target, pd);
+		return readPropertyValue(target, pd);
 
 	}
-	
-	public static Object getPropertyValue(Object objInstance , PropertyDescriptor pd){
-		if (pd == null)
+
+    public static Field getField(Object target, String propertyName) {
+          return ClassUtils.getField(target.getClass(),propertyName);
+    }
+
+    public static Object getFieldValue(Object target, String propertyName)  {
+        Field field = getField(target,propertyName);
+        boolean accessible = field.isAccessible();
+        if(!accessible){
+            field.setAccessible(true);
+        }
+        try {
+            Object result = field.get(target);
+            return result;
+        } catch (IllegalAccessException e) {
+
+        } finally {
+            field.setAccessible(accessible);
+        }
+        return null;
+    }
+
+    public static void setFieldValue(Object target, String propertyName,Object value)  {
+        Field field = getField(target,propertyName);
+        boolean accessible = field.isAccessible();
+        if(!accessible){
+            field.setAccessible(true);
+        }
+        try {
+            field.set(target,value);
+        } catch (IllegalAccessException e) {
+
+        } finally {
+            field.setAccessible(accessible);
+        }
+    }
+
+    protected static Object readPropertyValue(Object objInstance , PropertyDescriptor pd){
+		if (pd == null){
 			return null;
+        }
 
 		Method getter = pd.getReadMethod();
 		if (getter == null) {
-			throw new RuntimeException("the property '" + pd.getName() + "' getter not found - " + objInstance.getClass().getName());
+			return getFieldValue(objInstance,pd.getName());
 		}
 		return invokeMethod(objInstance, getter);
 	}
 	
-	protected static void wirtePropertyValue(Object objInstance , PropertyDescriptor pd,Object value){
+	protected static void writePropertyValue(Object objInstance , PropertyDescriptor pd,Object value){
 		if (pd == null){
 			return ;
 		}
 		Method setter = pd.getWriteMethod();
 		if (setter == null) {
-			throw new RuntimeException("the property '" + pd.getName() + "' getter not found - " + objInstance.getClass().getName());
+			setFieldValue(objInstance,pd.getName(),value);
+            return;
 		}
 		invokeMethod(objInstance, setter,value);
 	}
@@ -104,7 +140,7 @@ public class ObjectUtils {
 		
 		if(value == null){
 			//调用写入属性方法进行附值
-			wirtePropertyValue(target,pd,value);
+            writePropertyValue(target,pd,value);
 			return ;
 		}
 		
@@ -113,7 +149,7 @@ public class ObjectUtils {
 		//如果是复杂对象则先转换复杂对象，再附值
 		if(!value.getClass().isAssignableFrom(propType) && value instanceof Map){
 			desValue = convertToObject((Map)value,propType);
-			wirtePropertyValue(target,pd,desValue);
+            writePropertyValue(target,pd,desValue);
 			return ;
 		}
 		
@@ -123,7 +159,7 @@ public class ObjectUtils {
 		}
 		
 		//调用写入属性方法进行附值
-		wirtePropertyValue(target,pd,desValue);
+        writePropertyValue(target,pd,desValue);
 
 	}
 	
