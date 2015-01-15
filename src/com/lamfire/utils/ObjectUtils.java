@@ -15,7 +15,7 @@ public class ObjectUtils {
 	 * @param target
 	 * @param propertyValues
 	 */
-	public static void setProperties(Object target, Map<String, Object> propertyValues) {
+	public static void setPropertiesValues(Object target, Map<String, Object> propertyValues) {
 		if (target==null || propertyValues == null || propertyValues.isEmpty())
 			return;
 		try {
@@ -40,7 +40,7 @@ public class ObjectUtils {
 	 * @param name
 	 * @param value
 	 */
-	public static void setProperty(Object target, String name, Object value) {
+	public static void setPropertyValue(Object target, String name, Object value) {
 
 		PropertyDescriptor pd = ClassUtils.getPropertyDescriptor(target.getClass(), name);
 		if (pd == null){
@@ -75,11 +75,10 @@ public class ObjectUtils {
         if(field == null){
             throw new RuntimeException("Field[" + fieldName +"] not found - " + target.getClass().getName());
         }
-        boolean accessible = field.isAccessible();
-        boolean modified = false;
-        if(!accessible){
+        boolean hasChangeAccessibleFlag = false;
+        if(!field.isAccessible()){
             field.setAccessible(true);
-            modified = true;
+            hasChangeAccessibleFlag = true;
         }
         try {
             Object result = field.get(target);
@@ -87,8 +86,8 @@ public class ObjectUtils {
         } catch (IllegalAccessException e) {
 
         } finally {
-            if(modified){
-                field.setAccessible(accessible);
+            if(hasChangeAccessibleFlag){
+                field.setAccessible(false);
             }
         }
         return null;
@@ -99,19 +98,19 @@ public class ObjectUtils {
         if(field == null){
             throw new RuntimeException("Field[" + fieldName +"] not found - " + target.getClass().getName());
         }
-        boolean accessible = field.isAccessible();
-        boolean modified = false;
-        if(!accessible){
+
+        boolean hasChangeAccessibleFlag = false;
+        if(!field.isAccessible()){
             field.setAccessible(true);
-            modified = true;
+            hasChangeAccessibleFlag = true;
         }
         try {
             field.set(target,value);
         } catch (IllegalAccessException e) {
 
         } finally {
-            if(modified){
-                field.setAccessible(accessible);
+            if(hasChangeAccessibleFlag){
+                field.setAccessible(false);
             }
         }
     }
@@ -163,7 +162,7 @@ public class ObjectUtils {
 		Object desValue = value;
 		//如果是复杂对象则先转换复杂对象，再附值
 		if(!value.getClass().isAssignableFrom(propType) && value instanceof Map){
-			desValue = convertToObject((Map)value,propType);
+			desValue = toJavaObject((Map)value,propType);
             writePropertyValue(target,pd,desValue);
 			return ;
 		}
@@ -178,10 +177,10 @@ public class ObjectUtils {
 
 	}
 	
-	public static <T>T convertToObject(Map<String, Object> map,Class<T> claxx){
+	public static <T>T toJavaObject(Map<String, Object> map,Class<T> claxx){
 		try {
 			T desObject = claxx.newInstance();
-			setProperties(desObject,map);
+			setPropertiesValues(desObject,map);
 			return desObject;
 		} catch (Exception e) {
 			throw new RuntimeException("the class '" +claxx.getName() + "' not cerate new instance," + e.getMessage());
@@ -239,7 +238,7 @@ public class ObjectUtils {
 		for (PropertyDescriptor pd : pds) {
 			try {
 				Object value = getPropertyValue(source, pd.getName());
-				setProperty(dest, pd.getName(), value);
+				setPropertyValue(dest, pd.getName(), value);
 			} catch (Exception e) {
 			}
 		}
