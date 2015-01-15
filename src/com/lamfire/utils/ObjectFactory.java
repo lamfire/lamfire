@@ -24,14 +24,14 @@ public class ObjectFactory<T> {
 	
 	public  T newInstanceAndBindProperties(Map<String, Object> propertys) throws InstantiationException, IllegalAccessException {
 		T obj =  this.claxx.newInstance();
-		ObjectUtils.setProperties(this.claxx, propertys);
+		ObjectUtils.setPropertiesValues(this.claxx, propertys);
 		return obj;
 	}
 	
 	public T newInstanceAndBindProperties(Class<?>[] argsClasses, Object[] constructorArgs,Map<String, Object> propertys) throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException  {                                                                                                                                
 	    Constructor<T>  cons = this.claxx.getConstructor(argsClasses);                    
 	    T obj =  cons.newInstance(constructorArgs);    
-	    ObjectUtils.setProperties(this.claxx, propertys);
+	    ObjectUtils.setPropertiesValues(this.claxx, propertys);
 		return obj;
 	}
 	
@@ -44,11 +44,11 @@ public class ObjectFactory<T> {
 	}
 	
 	public void setProperties(T t , Map<String, Object> propertys){
-		ObjectUtils.setProperties(t, propertys);
+		ObjectUtils.setPropertiesValues(t, propertys);
 	}
 	
 	public void setProperty(T t ,String name , Object val){
-		ObjectUtils.setProperty(t, name, val);
+		ObjectUtils.setPropertyValue(t, name, val);
 	}
 
 }

@@ -63,8 +63,8 @@ public class TypeConvertTest {
 	public static void main(String[] args) {
 		String [] data = {"123","234","345"};
 		TypeA a = new TypeA();
-		ObjectUtils.setProperty(a, "intVal", data[0]);
-		ObjectUtils.setProperty(a, "enable", '2');
+		ObjectUtils.setPropertyValue(a, "intVal", data[0]);
+		ObjectUtils.setPropertyValue(a, "enable", '2');
 		
 		System.out.println(a.isEnable());
 		

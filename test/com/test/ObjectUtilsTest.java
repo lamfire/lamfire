@@ -12,11 +12,23 @@ import com.lamfire.utils.ObjectUtils;
 public class ObjectUtilsTest {
     static class Item{
         private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 
     public static void main(String[] args) {
         Item item = new Item();
         ObjectUtils.setFieldValue(item,"name","lamfire test");
         System.out.println(ObjectUtils.getFieldValue(item,"name"));
+
+        Item item2 = new Item();
+        ObjectUtils.copyProperties(item, item2);
+        System.out.println(ObjectUtils.getFieldValue(item2,"name"));
     }
 }

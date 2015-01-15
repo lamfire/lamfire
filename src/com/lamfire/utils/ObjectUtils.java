@@ -12,20 +12,20 @@ public class ObjectUtils {
 	/**
 	 * 设置对象属性
 	 * 
-	 * @param target
+	 * @param instance
 	 * @param propertyValues
 	 */
-	public static void setPropertiesValues(Object target, Map<String, Object> propertyValues) {
-		if (target==null || propertyValues == null || propertyValues.isEmpty())
+	public static void setPropertiesValues(Object instance, Map<String, Object> propertyValues) {
+		if (instance==null || propertyValues == null || propertyValues.isEmpty())
 			return;
 		try {
-			PropertyDescriptor[] pdArray = ClassUtils.getPropertyDescriptorsArray(target.getClass());
+			PropertyDescriptor[] pdArray = ClassUtils.getPropertyDescriptorsArray(instance.getClass());
 			if(pdArray == null)return;
-			for (PropertyDescriptor pd : pdArray) {
-				String propertyName = pd.getName();
+			for (PropertyDescriptor descriptor : pdArray) {
+				String propertyName = descriptor.getName();
 				Object value = propertyValues.get(propertyName);
 				if (value != null) {
-					setPropertyValue(target, pd, value);
+					setPropertyValue(instance, descriptor, value);
 				}
 			}
 		} catch (IntrospectionException e) {
@@ -36,33 +36,31 @@ public class ObjectUtils {
 	/**
 	 * 设置对象属性
 	 * 
-	 * @param target
+	 * @param instance
 	 * @param name
 	 * @param value
 	 */
-	public static void setPropertyValue(Object target, String name, Object value) {
-
-		PropertyDescriptor pd = ClassUtils.getPropertyDescriptor(target.getClass(), name);
+	public static void setPropertyValue(Object instance, String name, Object value) {
+		PropertyDescriptor pd = ClassUtils.getPropertyDescriptor(instance.getClass(), name);
 		if (pd == null){
-			return;
+            throw new RuntimeException("the property '" + name + "' not found - " + instance.getClass().getName());
         }
-		setPropertyValue(target, pd, value);
-
+		setPropertyValue(instance, pd, value);
 	}
 
 	/**
 	 * 获得属性值
 	 * 
-	 * @param target
+	 * @param instance
 	 * @param propertyName
 	 * @return
 	 */
-	public static Object getPropertyValue(Object target, String propertyName) {
-		PropertyDescriptor pd = ClassUtils.getPropertyDescriptor(target.getClass(), propertyName);
+	public static Object getPropertyValue(Object instance, String propertyName) {
+		PropertyDescriptor pd = ClassUtils.getPropertyDescriptor(instance.getClass(), propertyName);
 		if (pd == null){
 			throw new RuntimeException("the property '" + propertyName + "' not found");
 		}
-		return readPropertyValue(target, pd);
+		return readPropertyValue(instance, pd);
 
 	}
 
@@ -75,13 +73,17 @@ public class ObjectUtils {
         if(field == null){
             throw new RuntimeException("Field[" + fieldName +"] not found - " + target.getClass().getName());
         }
+        return getFieldValue(field,target);
+    }
+
+    public static Object getFieldValue(Field field,Object bean)  {
         boolean hasChangeAccessibleFlag = false;
         if(!field.isAccessible()){
             field.setAccessible(true);
             hasChangeAccessibleFlag = true;
         }
         try {
-            Object result = field.get(target);
+            Object result = field.get(bean);
             return result;
         } catch (IllegalAccessException e) {
 
@@ -93,19 +95,22 @@ public class ObjectUtils {
         return null;
     }
 
-    public static void setFieldValue(Object target, String fieldName,Object value)  {
-        Field field = getField(target,fieldName);
+    public static void setFieldValue(Object instance, String fieldName,Object value)  {
+        Field field = getField(instance,fieldName);
         if(field == null){
-            throw new RuntimeException("Field[" + fieldName +"] not found - " + target.getClass().getName());
+            throw new RuntimeException("Field[" + fieldName +"] not found - " + instance.getClass().getName());
         }
+        setFieldValue(field,instance,value);
+    }
 
+    public static void setFieldValue(Field field,Object instance,Object value)  {
         boolean hasChangeAccessibleFlag = false;
         if(!field.isAccessible()){
             field.setAccessible(true);
             hasChangeAccessibleFlag = true;
         }
         try {
-            field.set(target,value);
+            field.set(instance,value);
         } catch (IllegalAccessException e) {
 
         } finally {
@@ -115,25 +120,25 @@ public class ObjectUtils {
         }
     }
 
-    protected static Object readPropertyValue(Object objInstance , PropertyDescriptor pd){
-		if (pd == null){
+    protected static Object readPropertyValue(Object objInstance , PropertyDescriptor descriptor){
+		if (descriptor == null){
 			return null;
         }
 
-		Method getter = pd.getReadMethod();
+		Method getter = descriptor.getReadMethod();
 		if (getter == null) {
-			return getFieldValue(objInstance,pd.getName());
+			return getFieldValue(objInstance,descriptor.getName());
 		}
 		return invokeMethod(objInstance, getter);
 	}
 	
-	protected static void writePropertyValue(Object objInstance , PropertyDescriptor pd,Object value){
-		if (pd == null){
+	protected static void writePropertyValue(Object objInstance , PropertyDescriptor descriptor,Object value){
+		if (descriptor == null){
 			return ;
 		}
-		Method setter = pd.getWriteMethod();
+		Method setter = descriptor.getWriteMethod();
 		if (setter == null) {
-			setFieldValue(objInstance,pd.getName(),value);
+			setFieldValue(objInstance,descriptor.getName(),value);
             return;
 		}
 		invokeMethod(objInstance, setter,value);
@@ -142,28 +147,27 @@ public class ObjectUtils {
 	/**
 	 * 设置对象属性
 	 * 
-	 * @param target
-	 * @param pd
+	 * @param instance
+	 * @param descriptor
 	 * @param value
 	 */
-	protected static void setPropertyValue(Object target, PropertyDescriptor pd, Object value) {
-		
-		if (target==null || pd == null){
+	protected static void setPropertyValue(Object instance, PropertyDescriptor descriptor, Object value) {
+		if (instance==null || descriptor == null){
 			return;
 		}
 		
 		if(value == null){
 			//调用写入属性方法进行附值
-            writePropertyValue(target,pd,value);
+            writePropertyValue(instance, descriptor, value);
 			return ;
 		}
 		
-		Class propType = pd.getPropertyType();
+		Class propType = descriptor.getPropertyType();
 		Object desValue = value;
 		//如果是复杂对象则先转换复杂对象，再附值
 		if(!value.getClass().isAssignableFrom(propType) && value instanceof Map){
-			desValue = toJavaObject((Map)value,propType);
-            writePropertyValue(target,pd,desValue);
+			desValue = toJavaObject((Map) value, propType);
+            writePropertyValue(instance, descriptor, desValue);
 			return ;
 		}
 		
@@ -173,14 +177,14 @@ public class ObjectUtils {
 		}
 		
 		//调用写入属性方法进行附值
-        writePropertyValue(target,pd,desValue);
+        writePropertyValue(instance, descriptor, desValue);
 
 	}
 	
 	public static <T>T toJavaObject(Map<String, Object> map,Class<T> claxx){
 		try {
 			T desObject = claxx.newInstance();
-			setPropertiesValues(desObject,map);
+			setPropertiesValues(desObject, map);
 			return desObject;
 		} catch (Exception e) {
 			throw new RuntimeException("the class '" +claxx.getName() + "' not cerate new instance," + e.getMessage());
@@ -219,30 +223,40 @@ public class ObjectUtils {
 	/**
 	 * 拷贝相同的属性值到目标对象
 	 * 
-	 * @param source
-	 * @param dest
-	 * @throws IntrospectionException 
+	 * @param from
+	 * @param to
 	 */
 
-	public static void copyProperties(Object source, Object dest) {
-		
-		PropertyDescriptor[] pds = null;
-		try {
-			pds = ClassUtils.getPropertyDescriptorsArray(source.getClass());
-		} catch (IntrospectionException e) {
-			
-		}
-		
-		if(pds == null)return ;
-		
-		for (PropertyDescriptor pd : pds) {
+	public static void copyProperties(Object from, Object to) {
+        PropertyDescriptor[] propertyDescriptors = new PropertyDescriptor[0];
+        try {
+            propertyDescriptors = ClassUtils.getPropertyDescriptorsArray(from.getClass());
+        } catch (IntrospectionException e) {
+            throw new RuntimeException(e);
+        }
+        for (PropertyDescriptor descriptor : propertyDescriptors) {
 			try {
-				Object value = getPropertyValue(source, pd.getName());
-				setPropertyValue(dest, pd.getName(), value);
+                if(descriptor.getName().equals("class")){
+                    continue;
+                }
+				Object value = getPropertyValue(from, descriptor.getName());
+				setPropertyValue(to,descriptor,value);
 			} catch (Exception e) {
+                e.printStackTrace();
 			}
 		}
-
 	}
+
+    public static void copyJavaObject(Object from, Object to) {
+        Field[] fields = ClassUtils.getDeclaredFieldsAsArray(from.getClass());
+        for (Field field : fields) {
+            try {
+                Object value = getFieldValue(from, field.getName());
+                setFieldValue(field,to, value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }

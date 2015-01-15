@@ -455,13 +455,19 @@ public class ClassUtils {
 		return result;
 	}
 
+    public static Field[] getDeclaredFieldsAsArray(Class<?> targetClass) {
+        Field[] result = targetClass.getDeclaredFields();
+        return result;
+    }
+
 	public static Field getField(Class<?> inClass, String name) {
 		Field result = null;
 		for (Class<?> cls = inClass; (cls != null); cls = inClass.getSuperclass()) {
 			Map<String, Field> fields = getDeclaredFields(inClass);
 			result = fields.get(name);
-			if (result != null)
+			if (result != null || cls == Object.class){
 				break;
+            }
 		}
 
 		return result;
@@ -511,7 +517,7 @@ public class ClassUtils {
 		}
 		Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
 		if (index >= params.length || index < 0) {
-			throw new RuntimeException("Index outof bounds");
+			throw new RuntimeException("Index out of bounds");
 		}
 		if (!(params[index] instanceof Class<?>)) {
 			return Object.class;
