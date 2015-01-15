@@ -23,6 +23,19 @@ public class Threads {
 		return scheduler;
 	}
 
+    public static ThreadPoolExecutor newFixedThreadPool(int nThreads){
+        return new ThreadPoolExecutor(nThreads, nThreads,
+                0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>());
+    }
+
+    public static ThreadPoolExecutor newFixedThreadPool(int nThreads, java.util.concurrent.ThreadFactory threadFactory) {
+        return new ThreadPoolExecutor(nThreads, nThreads,
+                0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(),
+                threadFactory);
+    }
+
 	public static Thread runDaemon(Thread t, String name) {
 		return runDaemon(t, name, null);
 	}
@@ -133,4 +146,32 @@ public class Threads {
     	return getThreadPoolExecutor().submit(task);
     }
 
+    public static ThreadPoolExecutor newCachedThreadPool() {
+        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                60L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>());
+    }
+
+    public static ThreadPoolExecutor newCachedThreadPool(java.util.concurrent.ThreadFactory threadFactory) {
+        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                60L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>(),
+                threadFactory);
+    }
+
+    public static ScheduledThreadPoolExecutor newSingleThreadScheduledExecutor() {
+        return new ScheduledThreadPoolExecutor(1);
+    }
+
+    public static ScheduledThreadPoolExecutor newSingleThreadScheduledExecutor(java.util.concurrent.ThreadFactory threadFactory) {
+        return new ScheduledThreadPoolExecutor(1, threadFactory);
+    }
+
+    public static ScheduledThreadPoolExecutor newScheduledThreadPool(int corePoolSize) {
+        return new ScheduledThreadPoolExecutor(corePoolSize);
+    }
+
+    public static ScheduledThreadPoolExecutor newScheduledThreadPool( int corePoolSize, java.util.concurrent.ThreadFactory threadFactory) {
+        return new ScheduledThreadPoolExecutor(corePoolSize, threadFactory);
+    }
 }
