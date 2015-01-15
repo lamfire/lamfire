@@ -43,8 +43,9 @@ public class ObjectUtils {
 	public static void setProperty(Object target, String name, Object value) {
 
 		PropertyDescriptor pd = ClassUtils.getPropertyDescriptor(target.getClass(), name);
-		if (pd == null)
+		if (pd == null){
 			return;
+        }
 		setPropertyValue(target, pd, value);
 
 	}
@@ -65,15 +66,20 @@ public class ObjectUtils {
 
 	}
 
-    public static Field getField(Object target, String propertyName) {
-          return ClassUtils.getField(target.getClass(),propertyName);
+    public static Field getField(Object target, String fieldName) {
+          return ClassUtils.getField(target.getClass(),fieldName);
     }
 
-    public static Object getFieldValue(Object target, String propertyName)  {
-        Field field = getField(target,propertyName);
+    public static Object getFieldValue(Object target, String fieldName)  {
+        Field field = getField(target,fieldName);
+        if(field == null){
+            throw new RuntimeException("Field[" + fieldName +"] not found - " + target.getClass().getName());
+        }
         boolean accessible = field.isAccessible();
+        boolean modified = false;
         if(!accessible){
             field.setAccessible(true);
+            modified = true;
         }
         try {
             Object result = field.get(target);
@@ -81,23 +87,32 @@ public class ObjectUtils {
         } catch (IllegalAccessException e) {
 
         } finally {
-            field.setAccessible(accessible);
+            if(modified){
+                field.setAccessible(accessible);
+            }
         }
         return null;
     }
 
-    public static void setFieldValue(Object target, String propertyName,Object value)  {
-        Field field = getField(target,propertyName);
+    public static void setFieldValue(Object target, String fieldName,Object value)  {
+        Field field = getField(target,fieldName);
+        if(field == null){
+            throw new RuntimeException("Field[" + fieldName +"] not found - " + target.getClass().getName());
+        }
         boolean accessible = field.isAccessible();
+        boolean modified = false;
         if(!accessible){
             field.setAccessible(true);
+            modified = true;
         }
         try {
             field.set(target,value);
         } catch (IllegalAccessException e) {
 
         } finally {
-            field.setAccessible(accessible);
+            if(modified){
+                field.setAccessible(accessible);
+            }
         }
     }
 
