@@ -1,8 +1,11 @@
 package com.lamfire.code;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 public class AES {
+    //default charset
+    static final Charset CHARSET = Charset.forName("utf-8");
 	// The S box
 	private static final byte[] S = { (byte) 99, (byte) 124, (byte) 119, (byte) 123, (byte) 242, (byte) 107, (byte) 111, (byte) 197, (byte) 48, (byte) 1, (byte) 103, (byte) 43,
 			(byte) 254, (byte) 215, (byte) 171, (byte) 118, (byte) 202, (byte) 130, (byte) 201, (byte) 125, (byte) 250, (byte) 89, (byte) 71, (byte) 240, (byte) 173, (byte) 212,
@@ -539,6 +542,38 @@ public class AES {
 		return transformData(datas);
 	}
 
+    /**
+     * 加密
+     *
+     * @param source
+     *            要加密的字串
+     * @param key
+     *            密钥
+     * @return 加密后的字串
+     */
+    public static String encode(String source, String key,Charset charset) {
+        AES aes = new AES(key.getBytes(charset));
+        byte[] datas = source.getBytes();
+        datas = aes.encode(datas);
+        return Hex.encode(datas);
+    }
+
+    /**
+     * 解密
+     *
+     * @param source
+     *            要解密的字串
+     * @param key
+     *            密钥
+     * @return 解密后的字串
+     */
+    public static String decode(String source, String key,Charset charset) {
+        AES aes = new AES(key.getBytes());
+        byte[] datas = Hex.decode(source);
+        datas = aes.decode(datas);
+        return new String(datas,charset).trim();
+    }
+
 	/**
 	 * 加密
 	 * 
@@ -549,10 +584,7 @@ public class AES {
 	 * @return 加密后的字串
 	 */
 	public static String encode(String source, String key) {
-		AES aes = new AES(key.getBytes());
-		byte[] datas = source.getBytes();
-		datas = aes.encode(datas);
-		return Hex.encode(datas);
+		return encode(source,key,CHARSET);
 	}
 
 	/**
@@ -565,10 +597,7 @@ public class AES {
 	 * @return 解密后的字串
 	 */
 	public static String decode(String source, String key) {
-		AES aes = new AES(key.getBytes());
-		byte[] datas = Hex.decode(source);
-		datas = aes.decode(datas);
-		return new String(datas).trim();
+        return decode(source,key,CHARSET);
 	}
 	
 	/**
