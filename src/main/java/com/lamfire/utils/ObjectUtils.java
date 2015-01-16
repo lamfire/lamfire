@@ -259,4 +259,19 @@ public class ObjectUtils {
         }
     }
 
+    public static void emptyJavaObject(Object instance){
+        Field[] fields = ClassUtils.getAllFieldsAsArray(instance.getClass());
+        for (Field field : fields) {
+            try {
+                if(ClassUtils.isNumberType(field.getType())){
+                    setFieldValue(field,instance, 0);
+                }else{
+                    setFieldValue(field,instance, null);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

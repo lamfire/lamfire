@@ -492,6 +492,16 @@ public class ClassUtils {
 		return result;
 	}
 
+    public synchronized static Field[] getAllFieldsAsArray(Class<?> inClass) {
+        Map<String, Field> fieldMap = getAllFields(inClass);
+        Field[] fields = new Field[fieldMap.size()];
+        int i=0;
+        for(Map.Entry<String,Field> e :fieldMap.entrySet()){
+            fields[i++] = e.getValue();
+        }
+        return fields;
+    }
+
 	public static Method getMethod(Class<?> inClass, String name, Class<?>[] argsTypes) {
 		try {
 			return inClass.getMethod(name, argsTypes);
