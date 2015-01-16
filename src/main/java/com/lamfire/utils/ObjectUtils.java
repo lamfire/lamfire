@@ -248,7 +248,7 @@ public class ObjectUtils {
 	}
 
     public static void copyJavaObject(Object from, Object to) {
-        Field[] fields = ClassUtils.getDeclaredFieldsAsArray(from.getClass());
+        Field[] fields = ClassUtils.getDeclaredFields(from.getClass());
         for (Field field : fields) {
             try {
                 Object value = getFieldValue(from, field.getName());
@@ -260,10 +260,10 @@ public class ObjectUtils {
     }
 
     public static void emptyJavaObject(Object instance){
-        Field[] fields = ClassUtils.getAllFieldsAsArray(instance.getClass());
+        Field[] fields = ClassUtils.getAllFields(instance.getClass());
         for (Field field : fields) {
             try {
-                if(ClassUtils.isNumberType(field.getType())){
+                if(ClassUtils.isGenericNumberType(field.getType())){
                     setFieldValue(field,instance, 0);
                 }else{
                     setFieldValue(field,instance, null);

@@ -19,10 +19,12 @@ public class ClassUtils {
 
 	private static final Map<Class<?>, Map<String, PropertyDescriptor>> propertyDescriptorMapCache = new HashMap<Class<?>, Map<String, PropertyDescriptor>>();
 	private static final Map<Class<?>, PropertyDescriptor[]> propertyDescriptorArrayCache = new HashMap<Class<?>, PropertyDescriptor[]>();
-	private static final Map<Class<?>, Map<String, Field>> fieldCache = new HashMap<Class<?>, Map<String, Field>>();
+	private static final Map<Class<?>, Field[]> fieldCache = new HashMap<Class<?>,  Field[]>();
 	private static final Map<Object, Class<?>> primitiveWrapperMap = new HashMap<Object, Class<?>>();
 	private static final Map<String, Class<?>> genericActualTypeCacheMap = new HashMap<String, Class<?>>();
 	private static final Map<String, String> abbreviationMap = new HashMap<String, String>();
+    private static final Map<Class<?>, List<Class<?>>> allSupperClassMap = new HashMap<Class<?>,List<Class<?>>>();
+    private static final Map<Class<?>, List<Class<?>>> allInterfacesMap = new HashMap<Class<?>,List<Class<?>>>();
 
 	public static String getShortClassName(Object object, String valueIfNull) {
 		if (object == null) {
@@ -105,11 +107,11 @@ public class ClassUtils {
 		return null;
 	}
 
-	public static Field getAnnotationedField(Class<?> target, Class<? extends Annotation> annotationClass) {
+	public static Field getAnnotationField(Class<?> target, Class<? extends Annotation> annotationClass) {
 		if (annotationClass == null || target == null){
 			throw new NullPointerException();
 		}
-		Map<String, Field> fields = ClassUtils.getAllFields(target);
+		Map<String, Field> fields = ClassUtils.getAllFieldsAsMap(target);
 		for (Map.Entry<String, Field> e : fields.entrySet()) {
 			Field field = e.getValue();
 			Annotation ann = field.getAnnotation(annotationClass);
@@ -124,12 +126,17 @@ public class ClassUtils {
 		if (cls == null) {
 			return null;
 		}
-		List<Class<?>> classes = new ArrayList<Class<?>>();
+        List<Class<?>> classes = allSupperClassMap.get(cls);
+        if(classes != null){
+            return classes;
+        }
+		classes = new ArrayList<Class<?>>();
 		Class<?> superclass = cls.getSuperclass();
 		while (superclass != null) {
 			classes.add(superclass);
 			superclass = superclass.getSuperclass();
 		}
+        allSupperClassMap.put(cls,classes);
 		return classes;
 	}
 
@@ -137,7 +144,11 @@ public class ClassUtils {
 		if (cls == null) {
 			return null;
 		}
-		List<Class<?>> list = new ArrayList<Class<?>>();
+        List<Class<?>> list = allInterfacesMap.get(cls);
+        if(list != null){
+            return list;
+        }
+		list = new ArrayList<Class<?>>();
 		while (cls != null) {
 			Class<?>[] interfaces = cls.getInterfaces();
 			for (int i = 0; i < interfaces.length; i++) {
@@ -154,6 +165,7 @@ public class ClassUtils {
 			}
 			cls = cls.getSuperclass();
 		}
+        allInterfacesMap.put(cls,list);
 		return list;
 	}
 
@@ -441,7 +453,7 @@ public class ClassUtils {
 		return descriptor.getWriteMethod();
 	}
 
-	public static Map<String, Field> getDeclaredFields(Class<?> targetClass) {
+	public static Map<String, Field> getDeclaredFieldsAsMap(Class<?> targetClass) {
 		Map<String, Field> result = new HashMap<String, Field>();
 		Field[] fa = targetClass.getDeclaredFields();
 		for (int i = 0; i < fa.length; i++) {
@@ -451,7 +463,7 @@ public class ClassUtils {
 		return result;
 	}
 
-    public static Field[] getDeclaredFieldsAsArray(Class<?> targetClass) {
+    public static Field[] getDeclaredFields(Class<?> targetClass) {
         Field[] result = targetClass.getDeclaredFields();
         return result;
     }
@@ -459,7 +471,7 @@ public class ClassUtils {
 	public static Field getField(Class<?> inClass, String name) {
 		Field result = null;
 		for (Class<?> cls = inClass; (cls != null); cls = inClass.getSuperclass()) {
-			Map<String, Field> fields = getDeclaredFields(inClass);
+			Map<String, Field> fields = getDeclaredFieldsAsMap(inClass);
 			result = fields.get(name);
 			if (result != null || cls == Object.class){
 				break;
@@ -469,37 +481,33 @@ public class ClassUtils {
 		return result;
 	}
 
-	public synchronized static Map<String, Field> getAllFields(Class<?> inClass) {
-		Map<String, Field> result = fieldCache.get(inClass);
-		if (result != null) {
-			return result;
+	public synchronized static Map<String, Field> getAllFieldsAsMap(Class<?> inClass) {
+		Map<String, Field> result = new HashMap<String, Field>();
+		result.putAll(getDeclaredFieldsAsMap(inClass));
+
+        Field[] fields = getAllFields(inClass);
+        for (Field f: fields) {
+            result.put(f.getName(),f);
 		}
-
-		result = new HashMap<String, Field>();
-		result.putAll(getDeclaredFields(inClass));
-
-		List<Class<?>> allClass = getAllSuperclasses(inClass);
-
-		for (Class<?> cls : allClass) {
-			Map<String, Field> fields = getDeclaredFields(cls);
-			for (Map.Entry<String, Field> e : fields.entrySet()) {
-				if (!result.containsKey(e.getKey())) {
-					result.put(e.getKey(), e.getValue());
-				}
-			}
-		}
-		fieldCache.put(inClass, result);
 		return result;
 	}
 
-    public synchronized static Field[] getAllFieldsAsArray(Class<?> inClass) {
-        Map<String, Field> fieldMap = getAllFields(inClass);
-        Field[] fields = new Field[fieldMap.size()];
-        int i=0;
-        for(Map.Entry<String,Field> e :fieldMap.entrySet()){
-            fields[i++] = e.getValue();
+    public synchronized static Field[] getAllFields(Class<?> inClass) {
+        Field[] result = fieldCache.get(inClass);
+        if (result != null) {
+            return result;
         }
-        return fields;
+        List<Field> list = Lists.newArrayList();
+        Collections.addAll(list,getDeclaredFields(inClass));
+
+        List<Class<?>> allClass = getAllSuperclasses(inClass);
+
+        for (Class<?> cls : allClass) {
+            Collections.addAll(list,getDeclaredFields(cls));
+        }
+        result = Lists.toArray(list,Field.class);
+        fieldCache.put(inClass, result);
+        return result;
     }
 
 	public static Method getMethod(Class<?> inClass, String name, Class<?>[] argsTypes) {
@@ -533,7 +541,7 @@ public class ClassUtils {
 		return result;
 	}
 
-    public static boolean isNumberType(Class<?> inClass){
+    public static boolean isGenericNumberType(Class<?> inClass){
         if(int.class == inClass){
             return true;
         }
@@ -552,10 +560,13 @@ public class ClassUtils {
         if(byte.class == inClass){
             return true;
         }
+        if(char.class == inClass){
+            return true;
+        }
         return false;
     }
 
-    public static boolean isNumberObjectType(Class<?> inClass){
+    public static boolean isObjectNumberType(Class<?> inClass){
         if(Integer.class == inClass){
             return true;
         }

@@ -23,7 +23,7 @@ public class ClassUtilTest {
 
     public static void main(String[] args) {
         Field aField = ClassUtils.getField(ClassUtilTest.class,"a");
-        Asserts.assertEquals(ClassUtils.isNumberType(aField.getType()),true);
+        Asserts.assertEquals(ClassUtils.isGenericNumberType(aField.getType()),true);
 
         Field bField = ClassUtils.getField(ClassUtilTest.class,"b");
         Asserts.assertEquals(ClassUtils.isListType(bField.getType()),true);
