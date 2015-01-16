@@ -1,3 +1,5 @@
+package com.test;
+
 import com.lamfire.utils.ObjectPool;
 import com.lamfire.utils.RandomUtils;
 import com.lamfire.utils.Threads;

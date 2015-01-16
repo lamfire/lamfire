@@ -9,11 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ClassUtils {
 	public static final char PACKAGE_SEPARATOR_CHAR = '.';
@@ -161,7 +157,7 @@ public class ClassUtils {
 		return list;
 	}
 
-	public static List<Class<?>> convertClassNamesToClasses(List<String> classNames) {
+	public static List<Class<?>> toClasses(List<String> classNames) {
 		if (classNames == null) {
 			return null;
 		}
@@ -176,7 +172,7 @@ public class ClassUtils {
 		return classes;
 	}
 
-	public static List<String> convertClassesToClassNames(List<Class<?>> classes) {
+	public static List<String> toClassNames(List<Class<?>> classes) {
 		if (classes == null) {
 			return null;
 		}
@@ -526,4 +522,68 @@ public class ClassUtils {
 		genericActualTypeCacheMap.put(key, result);
 		return result;
 	}
+
+    public static boolean isNumberType(Class<?> inClass){
+        if(int.class == inClass){
+            return true;
+        }
+        if(long.class == inClass){
+            return true;
+        }
+        if(float.class == inClass){
+            return true;
+        }
+        if(double.class == inClass){
+            return true;
+        }
+        if(short.class == inClass){
+            return true;
+        }
+        if(byte.class == inClass){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isNumberObjectType(Class<?> inClass){
+        if(Integer.class == inClass){
+            return true;
+        }
+        if(Long.class == inClass){
+            return true;
+        }
+        if(Float.class == inClass){
+            return true;
+        }
+        if(Double.class == inClass){
+            return true;
+        }
+        if(Short.class == inClass){
+            return true;
+        }
+        if(Byte.class == inClass){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isArrayType(Class<?> inClass){
+        return inClass.isArray();
+    }
+
+    public static boolean isCollectionType(Class<?> inClass){
+        return Collection.class.isAssignableFrom(inClass);
+    }
+
+    public static boolean isMapType(Class<?> inClass){
+        return Map.class.isAssignableFrom(inClass);
+    }
+
+    public static boolean isListType(Class<?> inClass){
+        return List.class.isAssignableFrom(inClass);
+    }
+
+    public static boolean isSetType(Class<?> inClass){
+        return Set.class.isAssignableFrom(inClass);
+    }
 }
