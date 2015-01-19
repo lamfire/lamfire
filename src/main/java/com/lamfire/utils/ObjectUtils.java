@@ -247,7 +247,7 @@ public class ObjectUtils {
 		}
 	}
 
-    public static void copyJavaObject(Object from, Object to) {
+    public static void copy(Object from, Object to) {
         Field[] fields = ClassUtils.getDeclaredFields(from.getClass());
         for (Field field : fields) {
             try {
@@ -259,7 +259,7 @@ public class ObjectUtils {
         }
     }
 
-    public static void emptyJavaObject(Object instance){
+    public static void empty(Object instance){
         Field[] fields = ClassUtils.getAllFields(instance.getClass());
         for (Field field : fields) {
             try {

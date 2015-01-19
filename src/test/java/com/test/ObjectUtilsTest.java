@@ -69,10 +69,10 @@ public class ObjectUtilsTest {
         System.out.println("source : "+item);
 
         Item item2 = new Item();
-        ObjectUtils.copyJavaObject(item, item2);
+        ObjectUtils.copy(item, item2);
         System.out.println("copy : "+item2);
 
-        ObjectUtils.emptyJavaObject(item);
+        ObjectUtils.empty(item);
         System.out.println("empty : "+(item));
     }
 }
