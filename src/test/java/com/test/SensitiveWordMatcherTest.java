@@ -18,7 +18,7 @@ public class SensitiveWordMatcherTest {
         list.add("中国");
         list.add("华人");
         list.add("坏蛋");
-        list.add("变态");
+        list.add("变态狂");
         list.add("穷B");
         list.add("网民");
         list.add("愚蠢");
@@ -28,5 +28,6 @@ public class SensitiveWordMatcherTest {
         String source = "中华人民共和国，没有坏蛋，也没有变态狂，只有一群可爱的网民．";
 
         System.out.println(matcher.match(source));
+        System.out.println(matcher.replace(source,'*'));
     }
 }

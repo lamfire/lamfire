@@ -118,6 +118,21 @@ public class KeywordMatcher {
         return words;
     }
 
+    public String replace(String source,char replaceChar){
+        return replace(source,this.charset,replaceChar);
+    }
+
+    public String replace(String source,Charset charset ,char replaceChar){
+        List<String> words = match(source,charset);
+        for(String keyword : words){
+            char[] chars = new char[keyword.length()];
+            ArrayUtils.fill(chars, replaceChar);
+            String replaceWith = new String(chars);
+            source = StringUtils.replace(source,keyword,replaceWith);
+        }
+        return source;
+    }
+
     public void setCharset(Charset charset) {
         this.charset = charset;
     }

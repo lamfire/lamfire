@@ -1781,4 +1781,52 @@ public class ArrayUtils {
 		return array;
 	}
 
+    public static <T> void fill(T[] array,T value) {
+        for (int i=0;i<array.length;i++) {
+            array[i] = value;
+        }
+    }
+
+    public static  void fill(int[] array,int value) {
+        for (int i=0;i<array.length;i++) {
+            array[i] = value;
+        }
+    }
+
+    public static  void fill(long[] array,long value) {
+        for (int i=0;i<array.length;i++) {
+            array[i] = value;
+        }
+    }
+
+    public static  void fill(char[] array,char value) {
+        for (int i=0;i<array.length;i++) {
+            array[i] = value;
+        }
+    }
+
+    public static  void fill(byte[] array,byte value) {
+        for (int i=0;i<array.length;i++) {
+            array[i] = value;
+        }
+    }
+
+    public static  void fill(float[] array,float value) {
+        for (int i=0;i<array.length;i++) {
+            array[i] = value;
+        }
+    }
+
+    public static  void fill(double[] array,double value) {
+        for (int i=0;i<array.length;i++) {
+            array[i++] = value;
+        }
+    }
+
+    public static  void fill(short[] array,short value) {
+        for (int i=0;i<array.length;i++) {
+            array[i++] = value;
+        }
+    }
+
 }
