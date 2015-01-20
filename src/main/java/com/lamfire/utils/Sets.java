@@ -1,13 +1,6 @@
 package com.lamfire.utils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class Sets {
@@ -104,4 +97,10 @@ public class Sets {
 		}
 		return array;
 	}
+
+    public static <T> void addAll(Set<T> set,T[] array){
+        for (T t :array) {
+            set.add(t);
+        }
+    }
 }

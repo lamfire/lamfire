@@ -70,5 +70,10 @@ public class Lists {
 		}
 		return array;
 	}
-	
+
+    public static <T> void addAll(List<T> list,T[] array){
+        for (T t :array) {
+            list.add(t);
+        }
+    }
 }
