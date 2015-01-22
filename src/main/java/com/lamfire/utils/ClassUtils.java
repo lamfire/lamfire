@@ -4,11 +4,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.*;
 
 public class ClassUtils {
@@ -606,5 +602,23 @@ public class ClassUtils {
 
     public static boolean isSetType(Class<?> inClass){
         return Set.class.isAssignableFrom(inClass);
+    }
+
+    public static <T> T newInstance(Class<T> typeClass) throws IllegalAccessException, InstantiationException {
+        return typeClass.newInstance();
+    }
+
+    public static <T> T newInstance(Class<T> typeClass,Object... args) throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        Class<?>[] argsClasses = new Class[args.length];
+        int i=0;
+        for(Object arg : args){
+            argsClasses[i++] = arg.getClass();
+        }
+        return newInstance(typeClass,argsClasses,args);
+    }
+
+    public static <T> T newInstance(Class<T> typeClass,Class<?>[] argsClasses, Object[] constructorArgs) throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException  {
+        Constructor<T>  cons = typeClass.getConstructor(argsClasses);
+        return cons.newInstance(constructorArgs);
     }
 }

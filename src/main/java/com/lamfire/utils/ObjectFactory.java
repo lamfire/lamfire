@@ -16,8 +16,17 @@ public class ObjectFactory<T> {
 		T obj = this.claxx.newInstance();
 		return obj;
 	}
-	
-	public T newInstance(Class<?>[] argsClasses, Object[] constructorArgs) throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException  {                                                                                                                                
+
+    public T newInstance(Object... args) throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException  {
+        Class<?>[] argsClasses = new Class[args.length];
+        int i=0;
+        for(Object arg : args){
+            argsClasses[i++] = arg.getClass();
+        }
+        return newInstance(argsClasses,args);
+    }
+
+    public T newInstance(Class<?>[] argsClasses, Object[] constructorArgs) throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException  {
 	    Constructor<T>  cons = this.claxx.getConstructor(argsClasses);                    
 	    return cons.newInstance(constructorArgs);                                                                                                                          
 	}       

@@ -2,6 +2,7 @@ package com.lamfire.utils;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -271,6 +272,15 @@ public class ObjectUtils {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public static Object clone(Serializable instance){
+        byte [] bytes = Bytes.toBytes(instance);
+        try {
+            return Bytes.toObject(bytes);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
