@@ -712,4 +712,14 @@ public class NumberUtils {
 
 		return (!allowSigns) && (foundDigit);
 	}
+
+    public static float round(float value,int scale){
+        int seed = (int)Math.pow(10,scale);
+        return Math.round(value * seed) / (1.0f * seed);
+    }
+
+    public static double round(double value,int scale){
+        int seed = (int)Math.pow(10,scale);
+        return Math.round(value * seed) / (1.0d * seed);
+    }
 }
