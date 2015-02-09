@@ -1,14 +1,13 @@
 package com.lamfire.simplecache;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.lamfire.logger.Logger;
+import com.lamfire.utils.Lists;
+import com.lamfire.utils.Threads;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.lamfire.logger.Logger;
 
 public class AbstractCache<K, V> implements Cache<K, V> {
 	static final Logger LOGGER = Logger.getLogger(AbstractCache.class);
@@ -21,6 +20,7 @@ public class AbstractCache<K, V> implements Cache<K, V> {
 		this.maxElementsInCache = maxElementsInCache;
 		this.timeToLiveMillis = timeToLiveMillis;
 		this.items = items;
+        Threads.scheduleWithFixedDelay(cleanTask,5,5, TimeUnit.MINUTES);
 	}
 
 	@Override
@@ -133,5 +133,26 @@ public class AbstractCache<K, V> implements Cache<K, V> {
 			lock.unlock();
 		}
 	}
+
+    protected synchronized void cleanExpired(){
+        Set<Map.Entry<K,Item<K,V>>>  entrys = items.entrySet();
+        List<K> expired = Lists.newArrayList();
+        for(Map.Entry<K,Item<K,V>> e : entrys){
+            Item<K,V> item = e.getValue();
+            if(isExpired(item)){
+                expired.add(e.getKey());
+            }
+        }
+        for(K k : expired){
+            items.remove(k);
+        }
+    }
+
+    private Runnable cleanTask = new Runnable() {
+        @Override
+        public void run() {
+            cleanExpired();
+        }
+    };
 
 }
