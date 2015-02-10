@@ -135,16 +135,24 @@ public class AbstractCache<K, V> implements Cache<K, V> {
 	}
 
     protected synchronized void cleanExpired(){
-        Set<Map.Entry<K,Item<K,V>>>  entrys = items.entrySet();
-        List<K> expired = Lists.newArrayList();
-        for(Map.Entry<K,Item<K,V>> e : entrys){
-            Item<K,V> item = e.getValue();
-            if(isExpired(item)){
-                expired.add(e.getKey());
+        lock.lock();
+        try {
+            Set<Map.Entry<K,Item<K,V>>>  entrys = items.entrySet();
+            List<K> expired = Lists.newArrayList();
+            for(Map.Entry<K,Item<K,V>> e : entrys){
+                Item<K,V> item = e.getValue();
+                if(isExpired(item)){
+                    expired.add(e.getKey());
+                }
             }
-        }
-        for(K k : expired){
-            items.remove(k);
+            for(K k : expired){
+                items.remove(k);
+                if(LOGGER.isDebugEnabled()){
+                    LOGGER.debug("clean expired key : " + k);
+                }
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
