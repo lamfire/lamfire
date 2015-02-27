@@ -24,16 +24,20 @@ public class CachedObjectPool<E> extends ObjectPool<E> {
     }
 
     public synchronized E borrowObject(){
-        if(super.isEmpty()){
-            make();
-        }
-        E result = super.removeFirst();
-        activate(result);
-        if(validate(result)){
-            return result;
-        }
-        destroy(result);
-        return borrowObject();
+        E result = null;
+        do{
+            if(super.isEmpty()){
+                make();
+            }
+            E e = super.removeFirst();
+            activate(e);
+            if(validate(e)){
+                result = e;
+            }else{
+                destroy(e);
+            }
+        }while(result == null);
+        return result;
     }
 
     @Override

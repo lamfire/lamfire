@@ -9,10 +9,17 @@ package com.lamfire.pool;
  */
 public class ObjectPools {
 
-    public static <E> ObjectPool<E> makeFixedObjectPool(PoolableObjectFactory<E> objectFactory,int maxInstance,int idleInstance){
+    public static <E> ObjectPool<E> makeObjectPool(PoolableObjectFactory<E> objectFactory,int maxInstance,int idleInstance){
         FixedObjectPool<E> pool = new FixedObjectPool<E>(objectFactory);
         pool.setMaxInstances(maxInstance);
         pool.setMaxIdle(idleInstance);
+        return pool;
+    }
+
+    public static <E> ObjectPool<E> makeFixedObjectPool(PoolableObjectFactory<E> objectFactory,int instances){
+        FixedObjectPool<E> pool = new FixedObjectPool<E>(objectFactory);
+        pool.setMaxInstances(instances);
+        pool.setMaxIdle(instances);
         return pool;
     }
 

@@ -34,19 +34,23 @@ public class FixedObjectPool<E> extends ObjectPool<E> {
     }
 
     public synchronized E borrowObject(){
-        if(super.isEmpty()){
-            if(getInstanceSize() < getMaxInstances()){
-                make();
+        E result = null;
+        do{
+            if(super.isEmpty()){
+                if(getInstanceSize() < getMaxInstances()){
+                    make();
+                }
+                waitObjectInstance();
             }
-            waitObjectInstance();
-        }
-        E result = super.removeFirst();
-        activate(result);
-        if(validate(result)){
-            return result;
-        }
-        destroy(result);
-        return borrowObject();
+            E e = super.removeFirst();
+            activate(e);
+            if(validate(e)){
+                result = e;
+            }else{
+                destroy(e);
+            }
+        }while(result == null);
+        return result;
     }
 
 

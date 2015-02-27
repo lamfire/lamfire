@@ -42,12 +42,13 @@ public class ObjectPoolTest implements Runnable{
 
         @Override
         public Item make() {
+            System.out.println("---------------------------------------------------------------------------make");
             return new Item();
         }
 
         @Override
         public void destroy(Item instance) {
-
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>destroy");
         }
 
         @Override
@@ -66,13 +67,14 @@ public class ObjectPoolTest implements Runnable{
         }
     }
 
-    static ObjectPool<Item> pool = ObjectPools.makeCachedObjectPool(new ItemFactory(),9);
+    static ObjectPool<Item> pool = ObjectPools.makeCachedObjectPool(new ItemFactory(),5);
 
     public void run() {
         Item item = pool.borrowObject();
         Threads.sleep(RandomUtils.nextInt(1000));
         System.out.println(pool);
         pool.returnObject(item);
+        Threads.sleep(RandomUtils.nextInt(1000));
     }
 
     public static void main(String[] args) {
