@@ -3,11 +3,7 @@ package com.lamfire.utils;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -49,7 +45,20 @@ public class DateUtils {
         date.setTime( c.getTimeInMillis());
     }
 
+    public static Date getDate(int year, int month, int dayOfMonth,int hourOfDay, int minute, int second){
+        Calendar calendar = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute, second);
+        return calendar.getTime();
+    }
 
+    public static long getTimeInMillis(int year, int month, int dayOfMonth,int hourOfDay, int minute, int second){
+        Calendar calendar = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute, second);
+        return calendar.getTimeInMillis();
+    }
+
+    public static long getTimeInMillis(int year, int month, int dayOfMonth,int hourOfDay, int minute, int second, int millis){
+        Calendar calendar = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute, second);
+        return calendar.getTimeInMillis() + millis;
+    }
 
     public static void setYear(Date date,int year){
         date.setTime(setYear(date.getTime(),year));
