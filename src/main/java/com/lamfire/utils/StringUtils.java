@@ -955,6 +955,40 @@ public class StringUtils {
 		return new String(chars, 0, pos);
 	}
 
+    public static String remove(String str, char ... removes) {
+        if ((isEmpty(str))) {
+            return str;
+        }
+
+        boolean exists = false;
+        for(char remove : removes){
+            if(str.indexOf(remove) > 0 ){
+                exists = true;
+                break;
+            }
+        }
+
+        if(!exists){
+            return str;
+        }
+
+        char[] chars = str.toCharArray();
+        int pos = 0;
+        boolean removeThisChar = false;
+        for (int i = 0; i < chars.length; i++) {
+            removeThisChar = false;
+            for(char remove : removes){
+                if (chars[i] == remove) {
+                    removeThisChar = true;
+                }
+            }
+            if(!removeThisChar){
+                chars[(pos++)] = chars[i];
+            }
+        }
+        return new String(chars, 0, pos);
+    }
+
 	public static String replaceOnce(String text, String repl, String with) {
 		return replace(text, repl, with, 1);
 	}
