@@ -934,6 +934,13 @@ public class StringUtils {
 		return replace(str, remove, "", -1);
 	}
 
+    public static String remove(String str,String ... removes){
+        for(String remove : removes){
+            str = remove(str,remove);
+        }
+        return str;
+    }
+
 	public static String remove(String str, char remove) {
 		if ((isEmpty(str)) || (str.indexOf(remove) == -1)) {
 			return str;
