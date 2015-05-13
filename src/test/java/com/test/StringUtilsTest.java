@@ -42,9 +42,7 @@ public class StringUtilsTest {
 	
 	public static void main(String[] args) {
 		String source = "[RUN]:1354569845632|516405ba7d17e0e755f32713|a23efb45d|cn.sharesdk|1.2.3|18|1";
-		String start = "[RUN]";
-		String end = "18|10";
-		System.out.println(StringUtils.isStartWith(source, start));
-		System.out.println(StringUtils.isEndWith(source, end));
+		String s = StringUtils.remove(source,"RUN","cn");
+        System.out.println(s);
 	}
 }

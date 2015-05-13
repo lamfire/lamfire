@@ -346,6 +346,16 @@ public class JSON extends JSONParser implements Map<String, Object>, JSONString,
         }
     }
 
+    public byte[] toBytes(String charset){
+        SerializeWriter out = new SerializeWriter();
+        try {
+            new JSONSerializer(out).write(this);
+            return out.toBytes(charset);
+        } finally {
+            out.close();
+        }
+    }
+
     public void write(Appendable appendable) {
         SerializeWriter out = new SerializeWriter();
         try {
@@ -392,6 +402,11 @@ public class JSON extends JSONParser implements Map<String, Object>, JSONString,
 
     public static JSON fromBytes(byte[] bytes,Charset charset){
         String js = new String(bytes,charset);
+        return fromJSONString(js);
+    }
+
+    public static JSON fromBytes(byte[] bytes,String charset){
+        String js = new String(bytes,Charset.forName(charset));
         return fromJSONString(js);
     }
 }

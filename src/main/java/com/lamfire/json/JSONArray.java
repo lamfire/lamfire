@@ -15,6 +15,7 @@ import java.util.RandomAccess;
 import com.lamfire.json.serializer.JSONSerializer;
 import com.lamfire.json.serializer.SerializeWriter;
 import com.lamfire.json.util.TypeConverters;
+import com.lamfire.utils.Lists;
 
 
 public class JSONArray extends JSONParser implements List<Object>, JSONString, Cloneable, RandomAccess, Serializable {
@@ -350,6 +351,20 @@ public class JSONArray extends JSONParser implements List<Object>, JSONString, C
         } finally {
             out.close();
         }
+    }
+
+    public byte[] toBytes(String charset){
+        SerializeWriter out = new SerializeWriter();
+        try {
+            new JSONSerializer(out).write(this);
+            return out.toBytes(charset);
+        } finally {
+            out.close();
+        }
+    }
+
+    public <E> List<E> asList(){
+        return Lists.asList(this);
     }
 
 
