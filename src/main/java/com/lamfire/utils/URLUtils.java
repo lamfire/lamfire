@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,4 +78,24 @@ public class URLUtils {
 			IOUtils.closeQuietly(input);
 		}
 	}
+
+    public static List<String> extractAllUrl(String body){
+        List<String> list = Lists.newArrayList();
+        Pattern pattern = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:/?/=]+");
+        Matcher matcher = pattern.matcher(body);
+        while(matcher.find()){
+            list.add(matcher.group());
+        }
+        return list;
+    }
+
+    public static String extractUrl(String body){
+        List<String> list = Lists.newArrayList();
+        Pattern pattern = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:/?/=]+");
+        Matcher matcher = pattern.matcher(body);
+        if(matcher.find()){
+            return (matcher.group());
+        }
+        return null;
+    }
 }
