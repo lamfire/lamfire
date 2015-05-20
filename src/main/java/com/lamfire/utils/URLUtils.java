@@ -98,4 +98,14 @@ public class URLUtils {
         }
         return null;
     }
+
+    public static List<String> extractURL(String body,String domain){
+        List<String> list = Lists.newArrayList();
+        Pattern pattern = Pattern.compile("(http://|https://){1}"+domain+"[\\w\\.\\-/:/?/=]+");
+        Matcher matcher = pattern.matcher(body);
+        while(matcher.find()){
+            list.add(matcher.group());
+        }
+        return list;
+    }
 }
