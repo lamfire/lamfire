@@ -26,7 +26,7 @@ public class DateTest {
         System.out.println(DateFormatUtils.format(date,"yyyy-MM-dd HH:mm:ss"));
     }
 
-	public static void main(String[] args) {
+	public static void test() {
 		Date date = new Date();
         print(date);
 
@@ -50,10 +50,15 @@ public class DateTest {
 
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-        cal.set(Calendar.DAY_OF_MONTH,20);
+        //cal.set(Calendar.DAY_OF_MONTH,20);
         System.out.println(cal.getTime() + "  WEEK : " + cal.get(Calendar.DAY_OF_WEEK));
 
         System.out.println(DateUtils.isInWorkdays(cal.getTimeInMillis()));
 		
 	}
+
+    public static void main(String[] args) {
+        test();
+        System.out.println(DateUtils.isInWorkdays(System.currentTimeMillis(),TimeZone.getTimeZone("Asia/Shanghai")));
+    }
 }

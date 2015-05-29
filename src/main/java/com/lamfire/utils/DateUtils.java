@@ -325,7 +325,7 @@ public class DateUtils {
 
     public static boolean isInWorkdays(long millis,TimeZone timeZone){
         int dayOfWeek = getDayOfWeek(millis,timeZone);
-        if(dayOfWeek > 1 && dayOfWeek < 6){
+        if(dayOfWeek > 1 && dayOfWeek < 7){
             return true;
         }
         return false;
