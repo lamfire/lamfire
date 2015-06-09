@@ -1,5 +1,10 @@
 package com.lamfire.code;
 
+import com.lamfire.utils.ArrayUtils;
+import com.lamfire.utils.Bytes;
+import com.lamfire.utils.IOUtils;
+
+import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
@@ -12,17 +17,23 @@ import java.util.Random;
  */
 public class RSAAlgorithm {
 	static final Random random = new SecureRandom();
-	static final int MAX_ENCRYPT_BLOCK = 117;
-	static final int MAX_DECRYPT_BLOCK = 128;
+    public static final int KEYSIZE = 1024;
+	static final int MAX_ENCRYPT_BLOCK = KEYSIZE / 8 - 11;
+	static final int MAX_DECRYPT_BLOCK = KEYSIZE / 8;
 
-	public static final int KEYSIZE = 1024;
 
+    private int keySize = 1024;
 	private BigInteger publicKey;
 	private BigInteger privateKey;
 	private BigInteger modulus;
+    private int maxEncryptBlock;
+    private int maxDecryptBlock;
 
-	public RSAAlgorithm() {
-		genKey(KEYSIZE);
+	public RSAAlgorithm(int keySize) {
+        this.keySize = keySize;
+        maxEncryptBlock = keySize / 8 - 11;
+        maxDecryptBlock = keySize / 8;
+		genKey(keySize);
 	}
 
 	public RSAAlgorithm(BigInteger p, BigInteger q, BigInteger e) {
@@ -136,21 +147,34 @@ public class RSAAlgorithm {
 	}
 
 	public static void main(String[] args) throws Exception {
-		RSAAlgorithm rsa = new RSAAlgorithm();
+		RSAAlgorithm rsa = new RSAAlgorithm(1024);
 		BigInteger privKey = rsa.getPrivateKey();
 		BigInteger pubKey = rsa.getPublicKey();
 		BigInteger modulus = rsa.getModulus();
+
+        System.out.println("privKey:");
+        System.out.println(privKey);
+
+        System.out.println("pubKey:");
+        System.out.println(pubKey);
+
+        System.out.println("modulus:");
+        System.out.println(modulus);
+
+        System.out.println("============================");
 
 
 		// 加密
 		String source = "RSA公钥加密算法是1977年由Ron Rivest、Adi Shamirh和LenAdleman在（美国麻省理工学院）开发的。";
 
+
 		byte[] bytes = source.getBytes("UTF-8");
-		byte[] cipher = RSAAlgorithm.encode(bytes, privKey, modulus);
+		byte[] cipher =RSAAlgorithm.encode(bytes,rsa.getPrivateKey(),rsa.getModulus());
 		System.out.println("\r\n[ENCODE]:\r\n" + Base64.encode(cipher));
 
+        System.out.println("============================");
 		// 解密
-		byte[] plain = RSAAlgorithm.decode(cipher, pubKey, modulus);
+		byte[] plain = RSAAlgorithm.decode(cipher,rsa.getPublicKey(),rsa.getModulus());
 		System.out.println("\r\n[DECODE]:\r\n" + new String(plain, "UTF-8"));
 	}
 }
