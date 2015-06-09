@@ -117,12 +117,12 @@ public class RSA {
 	/**
 	 * 校验数字签名
 	 * @param data
-	 * @param sign
+	 * @param signWithBase64
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean verifySignatureAsBase64(byte[] data,String sign) throws Exception {
-		return verifySignature(data,Base64.decode(sign),publicKey);
+	public boolean verifySignatureWithBase64(byte[] data,String signWithBase64) throws Exception {
+		return verifySignature(data,Base64.decode(signWithBase64),publicKey);
 	}
 	
 	/**
