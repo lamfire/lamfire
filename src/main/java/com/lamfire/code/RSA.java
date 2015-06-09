@@ -184,7 +184,7 @@ public class RSA {
 	 * @return
 	 * @throws Exception
 	 */
-	public byte[] decode(byte[] data, Key key,int keySize) throws Exception {
+	public static byte[] decode(byte[] data, Key key,int keySize) throws Exception {
 		Cipher cipher = Cipher.getInstance(KEY_ALGORITHM);
 		cipher.init(Cipher.DECRYPT_MODE, key);
 
