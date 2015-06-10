@@ -7,7 +7,8 @@ import com.lamfire.code.RSA;
 
 public class RSATester {
 	static String source = "RSA公钥加密算法是1977年由Ron Rivest、Adi Shamirh和LenAdleman在（美国麻省理工学院）开发的。RSA取名来自开发他们三者的名字。RSA是目前最有影响力的公钥加密算法，它能够抵抗到目前为止已知的所有密码攻击，已被ISO推荐为公钥数据加密标准。RSA算法基于一个十分简单的数论事实：将两个大素数相乘十分容易，但那时想要对其乘积进行因式分解却极其困难，因此可以将乘积公开作为加密密钥。";
-	static String privateKey ="MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAIao0vPHmHmQGOT9ub/xf1fp6KNT\n" +
+
+    static String privateKey ="MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAIao0vPHmHmQGOT9ub/xf1fp6KNT\n" +
             "lMTrSgS+ucN0sJWy1BUODzDkYVgtFy/wh2tYHWyxdIt10LdzfUipse2lkpOYJGQfd2c9YaKTkHsT\n" +
             "o6vbCmMe6KOqCW/My0W8t1ZirAbD7a22m8w7i2GPKCCe+gtwArWNSODSoTgvXLxGcynRAgMBAAEC\n" +
             "gYBEzljUBaXMX6vIvji+chh+hF/BrMB0ikFNAWOMEsD0DOc/RurOMbPnyUpyzXV0jRaj5lzFsdKP\n" +
@@ -75,15 +76,15 @@ public class RSATester {
         RSA rsa = new RSA(keySize,Base64.decode(privateKey),Base64.decode(publicKey));
 
         String sign = rsa.signatureAsBase64(source.getBytes());
-        System.err.println("签名:" + sign);
-        boolean status = rsa.verifySignatureAsBase64(source.getBytes(),sign);
+        System.err.println("签名:\n" + sign);
+        boolean status = rsa.verifySignatureWithBase64(source.getBytes(),sign);
         System.out.println("\n\n验证结果:" + status);
     }
 
     public static void main(String[] args) throws Exception {
         keySize = 512;
         genKey();
-        test();
-        //testSign();
+        //test();
+        testSign();
     }
 }

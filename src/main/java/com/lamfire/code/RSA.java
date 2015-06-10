@@ -39,15 +39,27 @@ public class RSA {
 	 */
 	public static final String SIGNATURE_ALGORITHM = "MD5withRSA";
 
-
     /**
      * 密钥长度
      */
     private int keySize = 1024;
-    private byte[] privateKey;
-    private byte[] publicKey;
+    private PrivateKey privateKey;
+    private PublicKey publicKey;
 
-    public RSA(int keySize, byte[] privateKey, byte[] publicKey) {
+    public RSA(int keySize)throws Exception {
+        this.keySize = keySize;
+        KeyPair keyPair = genKeyPair(keySize);
+        this.privateKey = keyPair.getPrivate();
+        this.publicKey = keyPair.getPublic();
+    }
+
+    public RSA(int keySize, byte[] privateKey, byte[] publicKey) throws Exception {
+        this.keySize = keySize;
+        this.privateKey = toPrivateKey(privateKey);
+        this.publicKey = toPublicKey(publicKey);
+    }
+
+    public RSA(int keySize, PrivateKey privateKey,PublicKey publicKey) {
         this.keySize = keySize;
         this.privateKey = privateKey;
         this.publicKey = publicKey;
@@ -61,33 +73,30 @@ public class RSA {
         this.keySize = keySize;
     }
 
-    public byte[] getPrivateKey() {
+    public Key getPrivateKey() {
         return privateKey;
     }
 
-    public void setPrivateKey(byte[] privateKey) {
-        this.privateKey = privateKey;
+    public void setPrivateKey(byte[] privateKey)throws Exception {
+        this.privateKey = toPrivateKey(privateKey);
     }
 
-    public byte[] getPublicKey() {
+    public void setPrivateKey(PrivateKey privateKey){
+        this.privateKey = (privateKey);
+    }
+
+    public Key getPublicKey() {
         return publicKey;
     }
 
-    public void setPublicKey(byte[] publicKey) {
-        this.publicKey = publicKey;
+    public void setPublicKey(byte[] publicKey) throws Exception{
+        this.publicKey = toPublicKey(publicKey);
     }
 
-    /**
-	 * 生成密钥对(公钥和私钥)
-	 * @return
-	 * @throws Exception
-	 */
-	public static KeyPair genKeyPair(int keySize) throws Exception {
-		KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(KEY_ALGORITHM);
-		keyPairGen.initialize(keySize);
-		KeyPair keyPair = keyPairGen.generateKeyPair();
-		return keyPair;
-	}
+    public void setPublicKey(PublicKey publicKey){
+        this.publicKey = (publicKey);
+    }
+
 
 	/**
 	 * 用私钥对信息生成数字签名
@@ -96,11 +105,84 @@ public class RSA {
 	 * @throws Exception
 	 */
 	public String signatureAsBase64(byte[] data) throws Exception {
-		PrivateKey privateK = toPrivateKey(privateKey);
-		return Base64.encode(signature(data,privateK));
+		return Base64.encode(signature(data,privateKey));
 	}
 
-	/**
+    public byte[] signature(byte[] data) throws Exception {
+        return (signature(data,privateKey));
+    }
+
+    /**
+     * 校验数字签名
+     * @param data
+     * @param signWithBase64
+     * @return
+     * @throws Exception
+     */
+    public boolean verifySignatureWithBase64(byte[] data,String signWithBase64) throws Exception {
+        return verifySignature(data,Base64.decode(signWithBase64),publicKey);
+    }
+
+    public boolean verifySignature(byte[] data,byte[] signBytes) throws Exception {
+        return verifySignature(data,signBytes,publicKey);
+    }
+
+    /**
+     * 私钥解密
+     * @param data
+     * @return
+     * @throws Exception
+     */
+
+    public byte[] decodeByPrivateKey(byte[] data) throws Exception {
+        return decode(data, privateKey,keySize);
+    }
+
+    /**
+     * 公钥解密
+     * @param data
+     * @return
+     * @throws Exception
+     */
+    public byte[] decodeByPublicKey(byte[] data) throws Exception {
+        return decode(data, publicKey,keySize);
+    }
+
+
+
+    /**
+     * 公钥加密
+     * @param data
+     * @return
+     * @throws Exception
+     */
+    public  byte[] encodeByPublicKey(byte[] data) throws Exception {
+        return encode(data, publicKey,keySize);
+    }
+
+    /**
+     * 私钥加密
+     * @param data
+     * @return
+     * @throws Exception
+     */
+    public byte[] encodeByPrivateKey(byte[] data) throws Exception {
+        return encode(data, privateKey,keySize);
+    }
+
+    /**
+     * 生成密钥对(公钥和私钥)
+     * @return
+     * @throws Exception
+     */
+    public static KeyPair genKeyPair(int keySize) throws Exception {
+        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(KEY_ALGORITHM);
+        keyPairGen.initialize(keySize);
+        KeyPair keyPair = keyPairGen.generateKeyPair();
+        return keyPair;
+    }
+
+    /**
 	 * 用私钥对信息生成数字签名
 	 * @param data
 	 * @param privateKey
@@ -114,16 +196,7 @@ public class RSA {
 		return signature.sign();
 	}
 
-	/**
-	 * 校验数字签名
-	 * @param data
-	 * @param signWithBase64
-	 * @return
-	 * @throws Exception
-	 */
-	public boolean verifySignatureWithBase64(byte[] data,String signWithBase64) throws Exception {
-		return verifySignature(data,Base64.decode(signWithBase64),publicKey);
-	}
+
 	
 	/**
 	 * 校验数字签名
@@ -153,28 +226,7 @@ public class RSA {
 		return signature.verify(sign);
 	}
 
-	/**
-	 * 私钥解密
-	 * @param data
-	 * @return
-	 * @throws Exception
-	 */
-	 
-	public byte[] decodeByPrivateKey(byte[] data) throws Exception {
-		Key privateK = toPrivateKey(privateKey);
-		return decode(data, privateK,keySize);
-	}
 
-	/**
-	 * 公钥解密
-	 * @param data
-	 * @return
-	 * @throws Exception
-	 */
-	public byte[] decodeByPublicKey(byte[] data) throws Exception {
-		Key publicK = toPublicKey(publicKey);
-		return decode(data, publicK,keySize);
-	}
 
 	/**
 	 * 解密函数
@@ -216,27 +268,6 @@ public class RSA {
 
 	}
 
-	/**
-	 * 公钥加密
-	 * @param data
-	 * @return
-	 * @throws Exception
-	 */
-	public  byte[] encodeByPublicKey(byte[] data) throws Exception {
-		Key publicK = toPublicKey(publicKey);
-		return encode(data, publicK,keySize);
-	}
-
-	/**
-	 * 私钥加密
-	 * @param data
-	 * @return
-	 * @throws Exception
-	 */
-	public byte[] encodeByPrivateKey(byte[] data) throws Exception {
-		Key privateK = toPrivateKey(privateKey);
-		return encode(data, privateK,keySize);
-	}
 
 	/**
 	 * 加密函数
