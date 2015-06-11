@@ -599,6 +599,25 @@ public class Bytes {
 		return result;
 	}
 
+    public static byte[] subBytes(byte[] array, int startIndex, int length) {
+        if (array == null) {
+            return null;
+        }
+        if (startIndex < 0) {
+            startIndex = 0;
+        }
+        if (startIndex + length > array.length) {
+            length = array.length - startIndex;
+        }
+        if(length <= 0){
+            return new byte[0];
+        }
+
+        byte[] subbytes = new byte[length];
+        System.arraycopy(array, startIndex, subbytes, 0, length);
+        return subbytes;
+    }
+
 	public static byte[][] toByteArrays(String[] t) {
 		byte[][] result = new byte[t.length][];
 		for (int i = 0; i < t.length; i++) {
