@@ -4,6 +4,7 @@ import com.lamfire.utils.Asserts;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.BitSet;
 import java.util.Random;
 
 /**
@@ -148,7 +149,11 @@ public class RSAAlgorithm {
      * @return
      */
 	public static byte[] encode(byte[] bytes, BigInteger key, BigInteger modulus) {
-		byte[] resultBytes =  new BigInteger(bytes).modPow(key, modulus).toByteArray();
+        BigInteger message = new BigInteger(bytes);
+        if(message.compareTo(modulus) > 0){
+              throw new RuntimeException("Max.length(byte[]) of message can be (keyBitLength/8-1),to make sure that M < N.");
+        }
+		byte[] resultBytes =  message.modPow(key, modulus).toByteArray();
         return resultBytes;
 	}
 
