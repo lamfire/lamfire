@@ -28,7 +28,7 @@ public class RSAAlgorithmTest {
             System.out.println("[SOURCE]:" + Hex.encode(bytes));
             System.out.println("[DECODE]:" + Hex.encode(plain));
         }
-        Asserts.equalsAssert(bytes,plain);
+        Asserts.equalsArrayAssert(bytes,plain);
         System.out.println(new String(plain));
     }
 
@@ -40,7 +40,7 @@ public class RSAAlgorithmTest {
         //System.out.println(source);
         System.out.println("---------------------------------------------------");
         int i = 0;
-        int len = 49;
+        int len = 32;
         int endIdex = 0;
         String sub;
         while(i < source.length()){
@@ -148,6 +148,6 @@ public class RSAAlgorithmTest {
         Asserts.equalsAssert(source,des);
     }
     public static void main(String[] args) throws Exception {
-        randomTest();
+        testFile();
     }
 }
