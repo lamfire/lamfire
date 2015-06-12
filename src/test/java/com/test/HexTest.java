@@ -9,21 +9,21 @@ public class HexTest {
 		short source = 199;
 		String en = Hex.encode(source);
 		short de = Hex.toShort(en);
-		Asserts.assertEquals(de, source);
+		Asserts.equalsAssert(de, source);
 	}
 	
 	public void testInt(){
 		int source = 65535;
 		String en = Hex.encode(source);
 		int de = Hex.toInt(en);
-		Asserts.assertEquals(de, source);
+		Asserts.equalsAssert(de, source);
 	}
 	
 	public void testLong(){
 		long source = Long.MAX_VALUE;
 		String en = Hex.encode(source);
 		long de = Hex.toLong(en);
-		Asserts.assertEquals(de, source);
+		Asserts.equalsAssert(de, source);
 	}
 	
 	public void testEncode(){

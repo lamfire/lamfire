@@ -1,10 +1,10 @@
 package com.lamfire.code;
 
-import com.lamfire.utils.Asserts;
+import com.lamfire.utils.*;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.BitSet;
 import java.util.Random;
 
 /**
@@ -19,26 +19,78 @@ public class RSAAlgorithm {
 	private BigInteger publicKey;
 	private BigInteger privateKey;
 	private BigInteger modulus;
-    private int maxEncryptBlock;
-    private int maxDecryptBlock;
+    private int encryptBlock;
+    private int decryptBlock;
 
 	public RSAAlgorithm(int keyBitLength) {
-        this.keyBitLength = keyBitLength;
-        this.maxEncryptBlock = keyBitLength / 8 - 11;
-        this.maxDecryptBlock = keyBitLength / 8;
-		genKey(keyBitLength);
+        setKeyBitLength(keyBitLength);
 	}
 
-	public RSAAlgorithm(BigInteger p, BigInteger q, BigInteger e) {
+	public RSAAlgorithm(int keyBitLength,BigInteger p, BigInteger q, BigInteger e) {
+        setKeyBitLength(keyBitLength);
 		genKey(p, q, e);
 	}
 
-	public RSAAlgorithm(String p, String q, String e) {
-		BigInteger P = new BigInteger(Base64.decode(p));
-		BigInteger Q = new BigInteger(Base64.decode(q));
-		BigInteger E = new BigInteger(Base64.decode(e));
-		genKey(P, Q, E);
-	}
+
+    private void assertBlock(byte[] bytes){
+         Asserts.equalsAssert(bytes.length, keyBitLength / 8);
+    }
+
+
+    public byte[] encode(byte[] source,BigInteger key,BigInteger modulus){
+        int blockSize = encryptBlock;
+        // 对数据分段加密
+        int inputLen = source.length;
+        int offSet = 0;
+        byte[] cache;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            while (inputLen > offSet) {
+                if (inputLen - offSet > blockSize) {
+                    cache = encodeBlock(source, offSet, blockSize, key, modulus);
+                } else {
+                    cache = encodeBlock(source, offSet, inputLen - offSet, key, modulus);
+                }
+                assertBlock(cache);
+                out.write(cache, 0, cache.length);
+                offSet += blockSize;
+            }
+            byte[] encryptedData = out.toByteArray();
+            return encryptedData;
+         } finally {
+            IOUtils.closeQuietly(out);
+        }
+    }
+
+    public byte[] decode(byte[] source,BigInteger key,BigInteger modulus){
+        int blockSize = decryptBlock;
+        // 对数据分段解密
+        int inputLen = source.length;
+        int offSet = 0;
+        byte[] cache;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            while (inputLen > offSet) {
+                if (inputLen - offSet > blockSize) {
+                    cache = decodeBlock(source,offSet,blockSize,key,modulus);
+                } else {
+                    cache = decodeBlock(source,offSet,inputLen - offSet,key,modulus);
+                }
+                out.write(cache, 0, cache.length);
+                offSet += blockSize;
+            }
+            byte[] decryptedData = out.toByteArray();
+            return decryptedData;
+        }finally {
+            IOUtils.closeQuietly(out);
+        }
+    }
+
+    public void setKeyBitLength(int keyBitLength){
+        this.keyBitLength = keyBitLength;
+        this.encryptBlock = keyBitLength / 8 - 11;
+        this.decryptBlock = keyBitLength / 8;
+    }
 
 	/**
 	 * 获取私钥
@@ -94,7 +146,11 @@ public class RSAAlgorithm {
 		return Base64.encode(this.modulus.toByteArray());
 	}
 
-	public void genKey(BigInteger p, BigInteger q, BigInteger e) {
+    public void genKey(){
+        genKey(keyBitLength);
+    }
+
+	private void genKey(BigInteger p, BigInteger q, BigInteger e) {
 		// 计算（p-1)*(q-1)
 		BigInteger pq = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
 
@@ -119,7 +175,9 @@ public class RSAAlgorithm {
 	 * 
 	 * @param
 	 */
-	void genKey(int keyBitLength) {
+    private void genKey(int keyBitLength) {
+        setKeyBitLength(keyBitLength);
+
         // 产生两个(N/2 - 1)位的大素数p和q
         BigInteger p = genProbablePrime(keyBitLength / 2 - 1);
         BigInteger q = genProbablePrime(keyBitLength / 2 - 1);
@@ -148,14 +206,21 @@ public class RSAAlgorithm {
      * @param modulus
      * @return
      */
-	public static byte[] encode(byte[] bytes, BigInteger key, BigInteger modulus) {
+	protected static byte[] encodeBlock(final byte[] bytes, BigInteger key, BigInteger modulus) {
         BigInteger message = new BigInteger(bytes);
         if(message.compareTo(modulus) > 0){
               throw new RuntimeException("Max.length(byte[]) of message can be (keyBitLength/8-1),to make sure that M < N.");
         }
+        System.out.println("[S]:"+Hex.encode(bytes));
 		byte[] resultBytes =  message.modPow(key, modulus).toByteArray();
+        System.out.println("[E]:"+Hex.encode(resultBytes));
         return resultBytes;
 	}
+
+    protected static byte[] encodeBlock(final byte[] bytes,int startIndex,int length, BigInteger key, BigInteger modulus) {
+        byte[] source = Bytes.subBytes(bytes,startIndex,length);
+        return encodeBlock(source,key,modulus);
+    }
 
     /**
      * 解码
@@ -164,94 +229,16 @@ public class RSAAlgorithm {
      * @param modulus
      * @return
      */
-	public static byte[] decode(byte[] bytes, BigInteger key, BigInteger modulus) {
-		return new BigInteger(bytes).modPow(key, modulus).toByteArray();
+    protected static byte[] decodeBlock(byte[] bytes, BigInteger key, BigInteger modulus) {
+        System.out.println("[E]:"+Hex.encode(bytes));
+		byte[] decodeBytes =  new BigInteger(bytes).modPow(key, modulus).toByteArray();
+        System.out.println("[D]:"+Hex.encode(decodeBytes));
+        return decodeBytes;
 	}
 
-    private static void testKey() throws Exception {
-        // 加密
-        String source = "RSA公钥加密算法是1977年由Ron Rivest、Adi Shamirh和LenAdleman在（美国麻省理工学院）开发的。";
-
-        BigInteger privateKey = new BigInteger("18B78BA4000E8B89CB767D2CCADBD26D19CE80F3A72262C6BCB1ACF5F838B1651F901AAFF953790C2DFC87D35DB6D92D0174DC397943F79DBA82DD613E51DBD191AC01F26EB68795849C6A912036BDFD17EA8F6BC2DC0E223B0F2F5487473273F6797C7D8037E25101ED5C180A7659E3B51EEB729310121A46238BD1EFC730AB",16);
-        BigInteger publicKey = new BigInteger("B60432D2F12CD321D5F827E67DE1B5BCA51A13BEB59B9969E6A7E509F0442FF6FC9AE091E8B4B49B1A8AC275FF9A1922F4EDED500AE1E08ED64D2974BDA352A3",16);
-        BigInteger modulus = new BigInteger("76E02BF454A147847E5C6D409D7D76750602853440E1A8CD0CBB97DFD3C874D4F028FE2485E6A618D3EB2E7483622200B6ED4DA12C8189417256375297A0CB97D81ED229242A87A6C9FE233B8AA3D7002E348CB859BC44C8591E33B5EFFC8827459D96BCEC30950A3F6D769FC29922C1B5FD4E1E248FBDA8A92BA8BDD91FBE59",16);
-
-        System.out.println("privKey:" + privateKey.bitLength());
-        System.out.println(privateKey);
-
-        System.out.println("pubKey:" + publicKey.bitLength());
-        System.out.println(publicKey);
-
-        System.out.println("modulus:" + modulus.bitLength());
-        System.out.println(modulus);
-
-        System.out.println("============================");
-
-
-        byte[] bytes = source.getBytes("UTF-8");
-        System.out.println("[SOURCE BYTES]:" + bytes.length);
-        byte[] cipher =RSAAlgorithm.encode(bytes,privateKey,modulus);
-        System.out.println("[ENCODE BYTES]:" + cipher.length);
-        System.out.println("[ENCODE]:\r\n" + Hex.encode(cipher));
-
-
-        System.out.println("============================");
-        // 解密
-        byte[] plain = RSAAlgorithm.decode(cipher,publicKey,modulus);
-        String decode =  new String(plain, "UTF-8");
-        System.out.println("[DECODE BYTES]:" + plain.length);
-        System.out.println("[DECODE]:\r\n" +decode);
-
-        Asserts.assertEquals(source,decode);
+    protected static byte[] decodeBlock(final byte[] bytes,int startIndex,int length, BigInteger key, BigInteger modulus) {
+        byte[] source = Bytes.subBytes(bytes,startIndex,length);
+        return decodeBlock(source, key, modulus);
     }
 
-	private static void test() throws Exception {
-//        BigInteger Q = new BigInteger(Hex.decode("8682236E835BAF3CFEC279F0C479558EF55EADA5836D1D1B18D6D85736EB71F263D440DC9E7E0A997BECDD05B60EC19D63AC71EC27D91269739453D5050A6783"));
-//        BigInteger P =  new BigInteger(Hex.decode("E23F58C86F907C13FA8992556F9B912A1FF3C90E7216DACC320B9319AE4303562E9327FB8D614D30043A6EDC7F817BCE0C2D22DD973E2F4CE9D2E2D8730CFFF3"));
-//        BigInteger E = new BigInteger(Hex.decode("B60432D2F12CD321D5F827E67DE1B5BCA51A13BEB59B9969E6A7E509F0442FF6FC9AE091E8B4B49B1A8AC275FF9A1922F4EDED500AE1E08ED64D2974BDA352A3"));
-
-        BigInteger Q = RSAAlgorithm.genProbablePrime(511);
-        BigInteger P =  RSAAlgorithm.genProbablePrime(511);
-        BigInteger E =  RSAAlgorithm.genProbablePrime(1024);
-        System.out.println(String.format("Q:%d , P:%d , E:%d", Q.bitLength(), P.bitLength(), E.bitLength()));
-
-
-		RSAAlgorithm rsa = new RSAAlgorithm(P,Q,E);
-
-        System.out.println("privKey:" + rsa.getPrivateKey().bitLength());
-        System.out.println(rsa.getPrivateKey());
-
-        System.out.println("pubKey:" + rsa.getPrivateKey().bitLength());
-        System.out.println(rsa.getPrivateKey());
-
-        System.out.println("modulus:" + rsa.getModulus().bitLength());
-        System.out.println(rsa.getModulus());
-
-        System.out.println("============================");
-
-
-		// 加密
-		String source = "RSA公钥加密算法是1977年由Ron Rivest、Adi Shamirh和LenAdleman在（美国麻省理工学院）开发的。";
-
-
-		byte[] bytes = source.getBytes("UTF-8");
-        System.out.println("[SOURCE BYTES]:" + bytes.length);
-		byte[] cipher =RSAAlgorithm.encode(bytes,rsa.getPrivateKey(),rsa.getModulus());
-        System.out.println("[ENCODE BYTES]:" + cipher.length);
-		System.out.println("[ENCODE]:\r\n" + Hex.encode(cipher));
-
-
-        System.out.println("============================");
-		// 解密
-		byte[] plain = RSAAlgorithm.decode(cipher,rsa.getPublicKey(),rsa.getModulus());
-        String decode =  new String(plain, "UTF-8");
-        System.out.println("[DECODE BYTES]:" + plain.length);
-		System.out.println("[DECODE]:\r\n" +decode);
-
-        Asserts.assertEquals(source,decode);
-	}
-
-    public static void main(String[] args) throws Exception {
-        testKey();
-    }
 }

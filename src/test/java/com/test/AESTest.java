@@ -16,7 +16,7 @@ public class AESTest{
         String deData = AES.decode(enData,key);
         System.out.println("decode : "+deData);
 
-        Asserts.assertEquals(data, deData);
+        Asserts.equalsAssert(data, deData);
 	}
 
 

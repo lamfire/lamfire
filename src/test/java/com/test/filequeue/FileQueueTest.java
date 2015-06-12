@@ -31,20 +31,20 @@ public class FileQueueTest {
         System.out.println("[size]:"+queue.size());
 
 		byte[] bytes = queue.peek();
-		Asserts.assertEquals(0, Bytes.toInt(bytes));
+		Asserts.equalsAssert(0, Bytes.toInt(bytes));
 
         //peek
         for(int i=0;i<count;i++){
             bytes = queue.peek(i);
             int val = Bytes.toInt(bytes);
-            Asserts.assertEquals(i, val);
+            Asserts.equalsAssert(i, val);
             if(i % 100000 == 0){
                 System.out.println("[peek]"+i);
             }
         }
 		
 		//size
-        Asserts.assertEquals(count,queue.size());
+        Asserts.equalsAssert(count,queue.size());
 
 
         System.out.println("[size]:"+queue.size());
@@ -53,7 +53,7 @@ public class FileQueueTest {
         for(int i=0;i<count;i++){
             bytes = queue.poll();
             int val = Bytes.toInt(bytes);
-            Asserts.assertEquals(i, val);
+            Asserts.equalsAssert(i, val);
             if(i % 100000 == 0){
                 System.out.println("[poll]"+i);
             }
@@ -61,7 +61,7 @@ public class FileQueueTest {
 
 
         System.out.println("[size]:"+queue.size());
-        Asserts.assertEquals(0,queue.size());
+        Asserts.equalsAssert(0,queue.size());
 
         queue.delete();
 	}

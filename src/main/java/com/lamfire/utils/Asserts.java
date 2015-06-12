@@ -3,21 +3,21 @@ package com.lamfire.utils;
 import java.lang.reflect.Array;
 
 public class Asserts {
-	public static void assertTrue(String message, boolean condition) {
+	public static void trueAssert(String message, boolean condition) {
 		if (!condition)
 			fail(message);
 	}
 
-	public static void assertTrue(boolean condition) {
-		assertTrue(null, condition);
+	public static void trueAssert(boolean condition) {
+        trueAssert(null, condition);
 	}
 
-	public static void assertFalse(String message, boolean condition) {
-		assertTrue(message, !condition);
+	public static void falseAssert(String message, boolean condition) {
+        trueAssert(message, !condition);
 	}
 
-	public static void assertFalse(boolean condition) {
-		assertFalse(null, condition);
+	public static void falseAssert(boolean condition) {
+        falseAssert(null, condition);
 	}
 
 	public static void fail(String message) {
@@ -28,7 +28,7 @@ public class Asserts {
 		fail(null);
 	}
 
-	public static void assertEquals(String message, Object expected, Object actual) {
+	public static void equalsAssert(String message, Object expected, Object actual) {
 		if ((expected == null) && (actual == null))
 			return;
 		if ((expected != null) && (isEquals(expected, actual)))
@@ -45,68 +45,68 @@ public class Asserts {
 		return expected.equals(actual);
 	}
 
-	public static void assertEquals(Object expected, Object actual) {
-		assertEquals(null, expected, actual);
+	public static void equalsAssert(Object expected, Object actual) {
+        equalsAssert(null, expected, actual);
 	}
 
-	public static void assertArrayEquals(String message, Object[] expecteds, Object[] actuals)
+	public static void equalsArrayAssert(String message, Object[] expecteds, Object[] actuals)
 
 	{
 		internalArrayEquals(message, expecteds, actuals);
 	}
 
-	public static void assertArrayEquals(Object[] expecteds, Object[] actuals) {
-		assertArrayEquals(null, expecteds, actuals);
+	public static void equalsArrayAssert(Object[] expecteds, Object[] actuals) {
+        equalsArrayAssert(null, expecteds, actuals);
 	}
 
-	public static void assertArrayEquals(String message, byte[] expecteds, byte[] actuals)
+	public static void equalsArrayAssert(String message, byte[] expecteds, byte[] actuals)
 
 	{
 		internalArrayEquals(message, expecteds, actuals);
 	}
 
-	public static void assertArrayEquals(byte[] expecteds, byte[] actuals) {
-		assertArrayEquals(null, expecteds, actuals);
+	public static void equalsArrayAssert(byte[] expecteds, byte[] actuals) {
+        equalsArrayAssert(null, expecteds, actuals);
 	}
 
-	public static void assertArrayEquals(String message, char[] expecteds, char[] actuals)
+	public static void equalsArrayAssert(String message, char[] expecteds, char[] actuals)
 
 	{
 		internalArrayEquals(message, expecteds, actuals);
 	}
 
-	public static void assertArrayEquals(char[] expecteds, char[] actuals) {
-		assertArrayEquals(null, expecteds, actuals);
+	public static void equalsArrayAssert(char[] expecteds, char[] actuals) {
+        equalsArrayAssert(null, expecteds, actuals);
 	}
 
-	public static void assertArrayEquals(String message, short[] expecteds, short[] actuals)
+	public static void equalsArrayAssert(String message, short[] expecteds, short[] actuals)
 
 	{
 		internalArrayEquals(message, expecteds, actuals);
 	}
 
-	public static void assertArrayEquals(short[] expecteds, short[] actuals) {
-		assertArrayEquals(null, expecteds, actuals);
+	public static void equalsArrayAssert(short[] expecteds, short[] actuals) {
+        equalsArrayAssert(null, expecteds, actuals);
 	}
 
-	public static void assertArrayEquals(String message, int[] expecteds, int[] actuals)
+	public static void equalsArrayAssert(String message, int[] expecteds, int[] actuals)
 
 	{
 		internalArrayEquals(message, expecteds, actuals);
 	}
 
-	public static void assertArrayEquals(int[] expecteds, int[] actuals) {
-		assertArrayEquals(null, expecteds, actuals);
+	public static void equalsArrayAssert(int[] expecteds, int[] actuals) {
+        equalsArrayAssert(null, expecteds, actuals);
 	}
 
-	public static void assertArrayEquals(String message, long[] expecteds, long[] actuals)
+	public static void equalsArrayAssert(String message, long[] expecteds, long[] actuals)
 
 	{
 		internalArrayEquals(message, expecteds, actuals);
 	}
 
-	public static void assertArrayEquals(long[] expecteds, long[] actuals) {
-		assertArrayEquals(null, expecteds, actuals);
+	public static void equalsArrayAssert(long[] expecteds, long[] actuals) {
+        equalsArrayAssert(null, expecteds, actuals);
 	}
 
 	private static void internalArrayEquals(String message, Object expecteds, Object actuals)
@@ -128,11 +128,11 @@ public class Asserts {
 		for (int i = 0; i < expectedsLength; i++) {
 			Object expected = Array.get(expecteds, i);
 			Object actual = Array.get(actuals, i);
-			if ((isArray(expected)) && (isArray(actual)))
+			if ((isArray(expected)) && (isArray(actual))){
 				internalArrayEquals(message, expected, actual);
-
-			else
-				assertEquals(expected, actual);
+            }else{
+				equalsAssert(expected, actual);
+            }
 		}
 	}
 
@@ -140,74 +140,76 @@ public class Asserts {
 		return (expected != null) && (expected.getClass().isArray());
 	}
 
-	public static void assertEquals(String message, double expected, double actual, double delta) {
+	public static void equalsAssert(String message, double expected, double actual, double delta) {
 		if (Double.compare(expected, actual) == 0)
 			return;
 		if (Math.abs(expected - actual) > delta)
 			failNotEquals(message, new Double(expected), new Double(actual));
 	}
 
-	public static void assertEquals(long expected, long actual) {
-		assertEquals(null, expected, actual);
+	public static void equalsAssert(long expected, long actual) {
+        equalsAssert(null, expected, actual);
 	}
 
-	public static void assertEquals(String message, long expected, long actual) {
-		assertEquals(message, Long.valueOf(expected), Long.valueOf(actual));
+	public static void equalsAssert(String message, long expected, long actual) {
+        equalsAssert(message, Long.valueOf(expected), Long.valueOf(actual));
 	}
 
 	
-	public static void assertEquals(double expected, double actual) {
-		assertEquals(null, expected, actual);
+	public static void equalsAssert(double expected, double actual) {
+        equalsAssert(null, expected, actual);
 	}
 
 
-	public static void assertEquals(String message, double expected, double actual) {
+	public static void equalsAssert(String message, double expected, double actual) {
 		fail("Use assertEquals(expected, actual, delta) to compare floating-point numbers");
 	}
 
-	public static void assertEquals(double expected, double actual, double delta) {
-		assertEquals(null, expected, actual, delta);
+	public static void equalsAssert(double expected, double actual, double delta) {
+        equalsAssert(null, expected, actual, delta);
 	}
 
-	public static void assertNotNull(String message, Object object) {
-		assertTrue(message, object != null);
+	public static void notNullAssert(String message, Object object) {
+		trueAssert(message, object != null);
 	}
 
-	public static void assertNotNull(Object object) {
-		assertNotNull(null, object);
+	public static void notNullAssert(Object object) {
+        notNullAssert(null, object);
 	}
 
-	public static void assertNull(String message, Object object) {
-		assertTrue(message, object == null);
+	public static void nullAssert(String message, Object object) {
+        trueAssert(message, object == null);
 	}
 
-	public static void assertNull(Object object) {
-		assertNull(null, object);
+	public static void nullAssert(Object object) {
+        nullAssert(null, object);
 	}
 
-	public static void assertSame(String message, Object expected, Object actual) {
+	public static void sameAssert(String message, Object expected, Object actual) {
 		if (expected == actual)
 			return;
 		failNotSame(message, expected, actual);
 	}
 
-	public static void assertSame(Object expected, Object actual) {
-		assertSame(null, expected, actual);
+	public static void sameAssert(Object expected, Object actual) {
+        sameAssert(null, expected, actual);
 	}
 
-	public static void assertNotSame(String message, Object unexpected, Object actual) {
-		if (unexpected == actual)
+	public static void notSameAssert(String message, Object unexpected, Object actual) {
+		if (unexpected == actual){
 			failSame(message);
+        }
 	}
 
-	public static void assertNotSame(Object unexpected, Object actual) {
-		assertNotSame(null, unexpected, actual);
+	public static void notSameAssert(Object unexpected, Object actual) {
+        notSameAssert(null, unexpected, actual);
 	}
 
 	private static void failSame(String message) {
 		String formatted = "";
-		if (message != null)
+		if (message != null){
 			formatted = message + " ";
+        }
 		fail(formatted + "expected not same");
 	}
 
@@ -241,10 +243,10 @@ public class Asserts {
 	}
 
 	public static void assertEquals(String message, Object[] expecteds, Object[] actuals) {
-		assertArrayEquals(message, expecteds, actuals);
+        equalsArrayAssert(message, expecteds, actuals);
 	}
 
 	public static void assertEquals(Object[] expecteds, Object[] actuals) {
-		assertArrayEquals(expecteds, actuals);
+        equalsArrayAssert(expecteds, actuals);
 	}
 }

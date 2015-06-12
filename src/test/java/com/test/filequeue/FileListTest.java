@@ -32,19 +32,19 @@ public class FileListTest {
         System.out.println("[size]:"+list.size());
 
 		byte[] bytes = list.get(0);
-		Asserts.assertEquals(0, Bytes.toInt(bytes));
+		Asserts.equalsAssert(0, Bytes.toInt(bytes));
 
         //peek
         for(int i=0;i<count;i++){
             bytes = list.get(i);
-            Asserts.assertEquals(i, Bytes.toInt(bytes));
+            Asserts.equalsAssert(i, Bytes.toInt(bytes));
             if(i % 100000 == 0){
                 System.out.println("[get]"+i);
             }
         }
 		
 		//size
-        Asserts.assertEquals(count,list.size());
+        Asserts.equalsAssert(count,list.size());
 
 
         System.out.println("[size]:"+list.size());

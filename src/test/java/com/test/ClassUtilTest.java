@@ -23,19 +23,19 @@ public class ClassUtilTest {
 
     public static void main(String[] args) {
         Field aField = ClassUtils.getField(ClassUtilTest.class,"a");
-        Asserts.assertEquals(ClassUtils.isGenericNumberType(aField.getType()),true);
+        Asserts.equalsAssert(ClassUtils.isGenericNumberType(aField.getType()),true);
 
         Field bField = ClassUtils.getField(ClassUtilTest.class,"b");
-        Asserts.assertEquals(ClassUtils.isListType(bField.getType()),true);
-        Asserts.assertEquals(ClassUtils.isCollectionType(bField.getType()),true);
+        Asserts.equalsAssert(ClassUtils.isListType(bField.getType()),true);
+        Asserts.equalsAssert(ClassUtils.isCollectionType(bField.getType()),true);
 
         Field cField = ClassUtils.getField(ClassUtilTest.class,"c");
-        Asserts.assertEquals(ClassUtils.isSetType(cField.getType()),true);
-        Asserts.assertEquals(ClassUtils.isCollectionType(cField.getType()),true);
+        Asserts.equalsAssert(ClassUtils.isSetType(cField.getType()),true);
+        Asserts.equalsAssert(ClassUtils.isCollectionType(cField.getType()),true);
 
         Field dField = ClassUtils.getField(ClassUtilTest.class,"d");
-        Asserts.assertEquals(ClassUtils.isMapType(dField.getType()),true);
+        Asserts.equalsAssert(ClassUtils.isMapType(dField.getType()),true);
 
-        Asserts.assertEquals(ClassUtils.isAssignable(bField.getType(), Collection.class),true);
+        Asserts.equalsAssert(ClassUtils.isAssignable(bField.getType(), Collection.class),true);
     }
 }
