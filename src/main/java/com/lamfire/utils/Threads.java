@@ -174,4 +174,12 @@ public class Threads {
     public static ScheduledThreadPoolExecutor newScheduledThreadPool( int corePoolSize, java.util.concurrent.ThreadFactory threadFactory) {
         return new ScheduledThreadPoolExecutor(corePoolSize, threadFactory);
     }
+
+    public static Thread getCurrentThread(){
+        return Thread.currentThread();
+    }
+
+    public static long getCurrentThreadId(){
+        return Thread.currentThread().getId();
+    }
 }
