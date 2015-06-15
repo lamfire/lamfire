@@ -15,12 +15,13 @@ import java.util.Random;
  */
 public class RSAAlgorithm {
 	static final Random random = new SecureRandom();
+    static final byte RSA_BLOCK_FLAG = 0x1;   //RSA 块标示
+    static final int RSA_PADDING_LENGTH = 11;   //RSA 加密头长度
     private int keyBitLength = 1024;
 	private BigInteger publicKey;
 	private BigInteger privateKey;
 	private BigInteger modulus;
-    private int encryptBlock;
-    private int decryptBlock;
+    private int blockSize;
 
 	public RSAAlgorithm(int keyBitLength) {
         setKeyBitLength(keyBitLength);
@@ -38,7 +39,11 @@ public class RSAAlgorithm {
 
 
     public byte[] encode(byte[] source,BigInteger key,BigInteger modulus){
-        int blockSize = encryptBlock;
+        int blockSize = this.blockSize - RSA_PADDING_LENGTH;  //RSA_PADDING 填充，要求输入：必须 比 RSA 钥模长(modulus) 短至少11个字节, 也就是　keyBits/8 – 11
+        if(source.length <= blockSize){ //数据无需分段
+            return encodeBlock(source,key, modulus,keyBitLength);
+        }
+
         // 对数据分段加密
         int inputLen = source.length;
         int offSet = 0;
@@ -47,9 +52,9 @@ public class RSAAlgorithm {
         try {
             while (inputLen > offSet) {
                 if (inputLen - offSet > blockSize) {
-                    cache = encodeBlock(source, offSet, blockSize, key, modulus);
+                    cache = encodeBlock(source, offSet, blockSize, key, modulus,keyBitLength);
                 } else {
-                    cache = encodeBlock(source, offSet, inputLen - offSet, key, modulus);
+                    cache = encodeBlock(source, offSet, inputLen - offSet, key, modulus,keyBitLength);
                 }
                 assertBlock(cache);
                 out.write(cache, 0, cache.length);
@@ -63,7 +68,10 @@ public class RSAAlgorithm {
     }
 
     public byte[] decode(byte[] source,BigInteger key,BigInteger modulus){
-        int blockSize = decryptBlock;
+        int blockSize = this.blockSize;
+        if(source.length <= blockSize){ //数据无需分段
+            return decodeBlock(source,key, modulus,keyBitLength);
+        }
         // 对数据分段解密
         int inputLen = source.length;
         int offSet = 0;
@@ -72,9 +80,9 @@ public class RSAAlgorithm {
         try {
             while (inputLen > offSet) {
                 if (inputLen - offSet > blockSize) {
-                    cache = decodeBlock(source,offSet,blockSize,key,modulus);
+                    cache = decodeBlock(source,offSet,blockSize,key,modulus,keyBitLength);
                 } else {
-                    cache = decodeBlock(source,offSet,inputLen - offSet,key,modulus);
+                    cache = decodeBlock(source,offSet,inputLen - offSet,key,modulus,keyBitLength);
                 }
                 out.write(cache, 0, cache.length);
                 offSet += blockSize;
@@ -88,8 +96,7 @@ public class RSAAlgorithm {
 
     public void setKeyBitLength(int keyBitLength){
         this.keyBitLength = keyBitLength;
-        this.encryptBlock = keyBitLength / 8 - 11;
-        this.decryptBlock = keyBitLength / 8;
+        this.blockSize = keyBitLength / 8;
     }
 
 	/**
@@ -199,6 +206,27 @@ public class RSAAlgorithm {
         return BigInteger.probablePrime(bitLength, random);
     }
 
+
+    private static byte[] paddingBlock(final byte[] bytes,int blockSize){
+        if(bytes.length > (blockSize - RSA_BLOCK_FLAG)){
+            throw new RuntimeException("Message too large");
+        }
+        byte[] padding = new byte[blockSize];
+        padding[0] = RSA_BLOCK_FLAG;
+        int len = bytes.length;
+        Bytes.putInt(padding,1,len);
+        Bytes.putBytes(padding,blockSize - len,bytes,0,len);
+        return padding;
+    }
+
+    private static byte[] recoveryPaddingBlock(final byte[] bytes,int blockSize){
+        if(bytes [0] != RSA_BLOCK_FLAG){
+            throw new RuntimeException("Not RSA Block");
+        }
+        int len = Bytes.toInt(bytes,1);
+        return Bytes.subBytes(bytes,blockSize - len,len);
+    }
+
     /**
      * 编码
      * @param bytes
@@ -206,20 +234,26 @@ public class RSAAlgorithm {
      * @param modulus
      * @return
      */
-	protected static byte[] encodeBlock(final byte[] bytes, BigInteger key, BigInteger modulus) {
-        BigInteger message = new BigInteger(bytes);
+	protected static byte[] encodeBlock(final byte[] bytes, BigInteger key, BigInteger modulus,int keyBits) {
+        int block = keyBits / 8;
+        byte[] padding = paddingBlock(bytes,block);
+        BigInteger message = new BigInteger(padding);
         if(message.compareTo(modulus) > 0){
               throw new RuntimeException("Max.length(byte[]) of message can be (keyBitLength/8-1),to make sure that M < N.");
         }
-        System.out.println("[S]:"+Hex.encode(bytes));
-		byte[] resultBytes =  message.modPow(key, modulus).toByteArray();
-        System.out.println("[E]:"+Hex.encode(resultBytes));
+        //System.out.println("[S]:"+Hex.encode(padding));
+        BigInteger encrypt = message.modPow(key, modulus);
+		byte[] resultBytes =  encrypt.toByteArray();
+        //System.out.println("[E]:"+Hex.encode(resultBytes));
         return resultBytes;
 	}
 
-    protected static byte[] encodeBlock(final byte[] bytes,int startIndex,int length, BigInteger key, BigInteger modulus) {
-        byte[] source = Bytes.subBytes(bytes,startIndex,length);
-        return encodeBlock(source,key,modulus);
+    protected static byte[] encodeBlock(final byte[] bytes,int startIndex,int length, BigInteger key, BigInteger modulus,int keyBits) {
+        byte[] source = bytes;
+        if(bytes.length != length || startIndex != 0){
+            source = Bytes.subBytes(bytes,startIndex,length);
+        }
+        return encodeBlock(source,key,modulus,keyBits);
     }
 
     /**
@@ -229,16 +263,22 @@ public class RSAAlgorithm {
      * @param modulus
      * @return
      */
-    protected static byte[] decodeBlock(byte[] bytes, BigInteger key, BigInteger modulus) {
-        System.out.println("[E]:"+Hex.encode(bytes));
-		byte[] decodeBytes =  new BigInteger(bytes).modPow(key, modulus).toByteArray();
-        System.out.println("[D]:"+Hex.encode(decodeBytes));
-        return decodeBytes;
+    protected static byte[] decodeBlock(byte[] bytes, BigInteger key, BigInteger modulus,int keyBits) {
+        BigInteger cipherMessage = new BigInteger(bytes);
+        //System.out.println("[E]:"+Hex.encode(bytes));
+        BigInteger sourceMessage = cipherMessage.modPow(key, modulus);
+		byte[] decodeBytes =  sourceMessage.toByteArray();
+        byte[] resultBytes = recoveryPaddingBlock(decodeBytes,keyBits / 8);
+        //System.out.println("[D]:"+Hex.encode(resultBytes));
+        return resultBytes;
 	}
 
-    protected static byte[] decodeBlock(final byte[] bytes,int startIndex,int length, BigInteger key, BigInteger modulus) {
-        byte[] source = Bytes.subBytes(bytes,startIndex,length);
-        return decodeBlock(source, key, modulus);
+    protected static byte[] decodeBlock(final byte[] bytes,int startIndex,int length, BigInteger key, BigInteger modulus,int keyBits) {
+        byte[] source = bytes;
+        if(bytes.length != length || startIndex != 0){
+            source = Bytes.subBytes(bytes,startIndex,length);
+        }
+        return decodeBlock(source, key, modulus,keyBits);
     }
 
 }
