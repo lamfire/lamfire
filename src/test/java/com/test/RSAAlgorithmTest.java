@@ -37,24 +37,17 @@ public class RSAAlgorithmTest {
 
 
         String source = IOUtils.toString(ClassLoaderUtils.getResourceAsStream("data.txt", RSAAlgorithm.class));
-        //System.out.println(source);
+        System.out.println("source:");
+        System.out.println(source);
         System.out.println("---------------------------------------------------");
-        int i = 0;
-        int len = 32;
-        int endIdex = 0;
-        String sub;
-        while(i < source.length()){
-            if(i + len < source.length()){
-                endIdex = i+len;
-            }else{
-                endIdex = source.length();
-            }
-            sub = source.substring(i,endIdex);
-            System.out.println(sub);
-            i = endIdex;
-            endetest(sub.getBytes(),rsa,privateKey,publicKey,modulus);
-            System.out.println("==================================================\n\n");
-        }
+        byte[] bytes = rsa.encode(source.getBytes("utf-8"),publicKey,modulus);
+        byte[] deBytes = rsa.decode(bytes,privateKey,modulus);
+        String de = new String(deBytes,"utf-8");
+
+        System.out.println("decode:");
+        System.out.println(de);
+
+        Asserts.equalsAssert(source,de);
     }
 
     private static void testKey() throws Exception {

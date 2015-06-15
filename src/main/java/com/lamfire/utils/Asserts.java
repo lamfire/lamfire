@@ -162,7 +162,7 @@ public class Asserts {
 
 
 	public static void equalsAssert(String message, double expected, double actual) {
-		fail("Use assertEquals(expected, actual, delta) to compare floating-point numbers");
+		fail("Use equalsAssert(expected, actual, delta) to compare floating-point numbers");
 	}
 
 	public static void equalsAssert(double expected, double actual, double delta) {
@@ -242,11 +242,11 @@ public class Asserts {
 		return className + "<" + valueString + ">";
 	}
 
-	public static void assertEquals(String message, Object[] expecteds, Object[] actuals) {
+	public static void equalsAssert(String message, Object[] expecteds, Object[] actuals) {
         equalsArrayAssert(message, expecteds, actuals);
 	}
 
-	public static void assertEquals(Object[] expecteds, Object[] actuals) {
+	public static void equalsAssert(Object[] expecteds, Object[] actuals) {
         equalsArrayAssert(expecteds, actuals);
 	}
 }
