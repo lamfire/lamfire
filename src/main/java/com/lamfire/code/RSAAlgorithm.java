@@ -15,8 +15,8 @@ import java.util.Random;
  */
 public class RSAAlgorithm {
 	static final Random random = new SecureRandom();
-    static final byte RSA_BLOCK_FLAG = 0x1;   //RSA 块标示
-    static final int RSA_PADDING_LENGTH = 11;   //RSA 加密头长度
+    static final byte RSA_BLOCK_FLAG = 0x1;   //RSA 块标识
+    static final int RSA_PADDING_LENGTH = 11;   //RSA 密文头长度
     private int keyBitLength = 1024;
 	private BigInteger publicKey;
 	private BigInteger privateKey;
