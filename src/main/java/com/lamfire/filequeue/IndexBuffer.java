@@ -1,5 +1,6 @@
 package com.lamfire.filequeue;
 
+import com.lamfire.code.MD5;
 import com.lamfire.utils.FilenameUtils;
 
 import java.io.File;
@@ -11,16 +12,14 @@ import java.io.IOException;
  *
  */
 class IndexBuffer {
-	public static final String FILE_SUFFIX = ".idx";
+	public static final String FILE_SUFFIX = ".i";
 	public static final int ELEMENT_LENGTH = Element.ELEMENT_LENGTH;
     public static final int MAX_AVAILABLE_FILE_SPACE = FileBuffer.MAX_FILE_LENGTH - FileBuffer.MAX_FILE_LENGTH  % Element.ELEMENT_LENGTH;
 
     public static String getIndexFileName(String dir,String name,int index){
         dir = FilenameUtils.normalizeNoEndSeparator(dir);
-        if(index ==0){
-            return (dir+ File.separator +name + FILE_SUFFIX);
-        }
-        return (dir+ File.separator +name + FILE_SUFFIX +"." + index);
+        String fileName = MD5.hash(name + FILE_SUFFIX + "." + index);
+        return (dir+ File.separator + fileName + FILE_SUFFIX);
     }
 
 	public static File getIndexFile(String dir,String name,int index){

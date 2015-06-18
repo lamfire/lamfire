@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class QueuePreformaceTest {
     private static final Logger LOGGER = Logger.getLogger(QueuePreformaceTest.class);
-    private final String TEXT = RandomUtils.randomTextWithFixedLength(2);
+    private final String TEXT = RandomUtils.randomTextWithFixedLength(20);
 
     private FileQueue queue;
 
@@ -32,7 +32,7 @@ public class QueuePreformaceTest {
 
     QueuePreformaceTest() throws Exception{
         FileQueueBuilder builder = new FileQueueBuilder();
-        builder.dataDir("/data/FileQueue/").name("queue3");
+        builder.dataDir("/data/FileQueue/").name("Performance");
         queue = builder.build();
         //queue.clear();
     }
@@ -62,8 +62,11 @@ public class QueuePreformaceTest {
             while(true){
                 String wTxt = TEXT +":" +writeCounter.getAndIncrement();
                 try{
-                queue.add(wTxt.getBytes());
-                iops.incrementAndGet();
+                    queue.add(wTxt.getBytes());
+                    iops.incrementAndGet();
+                    if(writeCounter.get() >= 100000000){   //写入1千万
+                        break;
+                    }
                 }catch (Throwable t){
                     LOGGER.error(t.getMessage(),t);
                 }

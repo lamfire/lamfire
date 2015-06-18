@@ -1,5 +1,6 @@
 package com.lamfire.filequeue;
 
+import com.lamfire.code.MD5;
 import com.lamfire.utils.Bytes;
 import com.lamfire.utils.FilenameUtils;
 
@@ -13,12 +14,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  */
 class MetaBuffer {
-	public static final String FILE_SUFFIX = ".meta";
+	public static final String FILE_SUFFIX = ".m";
 	public static final int META_FILE_LENGTH = 32;
 
     public static String getMetaFileName(String dir,String name){
         dir = FilenameUtils.normalizeNoEndSeparator(dir);
-        return (dir+ File.separator +name + FILE_SUFFIX );
+        String fileName = MD5.hash(name + FILE_SUFFIX );
+        return (dir+ File.separator + fileName + FILE_SUFFIX);
     }
 
     public static File getMetaFile(String dir,String name){

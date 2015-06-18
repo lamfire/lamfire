@@ -1,5 +1,6 @@
 package com.lamfire.filequeue;
 
+import com.lamfire.code.MD5;
 import com.lamfire.utils.FilenameUtils;
 
 import java.io.File;
@@ -11,7 +12,7 @@ import java.io.IOException;
  *
  */
 class DataBuffer {
-	public static final String FILE_SUFFIX = ".data";
+	public static final String FILE_SUFFIX = ".d";
 	
 	public static File getDataFile(String dir, String name, int index){
 		return new File(getDataFileName(dir, name, index));
@@ -19,10 +20,8 @@ class DataBuffer {
 
     public static String getDataFileName(String dir, String name, int index){
         dir = FilenameUtils.normalizeNoEndSeparator(dir);
-        if(index ==0){
-            return (dir+ File.separator +name + FILE_SUFFIX);
-        }
-        return (dir+ File.separator +name + FILE_SUFFIX +"." + index);
+        String fileName = MD5.hash(name + FILE_SUFFIX + "." + index);
+        return (dir+ File.separator + fileName + FILE_SUFFIX);
     }
 
     public static boolean deleteDataFile(String dir, String name, int index){
