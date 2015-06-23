@@ -53,13 +53,13 @@ class IndexManager {
     public void deleteIndexFile(int index){
         IndexBuffer io = indexs.remove(index);
         if (io != null) {
-            LOGGER.info("deleting index file : " + IndexBuffer.getIndexFileName(dir, name, index));
+            LOGGER.info("deleting index file ["+index+"]: " + IndexBuffer.getIndexFileName(dir, name, index));
             io.closeAndDeleteFile();
             return;
         }
 
          if(IndexBuffer.deleteIndexFile(dir, name, index)){
-             LOGGER.info("deleting index file : " + IndexBuffer.getIndexFileName(dir, name, index));
+             LOGGER.info("deleting index file ["+index+"]: " + IndexBuffer.getIndexFileName(dir, name, index));
          }
     }
 

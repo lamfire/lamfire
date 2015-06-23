@@ -46,11 +46,11 @@ class DataManager {
 
     public synchronized DataBuffer getDataBuffer(int index) throws IOException {
         if(expired(index)){
-            throw new ExpiredException("The data file was expired : "+ IndexBuffer.getIndexFileName(dir, name, index));
+            throw new ExpiredException("The data file was expired ["+index+"]: "+ IndexBuffer.getIndexFileName(dir, name, index));
         }
 
         if(index > meta.getWriteDataIndex()){
-            throw new FileNotFoundException("The data file out of size : "+ IndexBuffer.getIndexFileName(dir, name, index));
+            throw new FileNotFoundException("The data file out of size ["+index+"]: "+ IndexBuffer.getIndexFileName(dir, name, index));
         }
 
         DataBuffer io = getOrNewDataBuffer(index);
@@ -61,13 +61,13 @@ class DataManager {
 
         DataBuffer io = stores.remove(index);
         if (io != null) {
-            LOGGER.info("deleting data file : " + DataBuffer.getDataFileName(dir, name, index));
+            LOGGER.info("deleting data file ["+index+"]: " + DataBuffer.getDataFileName(dir, name, index));
             io.closeAndDeleteFile();
             return;
         }
 
         if(DataBuffer.deleteDataFile(dir, name, index)){
-            LOGGER.info("deleting data file : " + DataBuffer.getDataFileName(dir, name, index));
+            LOGGER.info("deleting data file ["+index+"]: " + DataBuffer.getDataFileName(dir, name, index));
         }
 
     }

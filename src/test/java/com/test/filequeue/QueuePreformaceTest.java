@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class QueuePreformaceTest {
     private static final Logger LOGGER = Logger.getLogger(QueuePreformaceTest.class);
-    private final String TEXT = RandomUtils.randomTextWithFixedLength(20);
+    private final String TEXT = RandomUtils.randomTextWithFixedLength(50);
 
     private FileQueue queue;
 
@@ -34,7 +34,7 @@ public class QueuePreformaceTest {
         FileQueueBuilder builder = new FileQueueBuilder();
         builder.dataDir("/data/FileQueue/").name("Performance");
         queue = builder.build();
-        //queue.clear();
+        queue.clear();
     }
 
     Runnable statusThread = new Runnable() {
