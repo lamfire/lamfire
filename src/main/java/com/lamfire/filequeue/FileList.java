@@ -8,6 +8,7 @@ package com.lamfire.filequeue;
  */
 public interface FileList {
 	public boolean add(byte[] bytes);
+    public boolean add(byte[] bytes,int offset,int length);
 	public  boolean isEmpty();
     public  byte[] get(int index);
 	public  long size();

@@ -6,4 +6,6 @@ interface Writer {
 
     public void write(byte[] bytes) throws IOException;
 
+    public void write(byte[] bytes,int offset,int length) throws IOException;
+
 }

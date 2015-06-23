@@ -56,6 +56,10 @@ class DataBuffer {
 	public synchronized void write(byte[] bytes) throws IOException {
 		this.buffer.put(bytes);
 	}
+
+    public synchronized void write(byte[] bytes,int offset,int length) throws IOException {
+        this.buffer.put(bytes,offset,length);
+    }
 	
 	public synchronized void read(byte[] bytes)throws IOException{
 		this.buffer.get(bytes);

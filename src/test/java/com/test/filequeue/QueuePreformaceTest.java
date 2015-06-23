@@ -62,7 +62,7 @@ public class QueuePreformaceTest {
             while(true){
                 String wTxt = TEXT +":" +writeCounter.getAndIncrement();
                 try{
-                    queue.add(wTxt.getBytes());
+                    queue.push(wTxt.getBytes());
                     iops.incrementAndGet();
                     if(writeCounter.get() >= 100000000){   //写入1千万
                         break;
@@ -79,7 +79,7 @@ public class QueuePreformaceTest {
         public void run() {
             while(true){
                 try{
-                byte[] bytes = queue.poll();
+                byte[] bytes = queue.pull();
                 if(bytes == null){
                      continue;
                 }

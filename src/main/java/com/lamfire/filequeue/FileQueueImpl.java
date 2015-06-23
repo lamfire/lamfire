@@ -94,7 +94,7 @@ class FileQueueImpl implements FileQueue{
 
 
 
-	public boolean add(byte[] bytes) {
+	public boolean push(byte[] bytes) {
 		try {
 			lock.lock();
             writer.write(bytes);
@@ -106,10 +106,10 @@ class FileQueueImpl implements FileQueue{
 		}
 	}
 
-    public boolean add(byte[] bytes,int startIndex) {
+    public boolean push(byte[] bytes,int offset,int length) {
         try {
             lock.lock();
-            writer.write(bytes);
+            writer.write(bytes,offset,length);
             return true;
         } catch (Exception e) {
             throw new IOError(e);
@@ -143,7 +143,7 @@ class FileQueueImpl implements FileQueue{
         }
     }
 
-    public  byte[] poll() {
+    public  byte[] pull() {
         if (isEmpty()) {
             return null;
         }

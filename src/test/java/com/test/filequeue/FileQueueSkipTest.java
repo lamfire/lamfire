@@ -22,7 +22,7 @@ public class FileQueueSkipTest {
 
         //add
         for(int i=0;i<count;i++){
-		    queue.add(Bytes.toBytes(i));
+		    queue.push(Bytes.toBytes(i),0,4);
             if(i % 100000 == 0){
                 System.out.println("[add]"+i);
             }
@@ -35,7 +35,7 @@ public class FileQueueSkipTest {
 
         //skip
         for(int i=0;i<count;i+=4){
-            bytes = queue.poll();
+            bytes = queue.pull();
             queue.skip(3);
             int val = Bytes.toInt(bytes);
             Asserts.equalsAssert(i, val);
@@ -46,5 +46,6 @@ public class FileQueueSkipTest {
 		
 
         queue.delete();
+        System.exit(0);
 	}
 }

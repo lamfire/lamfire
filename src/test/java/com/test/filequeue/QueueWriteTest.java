@@ -40,7 +40,7 @@ public class QueueWriteTest  {
 
 		while(true){
 			byte[] bytes = (text +":" + (counter.get())).getBytes();
-			queue.add(bytes);
+			queue.push(bytes);
 			counter.getAndIncrement();
 		}
 		//System.out.println("[SIZE]:" + queue.size());

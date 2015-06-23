@@ -22,7 +22,7 @@ public class FileQueueTest {
 
         //add
         for(int i=0;i<count;i++){
-		    queue.add(Bytes.toBytes(i));
+		    queue.push(Bytes.toBytes(i));
             if(i % 100000 == 0){
                 System.out.println("[add]"+i);
             }
@@ -51,7 +51,7 @@ public class FileQueueTest {
 
         //poll
         for(int i=0;i<count;i++){
-            bytes = queue.poll();
+            bytes = queue.pull();
             int val = Bytes.toInt(bytes);
             Asserts.equalsAssert(i, val);
             if(i % 100000 == 0){

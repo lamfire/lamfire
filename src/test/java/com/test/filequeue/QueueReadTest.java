@@ -42,7 +42,7 @@ public class QueueReadTest  {
 		System.out.println("[SIZE]:"+queue.size());
 		
 		for(int i=0;i<1000000000;i++){
-			byte[] data = queue.poll();
+			byte[] data = queue.pull();
 			if(data == null){
 				System.out.println("[complated]:" + counter.get());
 				return;

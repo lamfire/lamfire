@@ -91,6 +91,17 @@ class FileListImpl implements FileList{
 			lock.unlock();
 		}
 	}
+    public boolean add(byte[] bytes,int offset,int length){
+        try {
+            lock.lock();
+            writer.write(bytes,offset,length);
+            return true;
+        } catch (Exception e) {
+            throw new IOError(e);
+        } finally {
+            lock.unlock();
+        }
+    }
 
 	public  boolean isEmpty() {
 		return size() == 0;

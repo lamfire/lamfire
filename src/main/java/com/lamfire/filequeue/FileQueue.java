@@ -7,10 +7,11 @@ package com.lamfire.filequeue;
  * 
  */
 public interface FileQueue {
-	public boolean add(byte[] bytes);
+	public boolean push(byte[] bytes);
+    public boolean push(byte[] bytes,int offset,int length);
     public  byte[] peek();
     public  byte[] peek(int i);
-    public  byte[] poll();
+    public  byte[] pull();
 	public  long size();
     public void skip(int number);
 	public void clear();
