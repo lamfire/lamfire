@@ -78,7 +78,8 @@ class MetaBuffer {
 		Bytes.putInt(buffer,20,writeIndexOffset);
 		Bytes.putInt(buffer,24, writeDataIndex.get());
 		Bytes.putInt(buffer,28, writeDataOffset);
-		file.put(0,buffer);
+        file.setWritePostion(0);
+		file.put(buffer);
 	}
 	
 	public void clear()throws IOException{

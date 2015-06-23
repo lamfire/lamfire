@@ -106,6 +106,18 @@ class FileQueueImpl implements FileQueue{
 		}
 	}
 
+    public boolean add(byte[] bytes,int startIndex) {
+        try {
+            lock.lock();
+            writer.write(bytes);
+            return true;
+        } catch (Exception e) {
+            throw new IOError(e);
+        } finally {
+            lock.unlock();
+        }
+    }
+
 	public  boolean isEmpty() {
 		return size() == 0;
 	}

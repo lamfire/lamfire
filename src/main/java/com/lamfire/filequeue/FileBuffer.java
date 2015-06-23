@@ -319,15 +319,22 @@ public class FileBuffer {
 		}
 	}
 
-	public void put(int postion, byte[] bytes) throws IOException {
-		try {
-			lock.lock();
-			this.setWritePostion(postion);
-			this.put(bytes);
-		} finally {
-			lock.unlock();
-		}
-	}
+    /**
+     * 写入数据
+     *
+     * @param bytes
+     * @throws java.io.IOException
+     */
+    public void put(byte[] bytes,int offset,int length) throws IOException {
+        try {
+            lock.lock();
+            adjustWriteMapper(length);
+            this.writeBuffer.put(bytes,offset,length);
+            this.writePostion += length;
+        } finally {
+            lock.unlock();
+        }
+    }
 
 	/**
 	 * 读取数据
@@ -341,16 +348,6 @@ public class FileBuffer {
 			adjustReadMapper(bytes.length);
 			this.readBuffer.get(bytes);
 			this.readPostion += bytes.length;
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	public void get(int postion, byte[] bytes) throws IOException {
-		try {
-			lock.lock();
-			this.setReadPostion(postion);
-			this.get(bytes);
 		} finally {
 			lock.unlock();
 		}

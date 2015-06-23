@@ -54,7 +54,7 @@ class DataBuffer {
 	}
 
 	public synchronized void write(byte[] bytes) throws IOException {
-		this.buffer.put(bytes);		
+		this.buffer.put(bytes);
 	}
 	
 	public synchronized void read(byte[] bytes)throws IOException{
