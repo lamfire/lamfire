@@ -1,6 +1,7 @@
 package com.lamfire.filequeue;
 
 import com.lamfire.code.MD5;
+import com.lamfire.logger.Logger;
 import com.lamfire.utils.Bytes;
 import com.lamfire.utils.FilenameUtils;
 
@@ -14,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  */
 class MetaBuffer {
+    private static final Logger LOGGER = Logger.getLogger(MetaBuffer.class);
 	public static final String FILE_SUFFIX = ".m";
 	public static final int META_FILE_LENGTH = 32;
 
@@ -107,6 +109,7 @@ class MetaBuffer {
         if(this.file == null){
             return;
         }
+        LOGGER.info("deleting meta file : " + file.getFilePath());
         this.file.closeAndDeleteFile();
         this.file = null;
     }

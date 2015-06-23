@@ -590,7 +590,10 @@ public class FileBuffer {
 			lock.unlock();
 		}
 	}
-	
+
+    public String getFilePath(){
+        return this.file.getAbsolutePath();
+    }
 
 	void addShutdownHook() {
 		if (shutdownCloseThread == null) {

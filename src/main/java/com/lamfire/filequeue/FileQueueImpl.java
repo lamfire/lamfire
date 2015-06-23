@@ -164,6 +164,28 @@ class FileQueueImpl implements FileQueue{
         }
     }
 
+    public void skip(int number){
+        if (isEmpty() || number <= 0) {
+            return ;
+        }
+        try {
+            lock.lock();
+            int i=0;
+            while(reader.hashMore()){
+                reader.moveNext();
+                i++;
+                if(i >= number){
+                    break;
+                }
+            }
+            reader.commit();
+        } catch (IOException e) {
+            throw new IOError(e);
+        } finally {
+            lock.unlock();
+        }
+    }
+
 	public  long size() {
 		try {
 			lock.lock();
