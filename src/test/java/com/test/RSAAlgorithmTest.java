@@ -165,6 +165,8 @@ public class RSAAlgorithmTest {
         System.out.println(source);
         byte[] bytes = source.getBytes();
 
+        //rsa.genKey();
+
         byte[] enBytes = rsa.encode(bytes,privateKey,modulus);
 
         byte[] deBytes = rsa.decode(enBytes,publicKey,modulus);

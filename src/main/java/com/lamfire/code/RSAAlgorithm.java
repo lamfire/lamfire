@@ -190,7 +190,7 @@ public class RSAAlgorithm {
         BigInteger q = genProbablePrime(keyBitLength / 2 - 1);
 
         // 随便找一个e
-        BigInteger e = genProbablePrime(keyBitLength);
+        BigInteger e = genProbablePrime(keyBitLength/ 2 - 1);
 
         //生成公钥和私钥
         genKey(p, q, e);
