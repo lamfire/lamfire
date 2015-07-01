@@ -20,6 +20,7 @@ public class RSAAlgorithmTest {
     static BigInteger modulus = new BigInteger("1e72a06a87163b2fb694f3caaf225c6cfa102ebf2b188088997ce7ae958617c1cafbcf445c201f87b82b913d581cf18681673b2a02f2b164de1e1b9569f56bd61f611068f252db8a3cf56ef98ed91e4f7cde10eb364b12d1229f3d4615594945e444a13a0f10362e7b6cb7cf5d2d0ed0d87ca2ec37e1545e8b674427badd6d67",16);
     static final int keyBits = 1024;
 
+
     static void endetest(byte[] bytes , RSAAlgorithm rsa,BigInteger privateKey,BigInteger publicKey,BigInteger modulus){
         byte[] cipher =rsa.encode(bytes,privateKey,modulus);
         // 解密
@@ -35,6 +36,10 @@ public class RSAAlgorithmTest {
     private static void testFile() throws Exception {
         RSAAlgorithm rsa = new RSAAlgorithm(keyBits);
 
+        rsa.genKey();
+        privateKey = rsa.getPrivateKey();
+        publicKey = rsa.getPublicKey();
+        modulus = rsa.getModulus();
 
         String source = IOUtils.toString(ClassLoaderUtils.getResourceAsStream("data.txt", RSAAlgorithm.class));
         System.out.println("source:");
@@ -180,6 +185,5 @@ public class RSAAlgorithmTest {
         testFile();
         //testGenKey();
         //test("姓名");
-
     }
 }

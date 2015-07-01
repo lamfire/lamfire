@@ -186,11 +186,11 @@ public class RSAAlgorithm {
         setKeyBitLength(keyBitLength);
 
         // 产生两个(N/2 - 1)位的大素数p和q
-        BigInteger p = genProbablePrime(keyBitLength / 2 - 1);
-        BigInteger q = genProbablePrime(keyBitLength / 2 - 1);
+        BigInteger p = genProbablePrime(keyBitLength / 2 -1);
+        BigInteger q = genProbablePrime(keyBitLength / 2 -1);
 
         // 随便找一个e
-        BigInteger e = genProbablePrime(keyBitLength/ 2 - 1);
+        BigInteger e = genProbablePrime(keyBitLength / 2 -1);
 
         //生成公钥和私钥
         genKey(p, q, e);
@@ -227,6 +227,13 @@ public class RSAAlgorithm {
         return Bytes.subBytes(bytes,blockSize - len,len);
     }
 
+    private static byte[] fillBlock(final byte[] bytes,int blockSize){
+        byte[] result = new byte[blockSize];
+        int i = blockSize - bytes.length;
+        Bytes.putBytes(result,i,bytes,0,bytes.length);
+        return result;
+    }
+
     /**
      * 编码
      * @param bytes
@@ -241,10 +248,11 @@ public class RSAAlgorithm {
         if(message.compareTo(modulus) > 0){
               throw new RuntimeException("Max.length(byte[]) of message can be (keyBitLength/8-1),to make sure that M < N.");
         }
-        //System.out.println("[S]:"+Hex.encode(padding));
         BigInteger encrypt = message.modPow(key, modulus);
 		byte[] resultBytes =  encrypt.toByteArray();
-        //System.out.println("[E]:"+Hex.encode(resultBytes));
+        if(resultBytes.length < block){ //fill block
+            resultBytes = fillBlock(resultBytes,block);
+        }
         return resultBytes;
 	}
 
@@ -265,11 +273,9 @@ public class RSAAlgorithm {
      */
     protected static byte[] decodeBlock(byte[] bytes, BigInteger key, BigInteger modulus,int keyBits) {
         BigInteger cipherMessage = new BigInteger(bytes);
-        //System.out.println("[E]:"+Hex.encode(bytes));
         BigInteger sourceMessage = cipherMessage.modPow(key, modulus);
 		byte[] decodeBytes =  sourceMessage.toByteArray();
         byte[] resultBytes = recoveryPaddingBlock(decodeBytes,keyBits / 8);
-        //System.out.println("[D]:"+Hex.encode(resultBytes));
         return resultBytes;
 	}
 
