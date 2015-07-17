@@ -593,9 +593,13 @@ public class FileUtils {
 	public static boolean exists(String file){
 		return exists(new File(file));
 	}
+
+    public static boolean hasParentDirs(String file){
+        return hasParentDirs(new File(file));
+    }
 	
-	public static boolean existsParentDir(String file){
-		return existsParentDir(new File(file));
+	public static boolean existsParentDirs(String file){
+		return existsParentDirs(new File(file));
 	}
 	
 	public static boolean exists(File file){
@@ -608,14 +612,26 @@ public class FileUtils {
 			file.mkdirs();
 		}
 	}
+
+    public static boolean hasParentDirs(File file){
+        try{
+            File parent = file.getCanonicalFile().getParentFile();
+            if (parent != null) {
+                return true;
+            }
+        }catch(IOException e){
+
+        }
+        return false;
+    }
 	
-	public static boolean existsParentDir(File file){
+	public static boolean existsParentDirs(File file){
 		try{
 			File parent = file.getCanonicalFile().getParentFile();
 			if (parent == null) {
 				return false;
 			}
-			if (!parent.isDirectory()){
+			if (parent.isDirectory() && parent.exists()){
 				return true;
 			}
 		}catch(IOException e){
@@ -625,16 +641,21 @@ public class FileUtils {
 	}
 
 	public static void makeParentDirs(File file) throws IOException {
-		File parent = file.getCanonicalFile().getParentFile();
-		if (parent == null) {
-			return;
-		}
-		if(!parent.exists()){
-			parent.mkdirs();
-		}
-		if (!parent.isDirectory())
-			throw new IOException("Unable to create parent directories of " + file);
+		makeParentDirsIfNotExists(file);
 	}
+
+    public static void makeParentDirsIfNotExists(File file) throws IOException {
+        File parent = file.getCanonicalFile().getParentFile();
+        if (parent == null) {
+            return;
+        }
+        if(!parent.exists()){
+            parent.mkdirs();
+        }
+        if (!parent.isDirectory()){
+            throw new IOException("Unable to create parent directories of " + file);
+        }
+    }
 
 	static class NullOutputStream extends OutputStream {
 		public void write(byte[] b, int off, int len) {
