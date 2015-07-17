@@ -16,7 +16,7 @@ public class FileListTest {
         int buffSize = 8 * 1024 * 1024;
 
         FileListBuilder builder = new FileListBuilder();
-        builder.dataDir("/data/FileQueue/").name("list2").indexBufferSize(buffSize).storeBufferSize(buffSize);
+        builder.dataDir("/data/FileQueue/").name("list2").indexBufferSize(buffSize).storeBufferSize(buffSize).closeOnJvmShutdown(true);
 		FileList list = builder.build();
         list.clear();
         int count = 10000000;
@@ -48,7 +48,9 @@ public class FileListTest {
 
 
         System.out.println("[size]:"+list.size());
-        list.delete();
+        //list.delete();
+
+        System.exit(0);
 
 	}
 }

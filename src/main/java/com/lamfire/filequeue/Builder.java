@@ -16,7 +16,17 @@ public abstract class Builder<E> {
     protected String name;
     protected int indexBufferSize = 4 * 1024 * 1024;
     protected int storeBufferSize = 4 * 1024 * 1024;
+    protected boolean closeOnJvmShutdown = false;
 
+
+    public boolean closeOnJvmShutdown(){
+        return closeOnJvmShutdown;
+    }
+
+    public Builder<E> closeOnJvmShutdown(boolean closeOnJvmShutdown) {
+        this.closeOnJvmShutdown = closeOnJvmShutdown;
+        return this;
+    }
 
     public String dataDir() {
         return dataDir;

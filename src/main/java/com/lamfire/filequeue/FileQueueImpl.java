@@ -1,8 +1,10 @@
 package com.lamfire.filequeue;
 
 import com.lamfire.logger.Logger;
+import com.lamfire.utils.CloseOnJvmShutdownHook;
 import com.lamfire.utils.Threads;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOError;
 import java.io.IOException;
@@ -16,7 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author lamfire
  * 
  */
-class FileQueueImpl implements FileQueue{
+class FileQueueImpl implements FileQueue,Closeable{
 	private static final Logger LOGGER = Logger.getLogger(FileQueueImpl.class);
 	private static final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;
     private static final int AUTO_CLEAR_INTERVAL  = 300; //s
@@ -37,6 +39,8 @@ class FileQueueImpl implements FileQueue{
 
     private int indexOfLastDeleteStoreFile = 0 ;
     private int indexOfLastDeleteIndexFile = 0;
+
+    private boolean closeOnJvmShutdown = false;
 
 	public FileQueueImpl(String dataDir, String name) throws IOException {
 		this(dataDir, name, DEFAULT_BUFFER_SIZE, DEFAULT_BUFFER_SIZE);
@@ -220,6 +224,7 @@ class FileQueueImpl implements FileQueue{
             meta.close();
 		} finally {
 			lock.unlock();
+            removeCloseOnJvmShutdown();
 		}
 	}
 
@@ -267,6 +272,20 @@ class FileQueueImpl implements FileQueue{
         for(int i=indexOfLastDeleteIndexFile;i<=index;i++){
             indexMgr.deleteIndexFile(i);
             indexOfLastDeleteIndexFile = i;
+        }
+    }
+
+    void addCloseOnJvmShutdown(){
+        if(!closeOnJvmShutdown){
+            closeOnJvmShutdown = true;
+            CloseOnJvmShutdownHook.getInstance().addJvmShutdownHook(this);
+        }
+    }
+
+    void removeCloseOnJvmShutdown(){
+        if(closeOnJvmShutdown){
+            closeOnJvmShutdown = false;
+            CloseOnJvmShutdownHook.getInstance().removeJvmShutdownHook(this);
         }
     }
 

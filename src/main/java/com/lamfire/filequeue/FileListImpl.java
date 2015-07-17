@@ -1,7 +1,9 @@
 package com.lamfire.filequeue;
 
 import com.lamfire.logger.Logger;
+import com.lamfire.utils.CloseOnJvmShutdownHook;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOError;
 import java.io.IOException;
@@ -14,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author lamfire
  * 
  */
-class FileListImpl implements FileList{
+class FileListImpl implements FileList,Closeable{
 	private static final Logger LOGGER = Logger.getLogger(FileListImpl.class);
 	private static final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;
 
@@ -35,6 +37,8 @@ class FileListImpl implements FileList{
 
     private int indexOfLastDeleteStoreFile = 0 ;
     private int indexOfLastDeleteIndexFile = 0;
+
+    private boolean closeOnJvmShutdown = false;
 
 	public FileListImpl(String dataDir, String name) throws IOException {
 		this(dataDir, name, DEFAULT_BUFFER_SIZE, DEFAULT_BUFFER_SIZE);
@@ -153,6 +157,7 @@ class FileListImpl implements FileList{
             meta.close();
 		} finally {
 			lock.unlock();
+            removeCloseOnJvmShutdown();
 		}
 	}
 
@@ -183,6 +188,20 @@ class FileListImpl implements FileList{
         for(int i=indexOfLastDeleteIndexFile;i<=index;i++){
             indexMgr.deleteIndexFile(i);
             indexOfLastDeleteIndexFile = i;
+        }
+    }
+
+    void addCloseOnJvmShutdown(){
+        if(!closeOnJvmShutdown){
+            closeOnJvmShutdown = true;
+            CloseOnJvmShutdownHook.getInstance().addJvmShutdownHook(this);
+        }
+    }
+
+    void removeCloseOnJvmShutdown(){
+        if(closeOnJvmShutdown){
+            closeOnJvmShutdown = false;
+            CloseOnJvmShutdownHook.getInstance().removeJvmShutdownHook(this);
         }
     }
 

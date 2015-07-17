@@ -15,8 +15,10 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException {
         FileQueueBuilder builder = new FileQueueBuilder();
-        builder.dataDir("/data/FileQueue/").name("queue3");
+        builder.dataDir("/data/FileQueue/").name("Main").closeOnJvmShutdown(true);
         FileQueue queue = builder.build();
-        queue.peek();
+        byte[] bytes = queue.peek();
+        System.out.println(bytes);
+        System.exit(0);
     }
 }

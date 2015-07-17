@@ -10,12 +10,11 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class FileListBuilder extends Builder<FileList> {
-    private FileList fileList;
-
     @Override
     synchronized FileList make(String dataDir, String name, int indexBufferSize, int storeBufferSize) throws IOException {
-        if(fileList == null){
-            fileList =  new FileListImpl(dataDir,name,indexBufferSize,storeBufferSize);
+        FileListImpl fileList =  new FileListImpl(dataDir,name,indexBufferSize,storeBufferSize);
+        if(closeOnJvmShutdown()){
+            fileList.addCloseOnJvmShutdown();
         }
         return fileList;
     }

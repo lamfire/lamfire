@@ -10,11 +10,12 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class FileQueueBuilder extends Builder<FileQueue> {
-    private FileQueue fileQueue;
+
     @Override
     synchronized FileQueue make(String dataDir, String name, int indexBufferSize, int storeBufferSize) throws IOException {
-        if(fileQueue == null){
-            fileQueue = new FileQueueImpl(dataDir,name,indexBufferSize,storeBufferSize) ;
+        FileQueueImpl fileQueue = new FileQueueImpl(dataDir,name,indexBufferSize,storeBufferSize) ;
+        if(closeOnJvmShutdown()){
+            fileQueue.addCloseOnJvmShutdown();
         }
         return fileQueue;
     }
