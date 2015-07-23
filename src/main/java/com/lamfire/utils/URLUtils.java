@@ -5,9 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.net.*;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -107,5 +105,14 @@ public class URLUtils {
             list.add(matcher.group());
         }
         return list;
+    }
+
+    public static String getHostAddress(URL url) throws UnknownHostException {
+        InetAddress addr = InetAddress.getByName(url.getHost());
+        return (addr.getHostAddress());
+    }
+
+    public static String getHostAddress(String url) throws UnknownHostException, MalformedURLException {
+        return getHostAddress(new URL(url));
     }
 }
