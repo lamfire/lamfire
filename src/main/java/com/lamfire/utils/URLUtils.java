@@ -115,4 +115,16 @@ public class URLUtils {
     public static String getHostAddress(String url) throws UnknownHostException, MalformedURLException {
         return getHostAddress(new URL(url));
     }
+
+    private static String switchToIPAddressUrl(String urlAddr) {
+        try{
+            URL url = new URL(urlAddr);
+            InetAddress addr = InetAddress.getByName(url.getHost());
+            String ipAddr =  addr.getHostAddress();
+            return StringUtils.replace(urlAddr,url.getHost(),ipAddr);
+        }catch (Exception e){
+            logger.error("[host name to host address failed] : " + e.getMessage(),e);
+            return urlAddr;
+        }
+    }
 }
