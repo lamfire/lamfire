@@ -213,8 +213,10 @@ public class RSAAlgorithm {
         }
         byte[] padding = new byte[blockSize];
         padding[0] = RSA_BLOCK_FLAG;
+        int crc32 = CRC32.digest(bytes);
+        Bytes.putInt(padding,1,crc32);
         int len = bytes.length;
-        Bytes.putInt(padding,1,len);
+        Bytes.putInt(padding,5,len);
         Bytes.putBytes(padding,blockSize - len,bytes,0,len);
         return padding;
     }
@@ -223,8 +225,14 @@ public class RSAAlgorithm {
         if(bytes [0] != RSA_BLOCK_FLAG){
             throw new RuntimeException("Not RSA Block");
         }
-        int len = Bytes.toInt(bytes,1);
-        return Bytes.subBytes(bytes,blockSize - len,len);
+        int crc32 = Bytes.toInt(bytes,1);
+        int len = Bytes.toInt(bytes,5);
+        byte[] data = Bytes.subBytes(bytes,blockSize - len,len);
+        int dataCrc32 = CRC32.digest(data);
+        if(dataCrc32 != crc32){
+            throw new RuntimeException("Block CRC32 checksum failed - [data=" + dataCrc32 +",source=" + crc32 +"]");
+        }
+        return data;
     }
 
     private static byte[] fillBlock(final byte[] bytes,int blockSize){
