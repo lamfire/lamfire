@@ -16,13 +16,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 class MetaBuffer {
     private static final Logger LOGGER = Logger.getLogger(MetaBuffer.class);
-	public static final String FILE_SUFFIX = ".m";
+	public static final String FILE_SUFFIX = "";
 	public static final int META_FILE_LENGTH = 32;
 
     public static String getMetaFileName(String dir,String name){
         dir = FilenameUtils.normalizeNoEndSeparator(dir);
-        String fileName = MD5.hash(name + FILE_SUFFIX );
-        return (dir+ File.separator + fileName + FILE_SUFFIX);
+        String fileName = (name + FILE_SUFFIX );
+        return (dir+ File.separator + fileName);
     }
 
     public static File getMetaFile(String dir,String name){

@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class QueuePreformaceTest {
     private static final Logger LOGGER = Logger.getLogger(QueuePreformaceTest.class);
-    private final String TEXT = RandomUtils.randomTextWithFixedLength(50);
+    private final String TEXT = RandomUtils.randomTextWithFixedLength(1050);
 
     private FileQueue queue;
 

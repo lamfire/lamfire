@@ -18,8 +18,8 @@ class IndexBuffer {
 
     public static String getIndexFileName(String dir,String name,int index){
         dir = FilenameUtils.normalizeNoEndSeparator(dir);
-        String fileName = MD5.hash(name + FILE_SUFFIX + "." + index);
-        return (dir+ File.separator + fileName + FILE_SUFFIX);
+        String fileName = (name + FILE_SUFFIX + "." + index);
+        return (dir+ File.separator + fileName);
     }
 
 	public static File getIndexFile(String dir,String name,int index){
