@@ -52,7 +52,7 @@ public class HttpClientTest {
 	public static void postTest()throws Exception{
 		HttpClient http = new HttpClient();
 		http.setMethod("post");
-		http.open("http://m.nadoola.com/NDManage/login.do");
+		http.open("http://www.mob.com");
 		http.addPostParameter("name", "lamfire");
 		http.addPostParameter("password", "lin12345");
 		http.addPostParameter("authCode", "lin12345");

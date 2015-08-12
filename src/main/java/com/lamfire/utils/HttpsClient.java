@@ -50,9 +50,6 @@ public class HttpsClient {
 	private int connectTimeOut = 30000;
 	private int readTimeOut = 30000;
 	private StringBuffer queryBuffer;
-	
-	
-	private DataOutputStream output = null;
 
 	public void setCharset(String charset) {
 		this.charset = charset;
@@ -89,6 +86,7 @@ public class HttpsClient {
 	}
 	
 	public void post(byte[] bytes) throws IOException {
+        OutputStream output = getOutputStream();
 		if(output == null){
 			throw new RuntimeException("method ["+this.method + "] output stream has not opened.");
 		}
@@ -149,11 +147,6 @@ public class HttpsClient {
 		
 		// 打开连接
 		conn.connect();
-
-		if(!isGetMethod){
-			//打开输出流
-			output = new DataOutputStream( conn.getOutputStream() );
-		}
 	}
 
 	public byte[] read() throws IOException {
@@ -168,8 +161,8 @@ public class HttpsClient {
 		return conn.getInputStream();
 	}
 	
-	public OutputStream getOutputStream(){
-		return output;
+	public OutputStream getOutputStream()throws IOException{
+		return conn.getOutputStream();
 	}
 
 	public String readAsString() throws IOException {
@@ -212,7 +205,7 @@ public class HttpsClient {
 		buffer.append("Content-Disposition: form-data; name=\"" + formItemName + "\"\r\n");
 		buffer.append("Content-Type: text/plain;charset=" + charset + "\r\n\r\n");
 		buffer.append(value);
-		
+        OutputStream output = getOutputStream();
 		output.write(buffer.toString().getBytes());
 		output.flush();
 	}
@@ -222,7 +215,7 @@ public class HttpsClient {
 		buffer.append("\r\n--" + BOUNDARY + "\r\n");
 		buffer.append("Content-Disposition: form-data; name=\"" + formItemName + "\"; filename=\"" + fileName + "\"\r\n");
 		buffer.append("Content-Type: application/octet-stream\r\n\r\n");
-
+        OutputStream output = getOutputStream();
 		output.write(buffer.toString().getBytes());
 		output.write(bytes);
 		output.flush();
@@ -245,6 +238,7 @@ public class HttpsClient {
 		buffer.append("\r\n--" + BOUNDARY + "\r\n");
 		buffer.append("Content-Disposition: form-data; name=\"" + formItemName + "\"; filename=\"" + fileName + "\"\r\n");
 		buffer.append("Content-Type: application/octet-stream\r\n\r\n");
+        OutputStream output = getOutputStream();
 		output.write(buffer.toString().getBytes());
 		IOUtils.copy(input, output);
 		output.flush();
@@ -255,6 +249,7 @@ public class HttpsClient {
 		String endstr = "\r\n--" + BOUNDARY + "--\r\n";
 		byte[] endbytes = endstr.getBytes();
 		try {
+            OutputStream output = getOutputStream();
 			output.write(endbytes);
 		}catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -262,8 +257,17 @@ public class HttpsClient {
 	}
 	
 	public void close(){
-		IOUtils.closeQuietly(output);
-		conn.disconnect();
+        try{
+            IOUtils.closeQuietly(getOutputStream());
+        }catch (Exception e){
+
+        }
+        try{
+            IOUtils.closeQuietly(getInputStream());
+        }catch (Exception e){
+
+        }
+        conn.disconnect();
 	}
 
 }

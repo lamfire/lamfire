@@ -32,9 +32,6 @@ public class HttpClient {
 	private int connectTimeOut = 30000;
 	private int readTimeOut = 30000;
 	private StringBuffer queryBuffer;
-	
-	
-	private DataOutputStream output = null;
 
 	public void setCharset(String charset) {
 		this.charset = charset;
@@ -71,13 +68,13 @@ public class HttpClient {
 	}
 	
 	public void post(byte[] bytes) throws IOException {
+        OutputStream output = getOutputStream();
 		if(output == null){
 			throw new RuntimeException("method ["+this.method + "] output stream has not opened.");
 		}
 		
 		output.write(bytes);
 		output.flush();
-
 	}
 
 	public void setRequestHeader(String key, String value) {
@@ -125,11 +122,6 @@ public class HttpClient {
 		
 		// 打开连接
 		conn.connect();
-
-		if(!isGetMethod){
-			//打开输出流
-			output = new DataOutputStream( conn.getOutputStream() );
-		}
 	}
 
 	public byte[] read() throws IOException {
@@ -140,12 +132,20 @@ public class HttpClient {
 		return result.toByteArray();
 	}
 	
-	public InputStream getInputStream()throws IOException{
-		return conn.getInputStream();
+	public InputStream getInputStream(){
+        try{
+		    return conn.getInputStream();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
 	}
 	
 	public OutputStream getOutputStream(){
-		return output;
+        try{
+            return conn.getOutputStream();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
 	}
 
 	public String readAsString() throws IOException {
@@ -188,7 +188,7 @@ public class HttpClient {
 		buffer.append("Content-Disposition: form-data; name=\"" + formItemName + "\"\r\n");
 		buffer.append("Content-Type: text/plain;charset=" + charset + "\r\n\r\n");
 		buffer.append(value);
-		
+        OutputStream output = getOutputStream();
 		output.write(buffer.toString().getBytes());
 		output.flush();
 	}
@@ -198,7 +198,7 @@ public class HttpClient {
 		buffer.append("\r\n--" + BOUNDARY + "\r\n");
 		buffer.append("Content-Disposition: form-data; name=\"" + formItemName + "\"; filename=\"" + fileName + "\"\r\n");
 		buffer.append("Content-Type: application/octet-stream\r\n\r\n");
-
+        OutputStream output = getOutputStream();
 		output.write(buffer.toString().getBytes());
 		output.write(bytes);
 		output.flush();
@@ -221,6 +221,7 @@ public class HttpClient {
 		buffer.append("\r\n--" + BOUNDARY + "\r\n");
 		buffer.append("Content-Disposition: form-data; name=\"" + formItemName + "\"; filename=\"" + fileName + "\"\r\n");
 		buffer.append("Content-Type: application/octet-stream\r\n\r\n");
+        OutputStream output = getOutputStream();
 		output.write(buffer.toString().getBytes());
 		IOUtils.copy(input, output);
 		output.flush();
@@ -231,6 +232,7 @@ public class HttpClient {
 		String endstr = "\r\n--" + BOUNDARY + "--\r\n";
 		byte[] endbytes = endstr.getBytes();
 		try {
+            OutputStream output = getOutputStream();
 			output.write(endbytes);
 		}catch (IOException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -238,7 +240,16 @@ public class HttpClient {
 	}
 	
 	public void close(){
-		IOUtils.closeQuietly(output);
+        try{
+            IOUtils.closeQuietly(getOutputStream());
+        }catch (Exception e){
+
+        }
+        try{
+            IOUtils.closeQuietly(getInputStream());
+        }catch (Exception e){
+
+        }
 		conn.disconnect();
 	}
 
