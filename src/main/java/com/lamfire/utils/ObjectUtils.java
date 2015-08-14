@@ -174,7 +174,7 @@ public class ObjectUtils {
 		
 		//如果不是目标类型的子类，则进行类型转换
 		if(!value.getClass().isAssignableFrom(propType)){
-			desValue = TypeConvertUtils.convertValue(desValue, propType);
+			desValue = TypeConvertUtils.convert(desValue, propType);
 		}
 		
 		//调用写入属性方法进行附值

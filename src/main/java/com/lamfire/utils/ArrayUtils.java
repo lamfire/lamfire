@@ -1829,4 +1829,19 @@ public class ArrayUtils {
         }
     }
 
+    public static Class<?> getComponentType(Object array){
+        if (array.getClass().isArray()){
+            return array.getClass().getComponentType();
+        }
+        throw new IllegalArgumentException("Argument is not array - " + array.getClass().getName());
+    }
+
+    public static Object get(Object array,int index){
+        return Array.get(array,index);
+    }
+
+    public static void set(Object array,int index,Object val){
+        Array.set(array,index,val);
+    }
+
 }

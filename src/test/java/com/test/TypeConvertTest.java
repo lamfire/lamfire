@@ -1,6 +1,10 @@
 package com.test;
 
+import com.lamfire.utils.Lists;
 import com.lamfire.utils.ObjectUtils;
+import com.lamfire.utils.TypeConvertUtils;
+
+import java.util.List;
 
 public class TypeConvertTest {
 
@@ -62,11 +66,17 @@ public class TypeConvertTest {
 	
 	public static void main(String[] args) {
 		String [] data = {"123","234","345"};
-		TypeA a = new TypeA();
-		ObjectUtils.setPropertyValue(a, "intVal", data[0]);
-		ObjectUtils.setPropertyValue(a, "enable", '2');
+
+        List<String> list = Lists.newArrayList();
+        list.add("456");
+        list.add("567");
+        list.add("789");
+
+		Integer [] ints = (Integer [])TypeConvertUtils.toArray(list,Integer.class);
 		
-		System.out.println(a.isEnable());
+		for(int i=0;i<ints.length;i++){
+            System.out.println(ints[i]);
+        }
 		
 	}
 }
