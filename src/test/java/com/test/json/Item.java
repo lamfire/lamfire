@@ -13,6 +13,7 @@ public class Item {
 	private Set<String> keys;
 	private byte[] bytes;
 	private Args args;
+    private String url;
 
 	public String getKey() {
 		return key;
@@ -62,5 +63,11 @@ public class Item {
 		this.keys = keys;
 	}
 
-	
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

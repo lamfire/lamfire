@@ -174,7 +174,7 @@ public class JSONSerializer {
         StringSerializer.instance.write(this, text);
     }
 
-    public ObjectSerializer getObjectWriter(Class<?> clazz) {
+    public synchronized ObjectSerializer getObjectWriter(Class<?> clazz) {
         ObjectSerializer writer = config.get(clazz);
 
         if (writer == null) {

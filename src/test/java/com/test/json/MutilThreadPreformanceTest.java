@@ -1,17 +1,27 @@
 package com.test.json;
 
+import com.lamfire.json.JSON;
+import com.lamfire.utils.Threads;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.lamfire.json.JSON;
-import com.lamfire.utils.Threads;
+public class MutilThreadPreformanceTest {
+    static String json ;
 
-public class PreformanceTest {
+    static {
+        Item item = getItem();
+        json = JSON.toJSONString(item);
+    }
 
+    public static String getJSONString(){
+        return json;
+    }
 
 	public static Item getItem() {
 		Item item = new Item();
@@ -41,6 +51,7 @@ public class PreformanceTest {
 		item.setValues(values);
 		item.setArgs(ags);
 		item.setBytes("123456".getBytes());
+        item.setUrl("https://itunes.apple.com/");
 
 		Set<String> keys = new HashSet<String>();
 		keys.add("lamfire");
@@ -62,37 +73,41 @@ public class PreformanceTest {
         }
     };
 
-    public PreformanceTest(){
+    public MutilThreadPreformanceTest(){
         Threads.scheduleWithFixedDelay(statusThread, 1, 1, TimeUnit.SECONDS);
     }
 
+    ThreadPoolExecutor executor = Threads.newFixedThreadPool(18);
+
 	public void serializeTest( ) {
-		Item item = getItem();
-		for(int i=0;i<10000000;i++){
-			String js = JSON.toJSONString(item);
+	    for(int i=0;i<100;i++){
+            executor.submit(serializer);
+        }
+	}
+
+    private Runnable serializer = new Runnable() {
+        @Override
+        public void run() {
+            Item item = getItem();
+            String js = JSON.toJSONString(item);
             System.out.println(js);
             counter.incrementAndGet();
-			if(i  == 0){
-				System.out.println(i+ "[serialized]:"  + js);
-			}
-		}
-	}
-	
-	public void deserializeTest() {
-		Item item = getItem();
-		String js = JSON.toJSONString(item);
-        System.out.println("[deserialized]:" + js);
-		for(int i=0;i<1000000000;i++){
-			item = JSON.toJavaObject(js, Item.class);
+        }
+    } ;
+
+    private Runnable deserializer = new Runnable() {
+        @Override
+        public void run() {
+            String js = getJSONString();
+            Item item = JSON.toJavaObject(js,Item.class);
             counter.incrementAndGet();
-			if(i == 0){
-                System.out.println(i+ "[deserialized]:"  + item);
-			}
-		}
-	}
-	
+        }
+    } ;
+
+
+
 	public static void main(String[] args) {
-        PreformanceTest test = new PreformanceTest();
+        MutilThreadPreformanceTest test = new MutilThreadPreformanceTest();
         test.serializeTest();
 	}
 }

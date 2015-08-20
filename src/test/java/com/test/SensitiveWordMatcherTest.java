@@ -38,7 +38,7 @@ public class SensitiveWordMatcherTest {
         List<String> list = FileUtils.readLines(ClassLoaderUtils.getResourceAsFile("keyword",SensitiveWordMatcherTest.class));
         KeywordMatcher matcher = new KeywordMatcher(list);
 
-        String source = "他妈的，中华人民共和国，没有坏蛋，也没有变态狂，只有一群可爱的网民．";
+        String source = "他 妈 的，中华人民共和国，没有坏蛋，也没有变态狂，只有一群可爱的网民．";
 
         long startAt = System.currentTimeMillis();
         matcher.match(source);

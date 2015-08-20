@@ -267,7 +267,7 @@ abstract class JSONParser{
         return toJSONString(object, new SerializerFeature[0]);
     }
 
-    protected static final String toJSONString(Object object, SerializerFeature... features) {
+    protected static synchronized final String toJSONString(Object object, SerializerFeature... features) {
         SerializeWriter out = new SerializeWriter();
 
         try {
@@ -286,7 +286,7 @@ abstract class JSONParser{
         }
     }
 
-    protected static final String toJSONString(Object object, SerializeConfig config, SerializerFeature... features) {
+    protected static synchronized final String toJSONString(Object object, SerializeConfig config, SerializerFeature... features) {
         SerializeWriter out = new SerializeWriter();
 
         try {
