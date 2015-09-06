@@ -8,12 +8,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.lamfire.json.JSON;
+import com.lamfire.utils.Asserts;
 import com.lamfire.utils.Threads;
 
 public class PreformanceTest {
+    private static Item entity = newItem();
+    private static String json = JSON.toJSONString(entity);
 
+    public static Item getItem(){
+        return entity;
+    }
 
-	public static Item getItem() {
+    public static Item newItem() {
 		Item item = new Item();
 		User user = new User();
 		user.setAge(100);
@@ -67,10 +73,9 @@ public class PreformanceTest {
     }
 
 	public void serializeTest( ) {
-		Item item = getItem();
 		for(int i=0;i<10000000;i++){
-			String js = JSON.toJSONString(item);
-            System.out.println(js);
+			String js = JSON.toJSONString(entity);
+            //System.out.println(js);
             counter.incrementAndGet();
 			if(i  == 0){
 				System.out.println(i+ "[serialized]:"  + js);
@@ -79,11 +84,9 @@ public class PreformanceTest {
 	}
 	
 	public void deserializeTest() {
-		Item item = getItem();
-		String js = JSON.toJSONString(item);
-        System.out.println("[deserialized]:" + js);
+        System.out.println("[deserialized]:" + json);
 		for(int i=0;i<1000000000;i++){
-			item = JSON.toJavaObject(js, Item.class);
+			Item item = JSON.toJavaObject(json, Item.class);
             counter.incrementAndGet();
 			if(i == 0){
                 System.out.println(i+ "[deserialized]:"  + item);
@@ -93,6 +96,9 @@ public class PreformanceTest {
 	
 	public static void main(String[] args) {
         PreformanceTest test = new PreformanceTest();
-        test.serializeTest();
+        //test.serializeTest();
+        test.deserializeTest();
+
+        System.exit(0);
 	}
 }

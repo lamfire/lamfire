@@ -6,6 +6,8 @@ import com.lamfire.code.RSAAlgorithm;
 import com.lamfire.utils.*;
 
 import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,6 +17,7 @@ import java.math.BigInteger;
  * To change this template use File | Settings | File Templates.
  */
 public class RSAAlgorithmTest {
+    static AtomicInteger counter = new AtomicInteger();
     static BigInteger privateKey = new BigInteger("18d260e2fd33a08ae4a638952befb33496f072e00ce92029f84a1cf0e3ef0c9ef50a60f84cf91c7a0d69cf8d2feaaeb06aae75e94273ecf1684340da1d43b00707ce1a5b4e0063bb6aa9a6c63b9ab7aab59b716e2d514d648caf10be5231394a5d93434589ff9538359fd6e5055341ce0f9d032ffe20db1b3e1b940842b4e49f",16);
     static BigInteger publicKey = new BigInteger("d4d2c80d52ddb2ed4394bb3f8e6c6b82d55f0e8316da658f5262d4b1aa32bd63676604cba4a4f4bf8e511a5c6d680a12d9b9ce30d412516dcfa5165d50617547969536a46dd120502447ffa10c2344d64b900033908eb1b254625b459b6eee8468fde9bf35eaa2a89881823672d70659cdf990ee264823db6a1bea10412242d7",16);
     static BigInteger modulus = new BigInteger("1e72a06a87163b2fb694f3caaf225c6cfa102ebf2b188088997ce7ae958617c1cafbcf445c201f87b82b913d581cf18681673b2a02f2b164de1e1b9569f56bd61f611068f252db8a3cf56ef98ed91e4f7cde10eb364b12d1229f3d4615594945e444a13a0f10362e7b6cb7cf5d2d0ed0d87ca2ec37e1545e8b674427badd6d67",16);
@@ -167,7 +170,7 @@ public class RSAAlgorithmTest {
 
     public static void test(String source) throws Exception {
         RSAAlgorithm rsa = new RSAAlgorithm(keyBits);
-        System.out.println(source);
+        //System.out.println(source);
         byte[] bytes = source.getBytes();
 
         //rsa.genKey();
@@ -177,13 +180,32 @@ public class RSAAlgorithmTest {
         byte[] deBytes = rsa.decode(enBytes,publicKey,modulus);
 
         String des = new String(deBytes);
-        System.out.println(des);
+        //System.out.println(des);
         Asserts.equalsAssert(source,des);
     }
 
+    static void performance()throws Exception{
+        Threads.scheduleWithFixedDelay(new Runnable() {
+            int pre = 0;
+            @Override
+            public void run() {
+                int ths = counter.get();
+                System.out.println((ths - pre) + " /s");
+                pre = ths;
+            }
+        },1,1, TimeUnit.SECONDS) ;
+
+        while(true){
+            String text = RandomUtils.randomText(1000,10000);
+            test(text);
+            counter.incrementAndGet();
+        }
+    }
+
     public static void main(String[] args) throws Exception {
-        testFile();
+        //testFile();
         //testGenKey();
         //test("姓名");
+        performance();
     }
 }
