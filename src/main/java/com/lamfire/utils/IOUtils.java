@@ -226,6 +226,10 @@ public class IOUtils {
 		return list;
 	}
 
+    public static Iterator<String> readLineIterator(Reader input) throws IOException {
+        return new FileLineIterator(input);
+    }
+
 	public static InputStream toInputStream(String input) {
 		byte[] bytes = input.getBytes();
 		return new ByteArrayInputStream(bytes);

@@ -7,6 +7,15 @@ import com.lamfire.code.HmacSHA1;
 import com.lamfire.code.PUID;
 import com.lamfire.code.Rijndael;
 import com.lamfire.code.UUIDGen;
+import com.lamfire.utils.ClassLoaderUtils;
+import com.lamfire.utils.FileUtils;
+import com.lamfire.utils.IOUtils;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.Reader;
+import java.util.Iterator;
 
 public class Client {
 
@@ -51,19 +60,12 @@ public class Client {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		//testAES();
-		//testRijndael();
-		//testGUID();
-		//testGuidGenerator();
-		//testUuid();
-		//testHmacSha1();
-//		
-//		51613ff4db48bf96929ecdda
-//		51613ff4db48bf96929ecddb
-//		51613ff4db48bf96929ecddc
-		
-		System.out.println(PUID.puidAsString());
-		System.out.println(PUID.puidAsString());
-		System.out.println(PUID.puidAsString());
+		File file = ClassLoaderUtils.getResourceAsFile("keyword",Client.class);
+        Reader reader = FileUtils.openFileReader(file);
+        Iterator<String> lines =  IOUtils.readLineIterator(reader);
+        while(lines.hasNext()){
+            System.out.println(lines.next());
+        }
+        reader.close();
 	}
 }

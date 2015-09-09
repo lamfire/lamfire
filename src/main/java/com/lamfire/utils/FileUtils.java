@@ -1,12 +1,6 @@
 package com.lamfire.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
@@ -53,6 +47,32 @@ public class FileUtils {
 
 		return new FileOutputStream(file);
 	}
+
+    public static FileReader openFileReader(File file) throws IOException {
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new IOException("File '" + file + "' exists but is a directory");
+            }
+            if (!file.canRead())
+                throw new IOException("File '" + file + "' cannot be read");
+        } else {
+            throw new FileNotFoundException("File '" + file + "' does not exist");
+        }
+        return new FileReader(file);
+    }
+
+    public static FileWriter openFileWriter(File file) throws IOException {
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new IOException("File '" + file + "' exists but is a directory");
+            }
+            if (!file.canRead())
+                throw new IOException("File '" + file + "' cannot be read");
+        } else {
+            throw new FileNotFoundException("File '" + file + "' does not exist");
+        }
+        return new FileWriter(file);
+    }
 
 	public static String byteCountToDisplaySize(long size) {
 		String displaySize;
