@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class CircularLinkedListTest {
     static final CircularLinkedList<Integer> list = new CircularLinkedList<Integer>();
 
-    public static void main(String[] args) {
+    public static void test() {
 
         Threads.scheduleWithFixedDelay(new Runnable() {
             @Override
@@ -103,9 +103,41 @@ public class CircularLinkedListTest {
 
         while (it.hasNext()) {
             System.out.println("[LIST]:" + list + " - " + list.size());
-            Threads.sleep(500);
+            Threads.sleep(1000);
         }
 
         System.out.println("[END]------------------------------------");
+    }
+
+    public static void main(String[] args) {
+        for (int i = 0; i < 10; i++) {
+            list.add(i);
+        }
+
+        Threads.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                list.removeFirst();
+            }
+        },15,1, TimeUnit.SECONDS);
+
+        while(!list.isEmpty()){
+            System.out.println(list.next());
+            Threads.sleep(500);
+        }
+
+        System.out.println("Finish next ----");
+
+        for (int i = 0; i < 10; i++) {
+            list.add(i);
+        }
+        while(!list.isEmpty()){
+            System.out.println(list.previous());
+            Threads.sleep(500);
+        }
+        System.out.println("Finish previous ----");
+
+        System.out.println("END...");
+        System.exit(0);
     }
 }

@@ -5,6 +5,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,7 +43,7 @@ public class FileLineIterator implements Iterator<String> {
     public String next() {
         if(line == null){
             if(!hasNext()){
-                throw new RuntimeException(new EOFException());
+                throw new NoSuchElementException();
             }
         }
         String result = line;

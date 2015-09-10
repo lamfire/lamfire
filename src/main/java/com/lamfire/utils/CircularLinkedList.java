@@ -17,6 +17,8 @@ public class CircularLinkedList<E> extends AbstractSequentialList<E> implements 
 
 	transient Node<E> last;
 
+    transient Node<E> current;
+
 	public CircularLinkedList() {
 	}
 
@@ -24,6 +26,43 @@ public class CircularLinkedList<E> extends AbstractSequentialList<E> implements 
 		this();
 		addAll(c);
 	}
+
+    public E next(){
+        lock.lock();
+        try{
+            if(current == null || current.item == null){
+                current = first;
+            }else{
+                current = current.next;
+            }
+            return current.item;
+        }finally {
+            lock.unlock();
+        }
+    }
+
+    public E previous(){
+        lock.lock();
+        try{
+            if(current == null || current.item == null){
+                current = first;
+            }else{
+                current = current.prev;
+            }
+            return current.item;
+        }finally {
+            lock.unlock();
+        }
+    }
+
+    public void refresh(){
+        lock.lock();
+        try{
+            current = null;
+        }finally {
+            lock.unlock();
+        }
+    }
 
 	private void linkFirst(E e) {
         lock.lock();
