@@ -27,7 +27,10 @@ public class FileLineIterator implements Iterator<String> {
     }
 
     @Override
-    public boolean hasNext() {
+    public synchronized boolean hasNext() {
+        if(line != null){
+            return true;
+        }
         try{
             line = reader.readLine();
             if(line != null){
@@ -40,7 +43,7 @@ public class FileLineIterator implements Iterator<String> {
     }
 
     @Override
-    public String next() {
+    public synchronized String next() {
         if(line == null){
             if(!hasNext()){
                 throw new NoSuchElementException();
