@@ -93,26 +93,4 @@ public class AlgorithmCoder {
 		return decrypted;
 	}
 
-
-	/**
-	 * 
-	 * @param 测试方法
-	 * @throws Exception
-	 */
-
-	public static void main(String[] args) throws Exception {
-		byte[] iv = new byte[16];
-		AlgorithmCoder coder = new AlgorithmCoder("AES", "AES/CBC/PKCS5Padding",iv);
-
-		byte[] key = ("1234567890123456".getBytes());
-
-		byte[] e = coder.encode("1234567890123456".getBytes(),key);
-		
-		System.out.println(Hex.encode(e));
-		
-		byte[] d = coder.decode(e,key);
-		
-		System.out.println(new String(d));
-	}
-
 }
