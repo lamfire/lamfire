@@ -1,6 +1,5 @@
 package com.lamfire.filequeue;
 
-import com.lamfire.code.MD5;
 import com.lamfire.utils.FilenameUtils;
 
 import java.io.File;
@@ -49,11 +48,11 @@ class IndexBuffer {
 	
 
 	public void setWriteOffset(int offset) {
-		this.buffer.setWritePostion(offset);
+		this.buffer.setWritePosition(offset);
 	}
 	
 	public void setReadOffset(int offset) {
-		this.buffer.setReadPostion(offset);
+		this.buffer.setReadPosition(offset);
 	}
 
 	public void add(Element element) throws IOException {
@@ -80,11 +79,11 @@ class IndexBuffer {
     }
 
 	public int getWriteOffset() {
-		return this.buffer.getWritePostion();
+		return this.buffer.getWritePosition();
 	}
 	
 	public int getReadOffset() {
-		return this.buffer.getReadPostion();
+		return this.buffer.getReadPosition();
 	}
 	
 	public int getFreeElementSize(){
@@ -94,7 +93,7 @@ class IndexBuffer {
 
 
     public int getUnreadElementSize(){
-        int unreadSpace = (FileBuffer.MAX_FILE_LENGTH - this.buffer.getReadPostion());
+        int unreadSpace = (FileBuffer.MAX_FILE_LENGTH - this.buffer.getReadPosition());
         return (unreadSpace - unreadSpace % ELEMENT_LENGTH ) / ELEMENT_LENGTH;
     }
 

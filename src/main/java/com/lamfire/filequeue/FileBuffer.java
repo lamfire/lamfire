@@ -11,7 +11,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.lamfire.logger.Logger;
-import com.lamfire.utils.FileUtils;
 
 
 /**
@@ -35,11 +34,11 @@ public class FileBuffer {
 	private final Lock lock = new ReentrantLock();
 
 	private MappedByteBuffer readBuffer = null;
-	private int readPostion = 0;
+	private int readPosition = 0;
 	private int readMapOffset = 0;
 
 	private MappedByteBuffer writeBuffer = null;
-	private int writePostion = 0;
+	private int writePosition = 0;
 	private int writeMapOffset = 0;
 
 	private File file;
@@ -146,25 +145,25 @@ public class FileBuffer {
 	void adjustReadMapper(int necessary) throws IOException {
 		try {
 			lock.lock();
-			if ((this.readPostion + necessary) > MAX_FILE_LENGTH) {
+			if ((this.readPosition + necessary) > MAX_FILE_LENGTH) {
 				throw new IOException("Read length out of disk space");
 			}
 
 			if (this.readBuffer == null) {
-				this.readBuffer = mmap(this.readPostion);
-				this.readMapOffset = this.readPostion;
+				this.readBuffer = mmap(this.readPosition);
+				this.readMapOffset = this.readPosition;
 				return;
 			}
 
-			if (this.readMapOffset + bufferSize < this.readPostion + necessary || this.readPostion < this.readMapOffset) {
+			if (this.readMapOffset + bufferSize < this.readPosition + necessary || this.readPosition < this.readMapOffset) {
 				unmap(this.readBuffer);
-				this.readBuffer = mmap(this.readPostion);
-				this.readMapOffset = this.readPostion;
+				this.readBuffer = mmap(this.readPosition);
+				this.readMapOffset = this.readPosition;
 				return;
 			}
 
-			if (this.readMapOffset + this.readBuffer.position() != this.readPostion) {
-				int postion = this.readPostion - this.readMapOffset;
+			if (this.readMapOffset + this.readBuffer.position() != this.readPosition) {
+				int postion = this.readPosition - this.readMapOffset;
 				this.readBuffer.position(postion);
 			}
 		} finally {
@@ -175,7 +174,7 @@ public class FileBuffer {
 	public int getFreeWriteSpace() {
 		try {
 			this.lock.lock();
-			return MAX_FILE_LENGTH - this.writePostion;
+			return MAX_FILE_LENGTH - this.writePosition;
 		} finally {
 			lock.unlock();
 		}
@@ -202,25 +201,25 @@ public class FileBuffer {
 	void adjustWriteMapper(int necessary) throws IOException {
 		try {
 			lock.lock();
-			if ((this.writePostion + necessary) > MAX_FILE_LENGTH) {
+			if ((this.writePosition + necessary) > MAX_FILE_LENGTH) {
 				throw new IOException("No more disk space");
 			}
 
 			if (this.writeBuffer == null) {
-				this.writeBuffer = mmap(this.writePostion);
-				this.writeMapOffset = this.writePostion;
+				this.writeBuffer = mmap(this.writePosition);
+				this.writeMapOffset = this.writePosition;
 				return;
 			}
 
-			if (this.writeMapOffset + bufferSize < this.writePostion + necessary || this.writePostion < this.writeMapOffset) {
+			if (this.writeMapOffset + bufferSize < this.writePosition + necessary || this.writePosition < this.writeMapOffset) {
 				unmap(this.writeBuffer);
-				this.writeBuffer = mmap(this.writePostion);
-				this.writeMapOffset = this.writePostion;
+				this.writeBuffer = mmap(this.writePosition);
+				this.writeMapOffset = this.writePosition;
 				return;
 			}
 
-			if (this.writeMapOffset + this.writeBuffer.position() != this.writePostion) {
-				int position = this.writePostion - this.writeMapOffset;
+			if (this.writeMapOffset + this.writeBuffer.position() != this.writePosition) {
+				int position = this.writePosition - this.writeMapOffset;
 				this.writeBuffer.position(position);
 			}
 		} finally {
@@ -266,23 +265,23 @@ public class FileBuffer {
 		return file;
 	}
 
-	public int getReadPostion() {
-		return readPostion;
+	public int getReadPosition() {
+		return readPosition;
 	}
 
-	public int getWritePostion() {
-		return writePostion;
+	public int getWritePosition() {
+		return writePosition;
 	}
 
 	/**
 	 * 设置读的起始位置
 	 * 
-	 * @param postion
+	 * @param position
 	 */
-	public void setReadPostion(int postion) {
+	public void setReadPosition(int position) {
 		try {
 			lock.lock();
-			this.readPostion = postion;
+			this.readPosition = position;
 		} finally {
 			lock.unlock();
 		}
@@ -291,12 +290,12 @@ public class FileBuffer {
 	/**
 	 * 设置写的起始位置
 	 * 
-	 * @param postion
+	 * @param position
 	 */
-	public void setWritePostion(int postion) {
+	public void setWritePosition(int position) {
 		try {
 			lock.lock();
-			this.writePostion = postion;
+			this.writePosition = position;
 		} finally {
 			lock.unlock();
 		}
@@ -313,7 +312,7 @@ public class FileBuffer {
 			lock.lock();
 			adjustWriteMapper(bytes.length);
 			this.writeBuffer.put(bytes);
-			this.writePostion += bytes.length;
+			this.writePosition += bytes.length;
 		} finally {
 			lock.unlock();
 		}
@@ -330,7 +329,7 @@ public class FileBuffer {
             lock.lock();
             adjustWriteMapper(length);
             this.writeBuffer.put(bytes,offset,length);
-            this.writePostion += length;
+            this.writePosition += length;
         } finally {
             lock.unlock();
         }
@@ -347,7 +346,7 @@ public class FileBuffer {
 			lock.lock();
 			adjustReadMapper(bytes.length);
 			this.readBuffer.get(bytes);
-			this.readPostion += bytes.length;
+			this.readPosition += bytes.length;
 		} finally {
 			lock.unlock();
 		}
@@ -358,7 +357,7 @@ public class FileBuffer {
 			lock.lock();
 			adjustWriteMapper(1);
 			this.writeBuffer.put(b);
-			this.writePostion++;
+			this.writePosition++;
 		} finally {
 			lock.unlock();
 		}
@@ -369,7 +368,7 @@ public class FileBuffer {
 			lock.lock();
 			adjustReadMapper(1);
 			byte value = this.readBuffer.get();
-			this.readPostion++;
+			this.readPosition++;
 			return value;
 		} finally {
 			lock.unlock();
@@ -381,16 +380,16 @@ public class FileBuffer {
 			lock.lock();
 			adjustWriteMapper(4);
 			this.writeBuffer.putInt(value);
-			this.writePostion += 4;
+			this.writePosition += 4;
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public void putInt(int postion, int value) throws IOException {
+	public void putInt(int position, int value) throws IOException {
 		try {
 			lock.lock();
-			setWritePostion(postion);
+			setWritePosition(position);
 			putInt(value);
 		} finally {
 			lock.unlock();
@@ -402,17 +401,17 @@ public class FileBuffer {
 			lock.lock();
 			adjustReadMapper(4);
 			int value = this.readBuffer.getInt();
-			this.readPostion += 4;
+			this.readPosition += 4;
 			return value;
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public int getInt(int postion) throws IOException {
+	public int getInt(int position) throws IOException {
 		try {
 			lock.lock();
-			setReadPostion(postion);
+			setReadPosition(position);
 			return getInt();
 		} finally {
 			lock.unlock();
@@ -424,16 +423,16 @@ public class FileBuffer {
 			lock.lock();
 			adjustWriteMapper(2);
 			this.writeBuffer.putShort(value);
-			this.writePostion += 2;
+			this.writePosition += 2;
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public void putShort(int postion, short value) throws IOException {
+	public void putShort(int position, short value) throws IOException {
 		try {
 			lock.lock();
-			setWritePostion(postion);
+			setWritePosition(position);
 			putShort(value);
 		} finally {
 			lock.unlock();
@@ -445,17 +444,17 @@ public class FileBuffer {
 			lock.lock();
 			adjustReadMapper(2);
 			short value = this.readBuffer.getShort();
-			this.readPostion += 2;
+			this.readPosition += 2;
 			return value;
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public short getShort(int postion) throws IOException {
+	public short getShort(int position) throws IOException {
 		try {
 			lock.lock();
-			setReadPostion(postion);
+			setReadPosition(position);
 			return getShort();
 		} finally {
 			lock.unlock();
@@ -467,16 +466,16 @@ public class FileBuffer {
 			lock.lock();
 			adjustWriteMapper(8);
 			this.writeBuffer.putLong(value);
-			this.writePostion += 8;
+			this.writePosition += 8;
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public void putLong(int postion, long value) throws IOException {
+	public void putLong(int position, long value) throws IOException {
 		try {
 			lock.lock();
-			setWritePostion(postion);
+			setWritePosition(position);
 			putLong(value);
 		} finally {
 			lock.unlock();
@@ -488,17 +487,17 @@ public class FileBuffer {
 			lock.lock();
 			adjustReadMapper(8);
 			long value = this.readBuffer.getLong();
-			this.readPostion += 8;
+			this.readPosition += 8;
 			return value;
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public long getLong(int postion) throws IOException {
+	public long getLong(int position) throws IOException {
 		try {
 			lock.lock();
-			setReadPostion(postion);
+			setReadPosition(position);
 			return getLong();
 		} finally {
 			lock.unlock();
@@ -510,16 +509,16 @@ public class FileBuffer {
 			lock.lock();
 			adjustWriteMapper(4);
 			this.writeBuffer.putFloat(value);
-			this.writePostion += 4;
+			this.writePosition += 4;
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public void putFloat(int postion, float value) throws IOException {
+	public void putFloat(int position, float value) throws IOException {
 		try {
 			lock.lock();
-			setWritePostion(postion);
+			setWritePosition(position);
 			putFloat(value);
 		} finally {
 			lock.unlock();
@@ -531,17 +530,17 @@ public class FileBuffer {
 			lock.lock();
 			adjustReadMapper(4);
 			float value = this.readBuffer.getFloat();
-			this.readPostion += 4;
+			this.readPosition += 4;
 			return value;
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public float getFloat(int postion) throws IOException {
+	public float getFloat(int position) throws IOException {
 		try {
 			lock.lock();
-			setReadPostion(postion);
+			setReadPosition(position);
 			return getFloat();
 		} finally {
 			lock.unlock();
@@ -553,16 +552,16 @@ public class FileBuffer {
 			lock.lock();
 			adjustWriteMapper(8);
 			this.writeBuffer.putDouble(value);
-			this.writePostion += 8;
+			this.writePosition += 8;
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public void putDouble(int postion, double value) throws IOException {
+	public void putDouble(int position, double value) throws IOException {
 		try {
 			lock.lock();
-			setWritePostion(postion);
+			setWritePosition(position);
 			putDouble(value);
 		} finally {
 			lock.unlock();
@@ -574,17 +573,17 @@ public class FileBuffer {
 			lock.lock();
 			adjustReadMapper(8);
 			double value = this.readBuffer.getDouble();
-			this.readPostion += 8;
+			this.readPosition += 8;
 			return value;
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	public double getDouble(int postion) throws IOException {
+	public double getDouble(int position) throws IOException {
 		try {
 			lock.lock();
-			setReadPostion(postion);
+			setReadPosition(position);
 			return getDouble();
 		} finally {
 			lock.unlock();

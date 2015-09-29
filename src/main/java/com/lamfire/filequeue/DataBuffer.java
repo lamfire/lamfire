@@ -1,6 +1,5 @@
 package com.lamfire.filequeue;
 
-import com.lamfire.code.MD5;
 import com.lamfire.utils.FilenameUtils;
 
 import java.io.File;
@@ -46,11 +45,11 @@ class DataBuffer {
 	}
 
 	public void setWriteOffset(int offset) {
-		this.buffer.setWritePostion(offset);
+		this.buffer.setWritePosition(offset);
 	}
 	
 	public void setReadOffset(int offset) {
-		this.buffer.setReadPostion(offset);
+		this.buffer.setReadPosition(offset);
 	}
 
 	public synchronized void write(byte[] bytes) throws IOException {
@@ -66,7 +65,7 @@ class DataBuffer {
 	}
 	
 	public synchronized void read(int postion ,byte[] bytes)throws IOException{
-		this.buffer.setReadPostion(postion);
+		this.buffer.setReadPosition(postion);
 		read(bytes);
 	}
 
@@ -85,11 +84,11 @@ class DataBuffer {
 
 
 	public int getWriteOffset() {
-		return this.buffer.getWritePostion();
+		return this.buffer.getWritePosition();
 	}
 	
 	public int getReadOffset() {
-		return this.buffer.getReadPostion();
+		return this.buffer.getReadPosition();
 	}
 	
 	public int getFreeWriteSpace(){

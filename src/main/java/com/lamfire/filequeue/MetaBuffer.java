@@ -1,6 +1,5 @@
 package com.lamfire.filequeue;
 
-import com.lamfire.code.MD5;
 import com.lamfire.logger.Logger;
 import com.lamfire.utils.Bytes;
 import com.lamfire.utils.FilenameUtils;
@@ -80,7 +79,7 @@ class MetaBuffer {
 		Bytes.putInt(buffer,20,writeIndexOffset);
 		Bytes.putInt(buffer,24, writeDataIndex.get());
 		Bytes.putInt(buffer,28, writeDataOffset);
-        file.setWritePostion(0);
+        file.setWritePosition(0);
 		file.put(buffer);
 	}
 	
