@@ -18,13 +18,15 @@ public class OPSMonitor implements Runnable {
     private final AtomicInteger counter = new AtomicInteger(0);
     private String id;
     private int ops = 0;
-    private int prevCount;
+    private int prevCount = 0;
     private int interval = 1;
+
+    private long prevTime = System.nanoTime();
+    private long lastExpendTime = 0;
 
     public OPSMonitor(String id){
         this.id = id;
     }
-
 
     @Override
     public void run() {
@@ -36,9 +38,25 @@ public class OPSMonitor implements Runnable {
         }
     }
 
-    public void increment(){
+    public synchronized void done(){
+        long thisTime = System.nanoTime();
         counter.incrementAndGet();
+        this.lastExpendTime = thisTime - prevTime;
+        this.prevTime = thisTime;
     }
+
+    public long getLastExpendTimeNano(){
+        return this.lastExpendTime;
+    }
+
+    public long getLastExpendTimeMillis(){
+        return this.lastExpendTime /1000/1000;
+    }
+
+    public long getLastExpendTimeSecond(){
+        return this.lastExpendTime /1000 /1000 /1000;
+    }
+
 
     public int getOps(){
         return ops;
@@ -48,8 +66,16 @@ public class OPSMonitor implements Runnable {
         return this.counter.get();
     }
 
+    public String getId(){
+        return id;
+    }
+
     public void setInterval(int interval){
         this.interval = interval;
+    }
+
+    public int getInterval(){
+        return this.interval;
     }
 
     public void startup(){

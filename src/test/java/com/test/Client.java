@@ -10,6 +10,7 @@ import com.lamfire.code.UUIDGen;
 import com.lamfire.utils.ClassLoaderUtils;
 import com.lamfire.utils.FileUtils;
 import com.lamfire.utils.IOUtils;
+import com.lamfire.utils.OPSMonitor;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -60,12 +61,24 @@ public class Client {
 	}
 	
 	public static void main(String[] args) throws Exception {
+        OPSMonitor ops = new OPSMonitor("id001");
+        long startAt = System.currentTimeMillis();
 		File file = ClassLoaderUtils.getResourceAsFile("keyword",Client.class);
+        System.out.println(System.currentTimeMillis() - startAt);
+        //ops.done();
+        System.out.println("ExpendTimeNano : " +ops.getLastExpendTimeNano());
+        System.out.println("ExpendTimeMillis : " +ops.getLastExpendTimeMillis());
+
+
+
         Reader reader = FileUtils.openFileReader(file);
         Iterator<String> lines =  IOUtils.readLineIterator(reader);
         while(lines.hasNext()){
             System.out.println(lines.next());
         }
         reader.close();
+        ops.done();
+        System.out.println("ExpendTimeNano : " +ops.getLastExpendTimeNano());
+        System.out.println("ExpendTimeMillis : " +ops.getLastExpendTimeMillis());
 	}
 }
