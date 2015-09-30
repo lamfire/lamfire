@@ -61,24 +61,39 @@ public class Client {
 	}
 	
 	public static void main(String[] args) throws Exception {
-        OPSMonitor ops = new OPSMonitor("id001");
-        long startAt = System.currentTimeMillis();
+
+
 		File file = ClassLoaderUtils.getResourceAsFile("keyword",Client.class);
-        System.out.println(System.currentTimeMillis() - startAt);
+
         //ops.done();
-        System.out.println("ExpendTimeNano : " +ops.getLastExpendTimeNano());
-        System.out.println("ExpendTimeMillis : " +ops.getLastExpendTimeMillis());
+        //System.out.println("ExpendTimeNano : " +ops.getLastExpendTimeNano());
+        //System.out.println("ExpendTimeMillis : " +ops.getLastExpendTimeMillis());
 
 
 
         Reader reader = FileUtils.openFileReader(file);
         Iterator<String> lines =  IOUtils.readLineIterator(reader);
+        OPSMonitor ops = new OPSMonitor("id001");
+        ops.done();
+        long startAt = System.nanoTime();
         while(lines.hasNext()){
             System.out.println(lines.next());
+            ops.done();
         }
+        System.out.println(System.nanoTime() - startAt);
         reader.close();
-        ops.done();
+
+        System.out.println("TotalExpendTimeNano : " +ops.getTotalExpendTimeNano());
+        System.out.println("TotalExpendTimeMillis : " +ops.getTotalExpendTimeMillis());
+
+        System.out.println("MaxExpendTimeNano : " +ops.getMaxExpendTimeNano());
+        System.out.println("MaxExpendTimeMillis : " +ops.getMaxExpendTimeMillis());
+
         System.out.println("ExpendTimeNano : " +ops.getLastExpendTimeNano());
         System.out.println("ExpendTimeMillis : " +ops.getLastExpendTimeMillis());
+
+        System.out.println("AVGExpendTimeNano : " +ops.getAvgExpendTimeNano());
+        System.out.println("AVGExpendTimeMillis : " +ops.getAvgExpendTimeMillis());
+
 	}
 }

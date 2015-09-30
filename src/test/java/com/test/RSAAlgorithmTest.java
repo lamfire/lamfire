@@ -185,19 +185,12 @@ public class RSAAlgorithmTest {
     }
 
     static void performance()throws Exception{
-        Threads.scheduleWithFixedDelay(new Runnable() {
-            int pre = 0;
-            @Override
-            public void run() {
-                int ths = counter.get();
-                System.out.println((ths - pre) + " /s");
-                pre = ths;
-            }
-        },1,1, TimeUnit.SECONDS) ;
-
+        OPSMonitor m = new OPSMonitor("rsa-001");
+        m.startup();
         while(true){
             String text = RandomUtils.randomText(1000,10000);
             test(text);
+            m.done();
             counter.incrementAndGet();
         }
     }

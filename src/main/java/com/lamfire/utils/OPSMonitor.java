@@ -24,6 +24,9 @@ public class OPSMonitor implements Runnable {
     private long prevTime = System.nanoTime();
     private long lastExpendTime = 0;
 
+    private long maxExpendTime = 0;
+    private long totalExpendTime = 0;
+
     public OPSMonitor(String id){
         this.id = id;
     }
@@ -42,6 +45,10 @@ public class OPSMonitor implements Runnable {
         long thisTime = System.nanoTime();
         counter.incrementAndGet();
         this.lastExpendTime = thisTime - prevTime;
+        if(this.maxExpendTime < lastExpendTime){
+            this.maxExpendTime = lastExpendTime;
+        }
+        this.totalExpendTime += lastExpendTime;
         this.prevTime = thisTime;
     }
 
@@ -57,6 +64,41 @@ public class OPSMonitor implements Runnable {
         return this.lastExpendTime /1000 /1000 /1000;
     }
 
+    public long getMaxExpendTimeNano(){
+        return  this.maxExpendTime;
+    }
+
+    public long getMaxExpendTimeMillis(){
+        return  this.maxExpendTime /1000/1000;
+    }
+
+    public long getMaxExpendTimeSecond(){
+        return  this.maxExpendTime /1000/1000/1000;
+    }
+
+    public long getAvgExpendTimeNano(){
+        return  this.totalExpendTime / counter.get();
+    }
+
+    public long getAvgExpendTimeMillis(){
+        return  getAvgExpendTimeNano() /1000/1000;
+    }
+
+    public long getAvgExpendTimeSecond(){
+        return  getAvgExpendTimeNano() /1000/1000/1000;
+    }
+
+    public long getTotalExpendTimeNano(){
+        return  this.totalExpendTime;
+    }
+
+    public long getTotalExpendTimeMillis(){
+        return  this.totalExpendTime /1000/1000;
+    }
+
+    public long getTotalExpendTimeSecond(){
+        return  this.totalExpendTime/1000/1000/1000;
+    }
 
     public int getOps(){
         return ops;
