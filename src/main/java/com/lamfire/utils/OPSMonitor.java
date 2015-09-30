@@ -15,10 +15,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class OPSMonitor implements Runnable {
     private static final Logger LOGGER = Logger.getLogger(OPSMonitor.class);
 
-    private AtomicInteger counter = new AtomicInteger(0);
+    private final AtomicInteger counter = new AtomicInteger(0);
+    private String id;
     private int ops = 0;
     private int prevCount;
     private int interval = 1;
+
+    public OPSMonitor(String id){
+        this.id = id;
+    }
 
 
     @Override
@@ -27,7 +32,7 @@ public class OPSMonitor implements Runnable {
         this.ops = thisCount - prevCount;
         this.prevCount = thisCount;
         if(LOGGER.isDebugEnabled()){
-            LOGGER.debug("count=" + thisCount +",ops=" + ops + "/" + interval +"s");
+            LOGGER.debug("["+id+"]count=" + thisCount +",ops=" + ops + "/" + interval +"s");
         }
     }
 
