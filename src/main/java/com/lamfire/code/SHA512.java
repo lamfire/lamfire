@@ -9,11 +9,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * SHA256算法 2010-8-4上午11:41:05 SHA1
+ * SHA512算法 2010-8-4上午11:41:05 SHA1
  * 
  * @author lamfire
  */
-public class SHA256 {
+public class SHA512 {
 
 	public static String hash(byte[] bytes) {
 		byte[] encode = digest(bytes);
@@ -59,7 +59,7 @@ public class SHA256 {
 
 	public static MessageDigest getMessageDigest() {
 		try {
-			return MessageDigest.getInstance("SHA-256");
+			return MessageDigest.getInstance("SHA-512");
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
