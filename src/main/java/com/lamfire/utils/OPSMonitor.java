@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Time: 下午12:02
  * To change this template use File | Settings | File Templates.
  */
-public class OPSMonitor implements Runnable {
+public class OPSMonitor{
     private static final Logger LOGGER = Logger.getLogger(OPSMonitor.class);
 
     private final AtomicInteger counter = new AtomicInteger(0);
@@ -27,19 +27,23 @@ public class OPSMonitor implements Runnable {
     private long maxExpendTime = 0;
     private long totalExpendTime = 0;
 
+    private Runnable worker = new Runnable() {
+        @Override
+        public void run() {
+            int thisCount = counter.get();
+            ops = thisCount - prevCount;
+            prevCount = thisCount;
+            if(LOGGER.isDebugEnabled()){
+                LOGGER.debug("["+id+"]count=" + thisCount +",ops=" + ops + "/" + interval +"s");
+            }
+        }
+    } ;
+
     public OPSMonitor(String id){
         this.id = id;
     }
 
-    @Override
-    public void run() {
-        int thisCount = counter.get();
-        this.ops = thisCount - prevCount;
-        this.prevCount = thisCount;
-        if(LOGGER.isDebugEnabled()){
-            LOGGER.debug("["+id+"]count=" + thisCount +",ops=" + ops + "/" + interval +"s");
-        }
-    }
+
 
     public synchronized void done(){
         long thisTime = System.nanoTime();
@@ -112,8 +116,8 @@ public class OPSMonitor implements Runnable {
         return id;
     }
 
-    public void setInterval(int interval){
-        this.interval = interval;
+    public void setInterval(int intervalSecond){
+        this.interval = intervalSecond;
     }
 
     public int getInterval(){
@@ -121,10 +125,10 @@ public class OPSMonitor implements Runnable {
     }
 
     public void startup(){
-        Threads.scheduleWithFixedDelay(this,interval,interval, TimeUnit.SECONDS);
+        Threads.scheduleWithFixedDelay(worker,interval,interval, TimeUnit.SECONDS);
     }
 
     public void shutdown(){
-        Threads.removeScheduledTask(this);
+        Threads.removeScheduledTask(worker);
     }
 }
