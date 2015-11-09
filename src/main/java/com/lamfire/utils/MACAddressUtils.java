@@ -28,7 +28,7 @@ public class MACAddressUtils {
 	}
 	
 	public static long asLongAddress(String macAddress){
-		return Hex.toLong(macAddress);
+		return Hex.toLong("0000"+macAddress);
 	}
 	
 	public static String asStringAddress(long macAddress){
