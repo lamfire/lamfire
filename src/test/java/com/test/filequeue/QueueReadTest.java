@@ -51,14 +51,9 @@ public class QueueReadTest  {
 			}
 			bytes = data;
 			String s = new String(bytes);
-            String[] dd = StringUtils.split(s,':');
-
-            int intVal = Integer.parseInt(dd[1]);
-            if(intVal != counter.get()){
-                System.out.println(counter.get() + " != " + intVal +" : " + s);
-            }
-			counter.getAndIncrement();
-			//System.out.println(new String(bytes));
+			System.out.println(s);
 		}
+        System.out.println("[SIZE]:"+queue.size());
+        System.exit(0);
 	}
 }

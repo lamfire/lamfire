@@ -37,16 +37,14 @@ public class QueueWriteTest  {
         FileQueue queue = builder.build();
 		String text = RandomUtils.randomTextWithFixedLength(100);
 
-        System.out.println(queue.size());
+        System.out.println("[SIZE]:"+queue.size());
 
-		while(true){
-			byte[] bytes = (text +":" + (counter.get())).getBytes();
+		for(int i=0;i<10;i++){
+			byte[] bytes = (text +":" + (i)).getBytes();
+            counter.getAndIncrement();
 			queue.push(bytes);
-			int count = counter.getAndIncrement();
-            if(count == 1000000){
-                break;
-            }
 		}
+
 		System.out.println("[SIZE]:" + queue.size());
 		queue.close();
 		System.out.println("END");

@@ -60,13 +60,20 @@ class MetaBuffer {
 	public MetaBuffer(File file,int indexFilePartitionLength , int dataFilePartitionLength) throws IOException{
         boolean existsFile = file.exists();
 		this.file = new FileBuffer(file,META_FILE_LENGTH);
-        this.indexFilePartitionLength = indexFilePartitionLength;
-        this.dataFilePartitionLength = dataFilePartitionLength;
 
-        //存在则加载
-        if(existsFile){
+        if(!existsFile){
+            this.indexFilePartitionLength = indexFilePartitionLength;
+            this.dataFilePartitionLength = dataFilePartitionLength;
+        }else{
+            //存在则加载
             LOGGER.info("[EXISTS] : load meta data from : " + file.getAbsolutePath());
             loadFromFile();
+            this.indexFilePartitionLength = readIndexFilePartitionLength();
+            this.dataFilePartitionLength = readDataFilePartitionLength();
+
+            if(this.indexFilePartitionLength != indexFilePartitionLength || this.dataFilePartitionLength != dataFilePartitionLength){
+                throw new IOException("Partition Length failed,index:" + indexFilePartitionLength + "/" + this.indexFilePartitionLength +" -> data:" + dataFilePartitionLength + "/" + this.dataFilePartitionLength);
+            }
         }
 	}
 	
@@ -86,6 +93,14 @@ class MetaBuffer {
             lock.unlock();
         }
 	}
+
+    private int readIndexFilePartitionLength()throws IOException{
+        return file.getInt(32);
+    }
+
+    private int readDataFilePartitionLength()throws IOException{
+        return file.getInt(36);
+    }
 	
 	public void flush()throws IOException{
         try{
@@ -156,7 +171,7 @@ class MetaBuffer {
 	public long getReadCount() {
         try{
             lock.lock();
-            return (1l * indexFilePartitionLength * readIndex.get() + readIndexOffset) /  Element.ELEMENT_LENGTH;
+            return ((indexFilePartitionLength - indexFilePartitionLength % Element.ELEMENT_LENGTH) * readIndex.get() + readIndexOffset) /  Element.ELEMENT_LENGTH;
         }finally {
             lock.unlock();
         }
@@ -166,7 +181,8 @@ class MetaBuffer {
 	public long getWriteCount() {
         try{
             lock.lock();
-		    return (1l * indexFilePartitionLength * writeIndex.get() + writeIndexOffset) /  Element.ELEMENT_LENGTH;
+            long count = (((indexFilePartitionLength - indexFilePartitionLength % Element.ELEMENT_LENGTH) * writeIndex.get() + writeIndexOffset)) /  Element.ELEMENT_LENGTH;
+            return count;
         }finally {
             lock.unlock();
         }
