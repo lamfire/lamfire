@@ -58,10 +58,16 @@ class MetaBuffer {
     private final int dataFilePartitionLength ;     //数据文件分区大小
 	
 	public MetaBuffer(File file,int indexFilePartitionLength , int dataFilePartitionLength) throws IOException{
+        boolean existsFile = file.exists();
 		this.file = new FileBuffer(file,META_FILE_LENGTH);
         this.indexFilePartitionLength = indexFilePartitionLength;
         this.dataFilePartitionLength = dataFilePartitionLength;
-        loadFromFile();
+
+        //存在则加载
+        if(existsFile){
+            LOGGER.info("[EXISTS] : load meta data from : " + file.getAbsolutePath());
+            loadFromFile();
+        }
 	}
 	
 	private void loadFromFile()throws IOException{
