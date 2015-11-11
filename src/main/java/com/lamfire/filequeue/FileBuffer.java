@@ -24,12 +24,12 @@ public class FileBuffer {
 	/**
 	 * 默认的缓冲区大小 : 4MB
 	 */
-	public static final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024; // 4m
+	private static final int _DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024; // 4m
 
 	/**
 	 * 文件的最大SIZE:1GB
 	 */
-	public static final int MAX_FILE_LENGTH = 1024 * 1024 * 1024; // 1G
+    private static final int _MAX_FILE_LENGTH = 1024 * 1024 * 1024; // 1G
 
 	private final Lock lock = new ReentrantLock();
 
@@ -46,16 +46,22 @@ public class FileBuffer {
     private FileChannel channel;
 
 	private final int bufferSize;
+    private final int fileMaxLength;
 
 	public FileBuffer(File file) throws IOException {
-		this(file, DEFAULT_BUFFER_SIZE);
+		this(file, _DEFAULT_BUFFER_SIZE,_MAX_FILE_LENGTH);
 	}
 
 	public FileBuffer(File file, int bufferSize) throws IOException {
-		this.bufferSize = bufferSize;
-		this.file = file;
-        initialize();
+        this(file, bufferSize, _MAX_FILE_LENGTH);
 	}
+
+    public FileBuffer(File file, int bufferSize,int fileMaxLength) throws IOException {
+        this.bufferSize = bufferSize;
+        this.fileMaxLength = fileMaxLength;
+        this.file = file;
+        initialize();
+    }
 
     protected synchronized   FileChannel getFileChannel(){
        if(this.channel == null){
@@ -80,7 +86,7 @@ public class FileBuffer {
 		try {
 			lock.lock();
             int mapLength = bufferSize;
-            int remaining = MAX_FILE_LENGTH - postion;
+            int remaining = fileMaxLength - postion;
             if(remaining < bufferSize){
                 mapLength = remaining;
             }
@@ -125,6 +131,14 @@ public class FileBuffer {
         }
 	}
 
+    public int getFileMaxLength() {
+        return fileMaxLength;
+    }
+
+    public int getBufferSize() {
+        return bufferSize;
+    }
+
     public void closeAndDeleteFile(){
         try {
             lock.lock();
@@ -145,7 +159,7 @@ public class FileBuffer {
 	void adjustReadMapper(int necessary) throws IOException {
 		try {
 			lock.lock();
-			if ((this.readPosition + necessary) > MAX_FILE_LENGTH) {
+			if ((this.readPosition + necessary) > fileMaxLength) {
 				throw new IOException("Read length out of disk space");
 			}
 
@@ -174,7 +188,7 @@ public class FileBuffer {
 	public int getFreeWriteSpace() {
 		try {
 			this.lock.lock();
-			return MAX_FILE_LENGTH - this.writePosition;
+			return fileMaxLength - this.writePosition;
 		} finally {
 			lock.unlock();
 		}
@@ -201,7 +215,7 @@ public class FileBuffer {
 	void adjustWriteMapper(int necessary) throws IOException {
 		try {
 			lock.lock();
-			if ((this.writePosition + necessary) > MAX_FILE_LENGTH) {
+			if ((this.writePosition + necessary) > fileMaxLength) {
 				throw new IOException("No more disk space");
 			}
 

@@ -13,6 +13,7 @@ public interface FileQueue {
     public  byte[] peek(int i);
     public  byte[] pull();
 	public  long size();
+    public  boolean isEmpty();
     public void skip(int number);
 	public void clear();
 	public void close();

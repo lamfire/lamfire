@@ -13,7 +13,6 @@ import java.io.IOException;
 class IndexBuffer {
 	public static final String FILE_SUFFIX = ".i";
 	public static final int ELEMENT_LENGTH = Element.ELEMENT_LENGTH;
-    public static final int MAX_AVAILABLE_FILE_SPACE = FileBuffer.MAX_FILE_LENGTH - FileBuffer.MAX_FILE_LENGTH  % Element.ELEMENT_LENGTH;
 
     public static String getIndexFileName(String dir,String name,int index){
         dir = FilenameUtils.normalizeNoEndSeparator(dir);
@@ -45,6 +44,11 @@ class IndexBuffer {
 		this.buffer = new FileBuffer(file,bufferSize);
 		this.index = page;
 	}
+
+    public IndexBuffer(File file, int page, int bufferSize,int fileMaxLen) throws IOException {
+        this.buffer = new FileBuffer(file,bufferSize,fileMaxLen);
+        this.index = page;
+    }
 	
 
 	public void setWriteOffset(int offset) {
@@ -93,7 +97,7 @@ class IndexBuffer {
 
 
     public int getUnreadElementSize(){
-        int unreadSpace = (FileBuffer.MAX_FILE_LENGTH - this.buffer.getReadPosition());
+        int unreadSpace = (this.buffer.getFileMaxLength() - this.buffer.getReadPosition());
         return (unreadSpace - unreadSpace % ELEMENT_LENGTH ) / ELEMENT_LENGTH;
     }
 

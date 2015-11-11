@@ -21,7 +21,6 @@ import java.util.concurrent.locks.ReentrantLock;
 class FileQueueImpl implements FileQueue,Closeable{
 	private static final Logger LOGGER = Logger.getLogger(FileQueueImpl.class);
 	private static final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;
-    private static final int AUTO_CLEAR_INTERVAL  = 300; //s
 	private int indexBufferSize = DEFAULT_BUFFER_SIZE;
 	private int storeBufferSize = DEFAULT_BUFFER_SIZE;
 
@@ -40,18 +39,14 @@ class FileQueueImpl implements FileQueue,Closeable{
     private int indexOfLastDeleteStoreFile = 0 ;
     private int indexOfLastDeleteIndexFile = 0;
 
+    private int indexFilePartitionLength;
+    private int dataFilePartitionLength;
     private boolean closeOnJvmShutdown = false;
 
-	public FileQueueImpl(String dataDir, String name) throws IOException {
-		this(dataDir, name, DEFAULT_BUFFER_SIZE, DEFAULT_BUFFER_SIZE);
-	}
-
-	public FileQueueImpl(String dataDir, String name, int storeBufferSize) throws IOException {
-		this(dataDir, name, DEFAULT_BUFFER_SIZE, storeBufferSize);
-	}
-
-	public FileQueueImpl(String dataDir, String name, int indexBufferSize, int storeBufferSize) throws IOException {
+	public FileQueueImpl(String dataDir, String name, int indexBufferSize, int storeBufferSize,int indexFilePartitionLength,int dataFilePartitionLength) throws IOException {
 		this.indexBufferSize = indexBufferSize;
+        this.indexFilePartitionLength = indexFilePartitionLength;
+        this.dataFilePartitionLength = dataFilePartitionLength;
 		this.storeBufferSize = storeBufferSize;
 		this.dir = dataDir;
 		this.name = name;
@@ -59,15 +54,21 @@ class FileQueueImpl implements FileQueue,Closeable{
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
+
+        //初始化
 		initialize();
-        Threads.scheduleWithFixedDelay(autoClearExpiredFileMonitor,AUTO_CLEAR_INTERVAL,AUTO_CLEAR_INTERVAL, TimeUnit.SECONDS);
+
+        //检查是否为空对列
+        if(this.isEmpty() && this.meta.getReadCount() > 0){
+            this.clear();
+        }
 	}
 
 	void initialize() throws IOException {
         try {
             lock.lock();
             if(meta == null){
-                meta = new MetaBuffer(MetaBuffer.getMetaFile(dir, name));
+                meta = new MetaBuffer(MetaBuffer.getMetaFile(dir, name),indexFilePartitionLength,dataFilePartitionLength);
             }
 
             if(indexMgr == null){
@@ -91,11 +92,23 @@ class FileQueueImpl implements FileQueue,Closeable{
 
             indexOfLastDeleteStoreFile = 0 ;
             indexOfLastDeleteIndexFile = 0;
+
         } finally {
             lock.unlock();
         }
 	}
 
+
+    /**
+     * 定时清理过期文件
+     * @param clearExpireFileIntervalSeconds    时间间隔
+     */
+    protected void enableClearExpireFile(int clearExpireFileIntervalSeconds){
+        //启动检查清理过期文件时间任务
+        if(clearExpireFileIntervalSeconds > 0){
+            Threads.scheduleWithFixedDelay(autoClearExpiredFileMonitor,clearExpireFileIntervalSeconds,clearExpireFileIntervalSeconds, TimeUnit.SECONDS);
+        }
+    }
 
 
 	public boolean push(byte[] bytes) {

@@ -36,12 +36,14 @@ public class QueueReadTest  {
 	
 	public static void main(String[] args) throws Exception {
         FileQueueBuilder builder = new FileQueueBuilder();
-        builder.dataDir("/data/FileQueue/").name("queue1");
+        builder.indexFilePartitionLength(16 * 1024 * 1024).dataFilePartitionLength(16 * 1024 * 1024);
+        builder.dataDir("/data/FileQueue/").name("QueueTest");
+        builder.enableAutoClearExpireFileIntervalSeconds(15);
 		FileQueue queue = builder.build();
 
 		System.out.println("[SIZE]:"+queue.size());
 		
-		for(int i=0;i<1000000000;i++){
+		while(!queue.isEmpty()){
 			byte[] data = queue.pull();
 			if(data == null){
 				System.out.println("[complated]:" + counter.get());
@@ -58,8 +60,5 @@ public class QueueReadTest  {
 			counter.getAndIncrement();
 			//System.out.println(new String(bytes));
 		}
-		
-		queue.close();
-
 	}
 }

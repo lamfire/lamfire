@@ -16,6 +16,6 @@ import java.io.File;
  */
 public class FileBufferTest {
 	public static void main(String[] args) throws Exception {
-        System.out.println(FileBuffer.MAX_FILE_LENGTH % 12);
+
 	}
 }

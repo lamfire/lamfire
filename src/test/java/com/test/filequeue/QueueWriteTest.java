@@ -32,7 +32,8 @@ public class QueueWriteTest  {
 	
 	public static void main(String[] args) throws Exception {
         FileQueueBuilder builder = new FileQueueBuilder();
-        builder.dataDir("/data/FileQueue/").name("queue4");
+        builder.indexFilePartitionLength(16 * 1024 * 1024).dataFilePartitionLength(16 * 1024 * 1024);
+        builder.dataDir("/data/FileQueue/").name("QueueTest");
         FileQueue queue = builder.build();
 		String text = RandomUtils.randomTextWithFixedLength(100);
 
@@ -41,10 +42,14 @@ public class QueueWriteTest  {
 		while(true){
 			byte[] bytes = (text +":" + (counter.get())).getBytes();
 			queue.push(bytes);
-			counter.getAndIncrement();
+			int count = counter.getAndIncrement();
+            if(count == 1000000){
+                break;
+            }
 		}
-		//System.out.println("[SIZE]:" + queue.size());
-		//queue.close();
-		//System.out.println("END");
+		System.out.println("[SIZE]:" + queue.size());
+		queue.close();
+		System.out.println("END");
+        System.exit(0);
 	}
 }

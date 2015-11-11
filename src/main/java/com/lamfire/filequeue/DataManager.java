@@ -14,7 +14,7 @@ class DataManager {
     private MetaBuffer meta;
     private String dir;
     private String name;
-    private int bufferSize = FileBuffer.DEFAULT_BUFFER_SIZE;
+    private int bufferSize = 4 * 1024 * 1024; // 4m
 
     private final Map<Integer,DataBuffer> stores = Maps.newHashMap();
 
@@ -38,7 +38,7 @@ class DataManager {
         DataBuffer io = stores.get(index);
         if (io == null) {
             File file = DataBuffer.getDataFile(dir, name, index);
-            io = new DataBuffer(file, index, bufferSize);
+            io = new DataBuffer(file, index, bufferSize,meta.getDataFilePartitionLength());
             stores.put(index, io);
         }
         return io;
@@ -46,11 +46,11 @@ class DataManager {
 
     public synchronized DataBuffer getDataBuffer(int index) throws IOException {
         if(expired(index)){
-            throw new ExpiredException("The data file was expired ["+index+"]: "+ IndexBuffer.getIndexFileName(dir, name, index));
+            throw new ExpiredException("["+name+"] : The data["+index+"] file was expired,Readed index="+meta.getReadIndex());
         }
 
         if(index > meta.getWriteDataIndex()){
-            throw new FileNotFoundException("The data file out of size ["+index+"]: "+ IndexBuffer.getIndexFileName(dir, name, index));
+            throw new FileNotFoundException("["+name+"] : The data["+index+"] file out of size");
         }
 
         DataBuffer io = getOrNewDataBuffer(index);
@@ -61,13 +61,13 @@ class DataManager {
 
         DataBuffer io = stores.remove(index);
         if (io != null) {
-            LOGGER.info("deleting data file ["+index+"]: " + DataBuffer.getDataFileName(dir, name, index));
+            LOGGER.info("["+name+"] : deleting data file ["+index+"]: " + DataBuffer.getDataFileName(dir, name, index));
             io.closeAndDeleteFile();
             return;
         }
 
         if(DataBuffer.deleteDataFile(dir, name, index)){
-            LOGGER.info("deleting data file ["+index+"]: " + DataBuffer.getDataFileName(dir, name, index));
+            LOGGER.info("["+name+"] : deleting data file ["+index+"]: " + DataBuffer.getDataFileName(dir, name, index));
         }
 
     }
@@ -76,7 +76,7 @@ class DataManager {
         meta.moveToNextDataWriteIndex();
         int index = meta.getWriteDataIndex();
         File file = DataBuffer.getDataFile(dir, name, index);
-        DataBuffer io = new DataBuffer(file, index, bufferSize);
+        DataBuffer io = new DataBuffer(file, index, bufferSize,meta.getDataFilePartitionLength());
         stores.put(index, io);
         return io;
     }

@@ -44,6 +44,11 @@ class DataBuffer {
 		this.index = index;
 	}
 
+    public DataBuffer(File file, int index, int bufferSize,int fileMaxLen) throws IOException {
+        this.buffer = new FileBuffer(file,bufferSize,fileMaxLen);
+        this.index = index;
+    }
+
 	public void setWriteOffset(int offset) {
 		this.buffer.setWritePosition(offset);
 	}

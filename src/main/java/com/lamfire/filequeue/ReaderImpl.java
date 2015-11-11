@@ -66,7 +66,7 @@ class ReaderImpl implements Reader {
         try{
             lock.lock();
             _offset += Element.ELEMENT_LENGTH;
-            if((FileBuffer.MAX_FILE_LENGTH - _offset) < Element.ELEMENT_LENGTH){
+            if((meta.getIndexFilePartitionLength() - _offset) < Element.ELEMENT_LENGTH){
                 _index ++;
                 _offset = 0;
             }
@@ -90,7 +90,7 @@ class ReaderImpl implements Reader {
 
             if(i > 0){
                 int skipOffset = i * Element.ELEMENT_LENGTH;
-                int maxAvailableSpace = IndexBuffer.MAX_AVAILABLE_FILE_SPACE;
+                int maxAvailableSpace = meta.getIndexFilePartitionLength() - meta.getIndexFilePartitionLength() % Element.ELEMENT_LENGTH;
                 int skipIdx = skipOffset / maxAvailableSpace;
                 skipOffset = skipOffset % maxAvailableSpace ;
                 index+= skipIdx;

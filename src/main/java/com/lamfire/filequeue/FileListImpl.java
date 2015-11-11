@@ -38,19 +38,16 @@ class FileListImpl implements FileList,Closeable{
     private int indexOfLastDeleteStoreFile = 0 ;
     private int indexOfLastDeleteIndexFile = 0;
 
+    private int indexFilePartitionLength;
+    private int dataFilePartitionLength;
+
     private boolean closeOnJvmShutdown = false;
 
-	public FileListImpl(String dataDir, String name) throws IOException {
-		this(dataDir, name, DEFAULT_BUFFER_SIZE, DEFAULT_BUFFER_SIZE);
-	}
-
-	public FileListImpl(String dataDir, String name, int storeBufferSize) throws IOException {
-		this(dataDir, name, DEFAULT_BUFFER_SIZE, storeBufferSize);
-	}
-
-	public FileListImpl(String dataDir, String name, int indexBufferSize, int storeBufferSize) throws IOException {
+	public FileListImpl(String dataDir, String name, int indexBufferSize, int storeBufferSize,int indexFilePartitionLength,int dataFilePartitionLength) throws IOException {
 		this.indexBufferSize = indexBufferSize;
 		this.storeBufferSize = storeBufferSize;
+        this.indexFilePartitionLength = indexFilePartitionLength;
+        this.dataFilePartitionLength = dataFilePartitionLength;
 		this.dir = dataDir;
 		this.name = name;
 		File dir = new File(dataDir);
@@ -66,7 +63,7 @@ class FileListImpl implements FileList,Closeable{
         }
         try {
             lock.lock();
-            meta = new MetaBuffer(MetaBuffer.getMetaFile(dir, name));
+            meta = new MetaBuffer(MetaBuffer.getMetaFile(dir, name),indexFilePartitionLength,dataFilePartitionLength);
             indexMgr = new IndexManager(this.meta,dir,name);
             dataMgr = new DataManager(this.meta,dir,name);
             reader = new ReaderImpl(this.meta,indexMgr, dataMgr) ;

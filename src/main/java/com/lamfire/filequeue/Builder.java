@@ -17,6 +17,8 @@ public abstract class Builder<E> {
     protected int indexBufferSize = 4 * 1024 * 1024;
     protected int storeBufferSize = 4 * 1024 * 1024;
     protected boolean closeOnJvmShutdown = false;
+    protected int indexFilePartitionLength = 1024 * 1024 * 1024;   //索引文件分区大小
+    protected int dataFilePartitionLength =1024 * 1024 * 1024;     //数据文件分区大小
 
 
     public boolean closeOnJvmShutdown(){
@@ -64,6 +66,16 @@ public abstract class Builder<E> {
         return this;
     }
 
+    public Builder<E> indexFilePartitionLength(int indexFilePartitionLength){
+        this.indexFilePartitionLength = indexFilePartitionLength;
+        return this;
+    }
+
+    public Builder<E> dataFilePartitionLength(int dataFilePartitionLength){
+        this.dataFilePartitionLength = dataFilePartitionLength;
+        return this;
+    }
+
     public E build()throws IOException{
         if(StringUtils.isBlank(dataDir)){
             throw new IllegalArgumentException("Argument 'dataDir' can not be empty.");
@@ -73,8 +85,8 @@ public abstract class Builder<E> {
             throw new IllegalArgumentException("Argument 'name' can not be empty.");
         }
 
-        return make(dataDir,name,indexBufferSize,storeBufferSize) ;
+        return make() ;
     }
 
-    abstract E make(String dataDir, String name, int indexBufferSize, int storeBufferSize) throws IOException;
+    abstract E make() throws IOException;
 }

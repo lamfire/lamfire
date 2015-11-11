@@ -14,7 +14,7 @@ class IndexManager {
     private MetaBuffer meta;
     private String dir;
     private String name;
-    private int bufferSize = FileBuffer.DEFAULT_BUFFER_SIZE;
+    private int bufferSize = 4 * 1024 * 1024; // 4m
 
     private final Map<Integer,IndexBuffer> indexs = Maps.newHashMap();
 
@@ -34,17 +34,17 @@ class IndexManager {
 
     public synchronized IndexBuffer getIndexBuffer(int index) throws IOException {
         if(expired(index)){
-            throw new ExpiredException("The index file was expired : "+ IndexBuffer.getIndexFileName(dir, name, index));
+            throw new ExpiredException("["+name+"] : The index["+index+"] was expired,Readed index="+meta.getReadIndex());
         }
 
         if(index > meta.getWriteIndex()){
-            throw new FileNotFoundException("The index file out of size : "+ IndexBuffer.getIndexFileName(dir, name, index));
+            throw new FileNotFoundException("["+name+"] : The index["+index+"] file out of size");
         }
 
         IndexBuffer io = indexs.get(index);
         if (io == null) {
             File pageFile = IndexBuffer.getIndexFile(dir, name, index);
-            io = new IndexBuffer(pageFile, index, bufferSize);
+            io = new IndexBuffer(pageFile, index, bufferSize,meta.getIndexFilePartitionLength());
             indexs.put(index, io);
         }
         return io;
@@ -53,13 +53,13 @@ class IndexManager {
     public void deleteIndexFile(int index){
         IndexBuffer io = indexs.remove(index);
         if (io != null) {
-            LOGGER.info("deleting index file ["+index+"]: " + IndexBuffer.getIndexFileName(dir, name, index));
+            LOGGER.info("["+name+"] : deleting index file ["+index+"]: " + IndexBuffer.getIndexFileName(dir, name, index));
             io.closeAndDeleteFile();
             return;
         }
 
          if(IndexBuffer.deleteIndexFile(dir, name, index)){
-             LOGGER.info("deleting index file ["+index+"]: " + IndexBuffer.getIndexFileName(dir, name, index));
+             LOGGER.info("["+name+"] : deleting index file ["+index+"]: " + IndexBuffer.getIndexFileName(dir, name, index));
          }
     }
 
@@ -67,7 +67,7 @@ class IndexManager {
         meta.moveToNextWriteIndex();
         int index = meta.getWriteIndex();
         File pageFile = IndexBuffer.getIndexFile(dir, name, index);
-        IndexBuffer io = new IndexBuffer(pageFile, index, bufferSize);
+        IndexBuffer io = new IndexBuffer(pageFile, index, bufferSize,meta.getIndexFilePartitionLength());
         indexs.put(index, io);
         return io;
     }

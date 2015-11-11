@@ -11,12 +11,24 @@ import java.io.IOException;
  */
 public class FileQueueBuilder extends Builder<FileQueue> {
 
+    int clearExpireFileIntervalSeconds = 300;
+
+    public FileQueueBuilder enableAutoClearExpireFileIntervalSeconds(int clearExpireFileIntervalSeconds){
+        this.clearExpireFileIntervalSeconds = clearExpireFileIntervalSeconds;
+        return this;
+    }
+
     @Override
-    synchronized FileQueue make(String dataDir, String name, int indexBufferSize, int storeBufferSize) throws IOException {
-        FileQueueImpl fileQueue = new FileQueueImpl(dataDir,name,indexBufferSize,storeBufferSize) ;
+    synchronized FileQueue make() throws IOException {
+        FileQueueImpl fileQueue = new FileQueueImpl(dataDir,name,indexBufferSize,storeBufferSize,indexFilePartitionLength,dataFilePartitionLength) ;
         if(closeOnJvmShutdown()){
             fileQueue.addCloseOnJvmShutdown();
         }
+
+        if(clearExpireFileIntervalSeconds > 0 ){
+            fileQueue.enableClearExpireFile(clearExpireFileIntervalSeconds);
+        }
+
         return fileQueue;
     }
 }

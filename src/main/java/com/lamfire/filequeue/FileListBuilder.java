@@ -11,8 +11,8 @@ import java.io.IOException;
  */
 public class FileListBuilder extends Builder<FileList> {
     @Override
-    synchronized FileList make(String dataDir, String name, int indexBufferSize, int storeBufferSize) throws IOException {
-        FileListImpl fileList =  new FileListImpl(dataDir,name,indexBufferSize,storeBufferSize);
+    synchronized FileList make() throws IOException {
+        FileListImpl fileList =  new FileListImpl(dataDir,name,indexBufferSize,storeBufferSize,indexFilePartitionLength,dataFilePartitionLength);
         if(closeOnJvmShutdown()){
             fileList.addCloseOnJvmShutdown();
         }
