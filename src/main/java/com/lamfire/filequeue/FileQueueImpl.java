@@ -60,7 +60,7 @@ class FileQueueImpl implements FileQueue,Closeable{
 
         //检查是否为空对列
         if(this.isEmpty() && this.meta.getReadCount() > 0){
-            this.clear();
+            this.renew();
         }
 	}
 
@@ -217,16 +217,28 @@ class FileQueueImpl implements FileQueue,Closeable{
 			lock.lock();
             deleteAllIndexFiles();
             deleteAllDataFiles();
-            this.reader = null;
-            this.writer = null;
             meta.clear();
-            initialize();
 		} catch (IOException e) {
 			throw new IOError(e);
 		} finally {
 			lock.unlock();
 		}
 	}
+
+    protected void renew(){
+        try {
+            LOGGER.info("[RENEW] : " + name);
+            lock.lock();
+            clear();
+            this.reader = null;
+            this.writer = null;
+            initialize();
+        } catch (IOException e) {
+            throw new IOError(e);
+        } finally {
+            lock.unlock();
+        }
+    }
 
 	public void close() {
 		try {
@@ -310,7 +322,7 @@ class FileQueueImpl implements FileQueue,Closeable{
                 deleteExpiredDataFiles();
                 deleteExpiredIndexFiles();
                 if(size() == 0 && (meta.getWriteIndex() > 0 || meta.getWriteDataIndex() > 0)){
-                    clear();
+                    renew();
                 }
             }catch (Throwable t){
 
