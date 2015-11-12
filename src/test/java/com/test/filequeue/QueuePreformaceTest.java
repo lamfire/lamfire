@@ -66,7 +66,7 @@ public class QueuePreformaceTest {
                 try{
                     queue.push(wTxt.getBytes());
                     iops.incrementAndGet();
-                    if(writeCounter.get() >= 100000000){   //写入1千万
+                    if(writeCounter.get() >= 10000000){   //写入1千万
                         break;
                     }
                 }catch (Throwable t){

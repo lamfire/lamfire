@@ -309,7 +309,7 @@ class FileQueueImpl implements FileQueue,Closeable{
                 lock.lock();
                 deleteExpiredDataFiles();
                 deleteExpiredIndexFiles();
-                if(size() == 0 && meta.getWriteIndex() > 0){
+                if(size() == 0 && (meta.getWriteIndex() > 0 || meta.getWriteDataIndex() > 0)){
                     clear();
                 }
             }catch (Throwable t){
