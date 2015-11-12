@@ -303,7 +303,7 @@ class MetaBuffer {
         }
     }
 
-    public void setWriteIndex0(int writeIndex) {
+    public void setWriteIndex(int writeIndex) {
         try{
             lock.lock();
             this.writeIndex.set(writeIndex);
@@ -339,7 +339,7 @@ class MetaBuffer {
         }
     }
 
-    public void setWriteDataIndex0(int writeDataIndex) {
+    public void setWriteDataIndex(int writeDataIndex) {
         try{
             lock.lock();
             this.writeDataIndex.set(writeDataIndex);
