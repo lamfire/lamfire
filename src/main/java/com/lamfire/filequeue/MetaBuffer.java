@@ -68,8 +68,8 @@ class MetaBuffer {
             //存在则加载
             LOGGER.info("[EXISTS] : load meta data from : " + file.getAbsolutePath());
             loadFromFile();
-            this.indexFilePartitionLength = readIndexFilePartitionLength();
-            this.dataFilePartitionLength = readDataFilePartitionLength();
+            this.indexFilePartitionLength = takeIndexFilePartitionLength();
+            this.dataFilePartitionLength = takeDataFilePartitionLength();
 
             if(this.indexFilePartitionLength != indexFilePartitionLength || this.dataFilePartitionLength != dataFilePartitionLength){
                 throw new IOException("Partition Length failed,index:" + indexFilePartitionLength + "/" + this.indexFilePartitionLength +" -> data:" + dataFilePartitionLength + "/" + this.dataFilePartitionLength);
@@ -94,11 +94,11 @@ class MetaBuffer {
         }
 	}
 
-    private int readIndexFilePartitionLength()throws IOException{
+    private int takeIndexFilePartitionLength()throws IOException{
         return file.getInt(32);
     }
 
-    private int readDataFilePartitionLength()throws IOException{
+    private int takeDataFilePartitionLength()throws IOException{
         return file.getInt(36);
     }
 	

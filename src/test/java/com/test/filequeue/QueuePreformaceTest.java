@@ -111,8 +111,8 @@ public class QueuePreformaceTest {
     };
 
     public void startup(){
-        Threads.startup(writeThread);
-        Threads.startup(readThread);
+        Threads.startup(writeThread).setName("writer");
+        Threads.startup(readThread).setName("reader");
         Threads.scheduleWithFixedDelay(statusThread,1,1,TimeUnit.SECONDS);
     }
 
