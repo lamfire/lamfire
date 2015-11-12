@@ -20,7 +20,7 @@ public class FileQueueBuilder extends Builder<FileQueue> {
 
     @Override
     synchronized FileQueue make() throws IOException {
-        FileQueueImpl fileQueue = new FileQueueImpl(dataDir,name,indexBufferSize,storeBufferSize,indexFilePartitionLength,dataFilePartitionLength) ;
+        FileQueueImpl fileQueue = new FileQueueImpl(dataDir,name,indexBlockSize,dataBlockSize,indexFilePartitionLength,dataFilePartitionLength) ;
         if(closeOnJvmShutdown()){
             fileQueue.addCloseOnJvmShutdown();
         }

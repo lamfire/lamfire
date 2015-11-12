@@ -34,7 +34,7 @@ public class QueuePreformaceTest {
         FileQueueBuilder builder = new FileQueueBuilder();
         builder.enableAutoClearExpireFileIntervalSeconds(15);
         //builder.indexFilePartitionLength(16 * 1024 * 1024).dataFilePartitionLength(16 * 1024 * 1024);
-        builder.dataDir("/data/FileQueue/").name("Performance");
+        builder.dataDir("/data/FileQueue/").name("Performance").dataBlockSize(64 * 1024 * 1024);
         queue = builder.build();
         queue.clear();
     }

@@ -14,8 +14,8 @@ import java.io.IOException;
 public abstract class Builder<E> {
     protected String dataDir;
     protected String name;
-    protected int indexBufferSize = 4 * 1024 * 1024;
-    protected int storeBufferSize = 4 * 1024 * 1024;
+    protected int indexBlockSize = 4 * 1024 * 1024; //索引内存映射块大小
+    protected int dataBlockSize = 4 * 1024 * 1024;  //数据内存映射块大小
     protected boolean closeOnJvmShutdown = false;
     protected int indexFilePartitionLength = 1024 * 1024 * 1024;   //索引文件分区大小
     protected int dataFilePartitionLength =1024 * 1024 * 1024;     //数据文件分区大小
@@ -48,21 +48,21 @@ public abstract class Builder<E> {
         return this;
     }
 
-    public int indexBufferSize() {
-        return indexBufferSize;
+    public int indexBlockSize() {
+        return indexBlockSize;
     }
 
-    public Builder<E> indexBufferSize(int indexBufferSize) {
-        this.indexBufferSize = indexBufferSize;
+    public Builder<E> indexBlockSize(int indexBlockSize) {
+        this.indexBlockSize = indexBlockSize;
         return this;
     }
 
-    public int storeBufferSize() {
-        return storeBufferSize;
+    public int dataBlockSize() {
+        return dataBlockSize;
     }
 
-    public Builder<E> storeBufferSize(int storeBufferSize) {
-        this.storeBufferSize = storeBufferSize;
+    public Builder<E> dataBlockSize(int dataBlockSize) {
+        this.dataBlockSize = dataBlockSize;
         return this;
     }
 

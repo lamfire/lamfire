@@ -15,7 +15,7 @@ public class FileQueueTest {
 	public static void main(String[] args) throws Exception {
         int buffSize = 8 * 1024 * 1024;
         FileQueueBuilder builder = new FileQueueBuilder();
-        builder.dataDir("/data/FileQueue/").name("queue2").indexBufferSize(buffSize).storeBufferSize(buffSize).closeOnJvmShutdown(true);
+        builder.dataDir("/data/FileQueue/").name("queue2").indexBlockSize(buffSize).dataBlockSize(buffSize).closeOnJvmShutdown(true);
         FileQueue queue = builder.build();
         queue.clear();
         int count = 1000000;

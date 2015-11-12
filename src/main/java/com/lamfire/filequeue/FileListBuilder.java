@@ -12,7 +12,7 @@ import java.io.IOException;
 public class FileListBuilder extends Builder<FileList> {
     @Override
     synchronized FileList make() throws IOException {
-        FileListImpl fileList =  new FileListImpl(dataDir,name,indexBufferSize,storeBufferSize,indexFilePartitionLength,dataFilePartitionLength);
+        FileListImpl fileList =  new FileListImpl(dataDir,name,indexBlockSize,dataBlockSize,indexFilePartitionLength,dataFilePartitionLength);
         if(closeOnJvmShutdown()){
             fileList.addCloseOnJvmShutdown();
         }

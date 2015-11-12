@@ -15,7 +15,7 @@ public class FileQueueSkipTest {
 	public static void main(String[] args) throws Exception {
         int buffSize = 8 * 1024 * 1024;
         FileQueueBuilder builder = new FileQueueBuilder();
-        builder.dataDir("/data/FileQueue/").name("queue_skip").indexBufferSize(buffSize).storeBufferSize(buffSize);
+        builder.dataDir("/data/FileQueue/").name("queue_skip").indexBlockSize(buffSize).dataBlockSize(buffSize);
         FileQueue queue = builder.build();
         queue.clear();
         int count = 1000000;
