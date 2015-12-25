@@ -50,6 +50,8 @@ public class HttpsClient {
 	private int connectTimeOut = 30000;
 	private int readTimeOut = 30000;
 	private StringBuffer queryBuffer;
+    private InputStream _inputStream;
+    private OutputStream _outputStream;
 
 	public void setCharset(String charset) {
 		this.charset = charset;
@@ -156,14 +158,30 @@ public class HttpsClient {
 		// 读取完成
 		return result.toByteArray();
 	}
-	
-	public InputStream getInputStream()throws IOException{
-		return conn.getInputStream();
-	}
-	
-	public OutputStream getOutputStream()throws IOException{
-		return conn.getOutputStream();
-	}
+
+    public synchronized InputStream getInputStream(){
+        if(_inputStream != null){
+            return _inputStream;
+        }
+        try{
+            this._inputStream = conn.getInputStream();
+            return _inputStream;
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public synchronized OutputStream getOutputStream(){
+        if(_outputStream != null){
+            return _outputStream;
+        }
+        try{
+            _outputStream = conn.getOutputStream();
+            return _outputStream;
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
 
 	public String readAsString() throws IOException {
 		return readAsString(charset);
@@ -255,19 +273,23 @@ public class HttpsClient {
 			LOGGER.error(e.getMessage(), e);
 		}
 	}
-	
-	public void close(){
+
+    public void close(){
         try{
-            IOUtils.closeQuietly(getOutputStream());
+            IOUtils.closeQuietly(_outputStream);
+            _outputStream = null;
         }catch (Exception e){
 
         }
         try{
-            IOUtils.closeQuietly(getInputStream());
+            IOUtils.closeQuietly(_inputStream);
+            _inputStream = null;
         }catch (Exception e){
 
         }
-        conn.disconnect();
-	}
+        if(conn != null){
+            conn.disconnect();
+        }
+    }
 
 }

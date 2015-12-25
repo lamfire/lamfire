@@ -32,6 +32,8 @@ public class HttpClient {
 	private int connectTimeOut = 30000;
 	private int readTimeOut = 30000;
 	private StringBuffer queryBuffer;
+    private InputStream _inputStream;
+    private OutputStream _outputStream;
 
 	public void setCharset(String charset) {
 		this.charset = charset;
@@ -132,17 +134,25 @@ public class HttpClient {
 		return result.toByteArray();
 	}
 	
-	public InputStream getInputStream(){
+	public synchronized InputStream getInputStream(){
+        if(_inputStream != null){
+            return _inputStream;
+        }
         try{
-		    return conn.getInputStream();
+		    this._inputStream = conn.getInputStream();
+            return _inputStream;
         }catch (Exception e){
             throw new RuntimeException(e);
         }
 	}
 	
-	public OutputStream getOutputStream(){
+	public synchronized OutputStream getOutputStream(){
+        if(_outputStream != null){
+            return _outputStream;
+        }
         try{
-            return conn.getOutputStream();
+            _outputStream = conn.getOutputStream();
+            return _outputStream;
         }catch (Exception e){
             throw new RuntimeException(e);
         }
@@ -241,16 +251,20 @@ public class HttpClient {
 	
 	public void close(){
         try{
-            IOUtils.closeQuietly(getOutputStream());
+            IOUtils.closeQuietly(_outputStream);
+            _outputStream = null;
         }catch (Exception e){
 
         }
         try{
-            IOUtils.closeQuietly(getInputStream());
+            IOUtils.closeQuietly(_inputStream);
+            _inputStream = null;
         }catch (Exception e){
 
         }
-		conn.disconnect();
+        if(conn != null){
+		    conn.disconnect();
+        }
 	}
 
 }
