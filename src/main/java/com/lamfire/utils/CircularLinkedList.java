@@ -525,7 +525,9 @@ public class CircularLinkedList<E> extends AbstractSequentialList<E> implements 
         private Node<E> next;
 
         CircularListIterator(int index) {
-            next = (index == size) ? null : node(index);
+            if(index > 0 && index < size){
+                next = node(index);
+            }
         }
 
         public boolean hasNext() {
@@ -533,11 +535,13 @@ public class CircularLinkedList<E> extends AbstractSequentialList<E> implements 
         }
 
         public E next() {
-            if (!hasNext())
+            if (!hasNext()){
                 throw new NoSuchElementException();
-
-            lastReturned = next;
-            next = next.next;
+            }
+            lastReturned = next = (next == null) ? last : next.next;
+            if(lastReturned == null){
+                lastReturned = first;
+            }
             return lastReturned.item;
         }
 
@@ -550,6 +554,9 @@ public class CircularLinkedList<E> extends AbstractSequentialList<E> implements 
                 throw new NoSuchElementException();
             }
             lastReturned = next = (next == null) ? last : next.prev;
+            if(lastReturned == null){
+                lastReturned = last;
+            }
             return lastReturned.item;
         }
 

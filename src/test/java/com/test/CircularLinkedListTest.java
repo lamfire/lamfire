@@ -109,7 +109,7 @@ public class CircularLinkedListTest {
         System.out.println("[END]------------------------------------");
     }
 
-    public static void main(String[] args) {
+    public static void test1(String[] args) {
         for (int i = 0; i < 10; i++) {
             list.add(i);
         }
@@ -139,5 +139,12 @@ public class CircularLinkedListTest {
 
         System.out.println("END...");
         System.exit(0);
+    }
+
+    public static void main(String[] args) {
+        list.add(0);
+        for(int i : list){
+            System.out.println(i);
+        }
     }
 }
