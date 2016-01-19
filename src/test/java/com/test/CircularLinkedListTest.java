@@ -143,8 +143,8 @@ public class CircularLinkedListTest {
 
     public static void main(String[] args) {
         list.add(0);
-        for(int i : list){
-            System.out.println(i);
+        while(true){
+            System.out.println(list.next());
         }
     }
 }

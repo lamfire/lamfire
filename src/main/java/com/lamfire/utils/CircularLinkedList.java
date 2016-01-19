@@ -30,6 +30,12 @@ public class CircularLinkedList<E> extends AbstractSequentialList<E> implements 
     public E next(){
         lock.lock();
         try{
+            if(size == 0){
+                throw new NoSuchElementException();
+            }
+            if(size == 1){
+                return first.item;
+            }
             if(current == null || current.item == null){
                 current = first;
             }else{
@@ -44,6 +50,12 @@ public class CircularLinkedList<E> extends AbstractSequentialList<E> implements 
     public E previous(){
         lock.lock();
         try{
+            if(size == 0){
+                throw new NoSuchElementException();
+            }
+            if(size == 1){
+                return first.item;
+            }
             if(current == null || current.item == null){
                 current = first;
             }else{
