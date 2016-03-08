@@ -198,7 +198,7 @@ public class RSAAlgorithmTest {
     public static void main(String[] args) throws Exception {
         //testFile();
         //testGenKey();
-        //test("姓名");
-        performance();
+        test();
+        //performance();
     }
 }

@@ -58,6 +58,14 @@ public class ZipUtils {
 
 	}
 
+    public static boolean isGzip(byte[] bs){
+        return ((bs[0] == 31) && (bs[1] == -117));
+    }
+
+    public static boolean isZip(byte[] bs){
+        return ((bs[0] == 120) && (bs[1] == -100));
+    }
+
 	public static byte[] zip(byte[] bs) throws Exception {
 
 		ByteArrayOutputStream o = null;
@@ -166,7 +174,7 @@ public class ZipUtils {
 	 *            zip File Name to be ziped
 	 */
 
-	public static void unZip(String sToPath, String sZipFile) throws Exception {
+	public static void unzip(String sToPath, String sZipFile) throws Exception {
 
 		if (null == sToPath || ("").equals(sToPath.trim())) {
 			File objZipFile = new File(sZipFile);

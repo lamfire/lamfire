@@ -1,21 +1,21 @@
 package com.test;
 
+import com.lamfire.utils.Bytes;
 import com.lamfire.utils.ZipUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ZipTest {
 
 	public static void main(String[] args) throws Exception {
-		byte[] source = "{availableProcessors:4,garbageCollectors:[{collectionCount:3,collectionTime:4,name:Copy}".getBytes("utf-8");
-		byte[] gzip = ZipUtils.gzip(source);
-		byte[] ungzip = ZipUtils.ungzip(gzip);
-		
+		byte[] source = "1333333333333333333333333333你好1122444123123123".getBytes("utf-8");
 		byte[] zip = ZipUtils.zip(source);
-		byte[] unzip = ZipUtils.unzip(zip);
-		System.out.println("src:\t"+source.length);
-		System.out.println("gzip:\t"+gzip.length);
-		System.out.println("ungzip:\t"+ungzip.length);
-		System.out.println("zip:\t"+zip.length);
-		System.out.println("unzip:\t"+unzip.length);
+
+        System.out.println(ZipUtils.isZip(zip));
+
 	}
 
 }
