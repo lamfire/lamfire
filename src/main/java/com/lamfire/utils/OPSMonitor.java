@@ -81,7 +81,11 @@ public class OPSMonitor{
     }
 
     public long getAvgExpendTimeNano(){
-        return  this.totalExpendTime / counter.get();
+        int count = counter.get();
+        if(count ==0){
+            return 0;
+        }
+        return  this.totalExpendTime / count;
     }
 
     public long getAvgExpendTimeMillis(){

@@ -13,6 +13,7 @@ public class OPSMonitorTest {
 
     public static void main(String[] args) {
         OPSMonitor monitor = new OPSMonitor("11");
+        monitor.setInterval(60);
         monitor.startup();
 
         while(true){
