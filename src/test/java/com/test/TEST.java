@@ -1,5 +1,6 @@
 package com.test;
 
+import com.lamfire.utils.IOUtils;
 import com.lamfire.utils.StringUtils;
 
 import java.lang.reflect.ParameterizedType;
@@ -12,6 +13,7 @@ import java.util.List;
 public class TEST {
 
 	public static void main(String[] args) throws Exception {
-        System.out.println(Long.MAX_VALUE);
+        Exception e = new RuntimeException("aaaaaaaaaaaa");
+        System.out.println(IOUtils.getStackTraceAsStringBuffer(e));
 	}
 }

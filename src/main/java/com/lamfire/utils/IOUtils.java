@@ -39,6 +39,18 @@ public class IOUtils {
 		}
 	}
 
+    public static StringBuffer getStackTraceAsStringBuffer(Throwable t){
+        StringWriter writer = new StringWriter();
+        PrintWriter pw = new PrintWriter(writer);
+        try{
+            t.printStackTrace(pw);
+        }finally{
+            IOUtils.closeQuietly(pw);
+        }
+        StringBuffer buffer = writer.getBuffer() ;
+        return buffer;
+    }
+
 	public static void closeQuietly(Closeable closeable) {
 		try {
 			if (closeable != null)
