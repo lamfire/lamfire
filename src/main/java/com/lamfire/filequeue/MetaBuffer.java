@@ -64,6 +64,7 @@ class MetaBuffer {
         if(!existsFile){
             this.indexFilePartitionLength = indexFilePartitionLength;
             this.dataFilePartitionLength = dataFilePartitionLength;
+            flush();
         }else{
             //存在则加载
             LOGGER.info("[EXISTS] : load meta data from : " + file.getAbsolutePath());
