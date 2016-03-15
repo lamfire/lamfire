@@ -31,7 +31,7 @@ public class OPSMonitor{
         @Override
         public void run() {
             int thisCount = counter.get();
-            ops = thisCount - prevCount;
+            ops = Math.abs(thisCount - prevCount);
             prevCount = thisCount;
             if(LOGGER.isDebugEnabled()){
                 LOGGER.debug("["+id+"]count=" + thisCount +",ops=" + ops + "/" + interval +"s");
