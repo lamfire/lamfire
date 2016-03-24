@@ -55,7 +55,7 @@ public class Client {
 		System.out.println("uuid:" + guid);
 	}
 	
-	public static void testHmacSha1(String source, String key){
+	public static void testHmacSha1(String source, String key)throws Exception{
 		String hash = HmacSHA1.hash(source, key);
 		System.out.println(hash);
 	}
