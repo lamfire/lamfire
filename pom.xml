@@ -88,7 +88,7 @@
     <distributionManagement>
         <repository>
             <id>lamfire</id>
-            <name>lamfire-respository</name>
+            <name>lamfire-mirror</name>
             <url>http://m2.lamfire.com:8081/nexus/content/repositories/lamfire/</url>
         </repository>
     </distributionManagement>
