@@ -13,7 +13,20 @@ import java.security.NoSuchAlgorithmException;
  * 
  * @author lamfire
  */
-public class MD5 {
+public class MD5 implements Hash {
+	private static final MD5 instance = new MD5();
+
+	public static final MD5 getInstance(){
+		return instance;
+	}
+
+	private MD5(){
+
+	}
+
+	public byte[] hashDigest(byte[] source){
+		return digest(source);
+	}
 
 	public static String hash(byte[] bytes) {
 		byte[] encode = digest(bytes);

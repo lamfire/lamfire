@@ -13,7 +13,21 @@ import java.security.NoSuchAlgorithmException;
  * 
  * @author lamfire
  */
-public class SHA1 {
+public class SHA1 implements Hash{
+
+	private static final SHA1 instance = new SHA1();
+
+	public static final SHA1 getInstance(){
+		return instance;
+	}
+
+	private SHA1(){
+
+	}
+
+	public byte[] hashDigest(byte[] source){
+		return digest(source);
+	}
 
 	public static String hash(byte[] bytes) {
 		byte[] encode = digest(bytes);

@@ -13,7 +13,21 @@ import java.security.NoSuchAlgorithmException;
  * 
  * @author lamfire
  */
-public class SHA512 {
+public class SHA512 implements Hash{
+
+	private static final SHA512 instance = new SHA512();
+
+	public static final SHA512 getInstance(){
+		return instance;
+	}
+
+	private SHA512(){
+
+	}
+
+	public byte[] hashDigest(byte[] source){
+		return digest(source);
+	}
 
 	public static String hash(byte[] bytes) {
 		byte[] encode = digest(bytes);
