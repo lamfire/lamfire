@@ -1,14 +1,14 @@
 package com.lamfire.code;
 
+import com.lamfire.logger.Logger;
+import com.lamfire.utils.MACAddressUtils;
+import com.lamfire.utils.RandomUtils;
+
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.lamfire.logger.Logger;
-import com.lamfire.utils.MACAddressUtils;
-import com.lamfire.utils.RandomUtils;
 
 public class PUID implements Comparable<PUID>, Serializable {
 	private static final long serialVersionUID = 8815279469780082174L;
@@ -45,21 +45,21 @@ public class PUID implements Comparable<PUID>, Serializable {
 	final int machine;
 	final int inc;
 
-	public PUID(Date time) {
+	PUID(Date time) {
 		this(time, MACHINE_PROCESS_UNIQUE, INC.getAndIncrement());
 	}
 
-	public PUID(Date time, int inc) {
+	PUID(Date time, int inc) {
 		this(time, MACHINE_PROCESS_UNIQUE, inc);
 	}
 
-	public PUID(Date time, int machine, int inc) {
+	PUID(Date time, int machine, int inc) {
 		this.time = (int) (time.getTime() / 1000L);
 		this.machine = machine;
 		this.inc = inc;
 	}
-	
-	public PUID(String source) {
+
+	PUID(String source) {
 		if (!isValid(source)) {
 			throw new IllegalArgumentException("invalid PUID [" + source + "]");
 		}
@@ -115,12 +115,11 @@ public class PUID implements Comparable<PUID>, Serializable {
 	}
 
 	public String toString() {
-		byte[] b = toByteArray();
+		byte[] b = toBytes();
 		return Hex.encode(b);
 	}
 
-	public byte[] toByteArray() {
-		int time = (int) (System.currentTimeMillis() / 1000L);
+	public byte[] toBytes() {
 		byte[] bytes = new byte[12];
 		ByteBuffer bb = ByteBuffer.wrap(bytes);
 		bb.putInt(time);
@@ -168,8 +167,20 @@ public class PUID implements Comparable<PUID>, Serializable {
 		return new PUID();
 	}
 
+	public static PUID make() {
+		return new PUID();
+	}
+
+	public static byte[] makeAsBytes() {
+		return new PUID().toBytes();
+	}
+
+	public static String makeAsString() {
+		return new PUID().toString();
+	}
+
 	public static byte[] puidAsBytes() {
-		return new PUID().toByteArray();
+		return new PUID().toBytes();
 	}
 
 	public static String puidAsString() {
