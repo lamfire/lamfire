@@ -2,6 +2,7 @@ package com.lamfire.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 
 public class NumberUtils {
 	public static final Long LONG_ZERO = new Long(0L);
@@ -40,18 +41,8 @@ public class NumberUtils {
 
 	public static final Float FLOAT_MINUS_ONE = new Float(-1.0F);
 
-	/** @deprecated */
-	public static int stringToInt(String str) {
-		return toInt(str);
-	}
-
 	public static int toInt(String str) {
 		return toInt(str, 0);
-	}
-
-	/** @deprecated */
-	public static int stringToInt(String str, int defaultValue) {
-		return toInt(str, defaultValue);
 	}
 
 	public static int toInt(String str, int defaultValue) {
@@ -721,5 +712,17 @@ public class NumberUtils {
     public static double round(double value,int scale){
         int seed = (int)Math.pow(10,scale);
         return Math.round(value * seed) / (1.0d * seed);
+    }
+
+    public static String format(Object value,int decimal){
+        if(decimal > 0 ){
+            StringBuffer buffer = new StringBuffer(".");
+            for(int i=0;i< decimal;i++){
+                buffer.append("0");
+            }
+            DecimalFormat decimalFormat = new DecimalFormat(buffer.toString());
+            return decimalFormat.format(value);
+        }
+        return String.valueOf(Math.round(Double.valueOf(value.toString())));
     }
 }
