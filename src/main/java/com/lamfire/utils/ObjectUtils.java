@@ -230,7 +230,7 @@ public class ObjectUtils {
 
 	public static void copy(Object from, Object to) {
         if( ! StringUtils.equals(from.getClass().getName(),to.getClass().getName()) ){
-            throw new IllegalArgumentException(from.getClass() + " - " + to.getClass() +" was not same class instance");
+            throw new IllegalArgumentException(from.getClass() + " - " + to.getClass() +" was not same class");
         }
         PropertyDescriptor[] propertyDescriptors = null;
         try {
