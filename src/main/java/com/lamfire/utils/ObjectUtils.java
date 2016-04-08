@@ -101,10 +101,10 @@ public class ObjectUtils {
         if(field == null){
             throw new RuntimeException("Field[" + fieldName +"] not found - " + instance.getClass().getName());
         }
-        setFieldValue(field,instance,value);
+        setFieldValue(instance,field,value);
     }
 
-    public static void setFieldValue(Field field,Object instance,Object value)  {
+    public static void setFieldValue(Object instance,Field field,Object value)  {
         boolean hasChangeAccessibleFlag = false;
         if(!field.isAccessible()){
             field.setAccessible(true);
@@ -223,18 +223,25 @@ public class ObjectUtils {
 
 	/**
 	 * 拷贝相同的属性值到目标对象
-	 * 
+	 * 需要类型相同
 	 * @param from
 	 * @param to
 	 */
 
-	public static void copyProperties(Object from, Object to) {
-        PropertyDescriptor[] propertyDescriptors = new PropertyDescriptor[0];
+	public static void copy(Object from, Object to) {
+        if( ! StringUtils.equals(from.getClass().getName(),to.getClass().getName()) ){
+            throw new IllegalArgumentException(from.getClass() + " - " + to.getClass() +" was not same class instance");
+        }
+        PropertyDescriptor[] propertyDescriptors = null;
         try {
             propertyDescriptors = ClassUtils.getPropertyDescriptorsArray(from.getClass());
         } catch (IntrospectionException e) {
             throw new RuntimeException(e);
         }
+        if(propertyDescriptors == null){
+            return;
+        }
+
         for (PropertyDescriptor descriptor : propertyDescriptors) {
 			try {
                 if(descriptor.getName().equals("class")){
@@ -248,14 +255,14 @@ public class ObjectUtils {
 		}
 	}
 
-    public static void copy(Object from, Object to) {
+    public static void copyTo(Object from, Object to) {
         Field[] fields = ClassUtils.getDeclaredFields(from.getClass());
         for (Field field : fields) {
             try {
                 Object value = getFieldValue(from, field.getName());
-                setFieldValue(field,to, value);
+                setFieldValue(to,field.getName(),value);
             } catch (Exception e) {
-                e.printStackTrace();
+
             }
         }
     }
@@ -265,9 +272,9 @@ public class ObjectUtils {
         for (Field field : fields) {
             try {
                 if(ClassUtils.isGenericNumberType(field.getType())){
-                    setFieldValue(field,instance, 0);
+                    setFieldValue(instance,field.getName(),0);
                 }else{
-                    setFieldValue(field,instance, null);
+                    setFieldValue(instance,field, null);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
