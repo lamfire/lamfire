@@ -40,7 +40,7 @@ public class ParserConfig {
 		return defaultSerializer;
 	}
 
-	public ParserConfig() {
+	private ParserConfig() {
 		primitiveClasses.add(boolean.class);
 		primitiveClasses.add(Boolean.class);
 
