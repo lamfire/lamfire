@@ -605,6 +605,9 @@ public class ClassUtils {
     }
 
     public static <T> T newInstance(Class<T> typeClass) throws IllegalAccessException, InstantiationException {
+        if(typeClass.isArray()){
+            throw new InstantiationException("Not support array type : " + typeClass.toString());
+        }
         return typeClass.newInstance();
     }
 
@@ -629,7 +632,32 @@ public class ClassUtils {
         }else if(type instanceof ParameterizedType){
             ParameterizedType paramType = (ParameterizedType)type;
             clazz = (Class<?>)paramType.getRawType();
+        }else{
+            throw new InstantiationException("Not support Type : " + type.toString());
         }
         return newInstance(clazz);
+    }
+
+    public static Object newComponentTypeArray( Class<?> componentType,int length) throws IllegalAccessException, InstantiationException {
+        if(componentType.isArray()){
+            componentType = componentType.getComponentType();
+        }
+        return Array.newInstance(componentType,length);
+    }
+
+    public static Object newComponentTypeArray(Type type,int length) throws IllegalAccessException, InstantiationException {
+        Class<?> componentType = null;
+        if(type instanceof Class<?>){
+            componentType = (Class<?>)type;
+            if(componentType.isArray()){
+                componentType = componentType.getComponentType();
+            }
+        }else if (type instanceof GenericArrayType) {
+            GenericArrayType arrayType = (GenericArrayType) type;
+            componentType = (Class<?>)arrayType.getGenericComponentType();
+        }else{
+            throw new InstantiationException("Not support Type : " + type.toString());
+        }
+        return Array.newInstance(componentType,length);
     }
 }
