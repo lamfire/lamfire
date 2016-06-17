@@ -93,26 +93,26 @@ public class CollectionTest {
         }
     }
 
+    static void fill(Collection<Integer> col){
+        col.add(1);
+        col.add(2);
+        col.add(3);
+        col.add(4);
+        col.add(5);
+    }
+
     public static void main(String[] args) {
         HashSet<Integer> hashSet = new HashSet<Integer>();
-        hashSet.add(1);
-        hashSet.add(2);
-        hashSet.add(3);
+        fill(hashSet);
 
         TreeSet<Integer> treeSet = new TreeSet<Integer>();
-        treeSet.add(1);
-        treeSet.add(2);
-        treeSet.add(3);
+        fill(treeSet);
 
         ArrayList<Integer> arrayList = new ArrayList<Integer>();
-        arrayList.add(1);
-        arrayList.add(2);
-        arrayList.add(3);
+        fill(arrayList);
 
         LinkedList<Integer> linkedList = new LinkedList<Integer>();
-        linkedList.add(1);
-        linkedList.add(2);
-        linkedList.add(3);
+        fill(linkedList);
 
         Entity e = new Entity();
         e.setCollection(arrayList);
