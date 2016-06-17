@@ -621,4 +621,15 @@ public class ClassUtils {
         Constructor<T>  cons = typeClass.getConstructor(argsClasses);
         return cons.newInstance(constructorArgs);
     }
+
+    public static Object newInstance(Type type) throws IllegalAccessException, InstantiationException {
+        Class<?> clazz = null;
+        if (type instanceof Class<?>) {
+            clazz = (Class<?>) type;
+        }else if(type instanceof ParameterizedType){
+            ParameterizedType paramType = (ParameterizedType)type;
+            clazz = (Class<?>)paramType.getRawType();
+        }
+        return newInstance(clazz);
+    }
 }
