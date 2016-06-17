@@ -92,6 +92,9 @@ public class ParserConfig {
 		derializers.put(List.class, CollectionDeserializer.instance);
         derializers.put(Set.class, CollectionDeserializer.instance);
 		derializers.put(ArrayList.class, CollectionDeserializer.instance);
+        derializers.put(LinkedList.class, CollectionDeserializer.instance);
+        derializers.put(HashSet.class, CollectionDeserializer.instance);
+        derializers.put(TreeSet.class, CollectionDeserializer.instance);
 
 		derializers.put(Object.class, JavaObjectDeserializer.instance);
 		derializers.put(String.class, StringDeserializer.instance);
