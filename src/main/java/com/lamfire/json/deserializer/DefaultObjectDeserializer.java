@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.lamfire.json.JSONException;
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.parser.Feature;
 import com.lamfire.json.parser.JSONScanner;
 import com.lamfire.json.parser.JSONToken;
@@ -26,7 +26,7 @@ public class DefaultObjectDeserializer implements ObjectDeserializer {
 	public DefaultObjectDeserializer() {
 	}
 
-	public void parseMap(DefaultExtJSONParser parser, Map<String, Object> map, Type valueType) {
+	public void parseMap(JavaObjectJSONParser parser, Map<String, Object> map, Type valueType) {
 		JSONScanner lexer = (JSONScanner) parser.getLexer();
 
 		if (lexer.token() != JSONToken.LBRACE) {
@@ -105,7 +105,7 @@ public class DefaultObjectDeserializer implements ObjectDeserializer {
 		}
 	}
 
-	public void parseObject(DefaultExtJSONParser parser, Object object) {
+	public void parseObject(JavaObjectJSONParser parser, Object object) {
 		Class<?> clazz = object.getClass();
 		Map<String, FieldDeserializer> setters = parser.getConfig().getFieldDeserializers(clazz);
 
@@ -196,7 +196,7 @@ public class DefaultObjectDeserializer implements ObjectDeserializer {
 		}
 	}
 
-	public <T> T deserialze(DefaultExtJSONParser parser, Type type) {
+	public <T> T deserialze(JavaObjectJSONParser parser, Type type) {
 		if (type instanceof Class<?>) {
 			return deserialze(parser, (Class<T>) type);
 		}
@@ -216,7 +216,7 @@ public class DefaultObjectDeserializer implements ObjectDeserializer {
 		throw new JSONException("not support type : " + type);
 	}
 
-	public <T> T deserialze(DefaultExtJSONParser parser, ParameterizedType type) {
+	public <T> T deserialze(JavaObjectJSONParser parser, ParameterizedType type) {
 		try {
 			Type rawType = type.getRawType();
 			if (rawType instanceof Class<?>) {
@@ -260,7 +260,7 @@ public class DefaultObjectDeserializer implements ObjectDeserializer {
 		}
 	}
 
-	public <T> T deserialze(DefaultExtJSONParser parser, Class<T> clazz) {
+	public <T> T deserialze(JavaObjectJSONParser parser, Class<T> clazz) {
 		Object value = null;
 		if (clazz.isAssignableFrom(HashMap.class)) {
 			value = new HashMap();

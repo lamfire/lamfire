@@ -30,7 +30,7 @@ public class SetTypeFieldDeserializer extends FieldDeserializer {
     }
 
     @Override
-    public void parseField(DefaultExtJSONParser parser, Object object) {
+    public void parseField(JavaObjectJSONParser parser, Object object) {
         if (parser.getLexer().token() == JSONToken.NULL) {
             setValue(object, null);
             return;
@@ -48,7 +48,7 @@ public class SetTypeFieldDeserializer extends FieldDeserializer {
     }
 
 
-    public final void parseArray(DefaultExtJSONParser parser, Collection array) {
+    public final void parseArray(JavaObjectJSONParser parser, Collection array) {
         final JSONLexer lexer = parser.getLexer();
 
         if (lexer.token() != JSONToken.LBRACKET) {

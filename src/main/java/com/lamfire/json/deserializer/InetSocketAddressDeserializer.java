@@ -5,7 +5,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import com.lamfire.json.JSONException;
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.parser.JSONLexer;
 import com.lamfire.json.parser.JSONToken;
 
@@ -14,7 +14,7 @@ public class InetSocketAddressDeserializer implements ObjectDeserializer {
     public final static InetSocketAddressDeserializer instance = new InetSocketAddressDeserializer();
 
     @SuppressWarnings("unchecked")
-    public <T> T deserialze(DefaultExtJSONParser parser, Type clazz) {
+    public <T> T deserialze(JavaObjectJSONParser parser, Type clazz) {
         JSONLexer lexer = parser.getLexer();
 
         if (lexer.token() == JSONToken.NULL) {

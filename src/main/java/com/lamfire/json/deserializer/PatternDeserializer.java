@@ -3,14 +3,14 @@ package com.lamfire.json.deserializer;
 import java.lang.reflect.Type;
 import java.util.regex.Pattern;
 
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.parser.JSONToken;
 
 public class PatternDeserializer implements ObjectDeserializer {
     public final static PatternDeserializer instance = new PatternDeserializer();
 
     @SuppressWarnings("unchecked")
-    public <T> T deserialze(DefaultExtJSONParser parser, Type clazz) {
+    public <T> T deserialze(JavaObjectJSONParser parser, Type clazz) {
         Object value = parser.parse();
 
         if (value == null) {

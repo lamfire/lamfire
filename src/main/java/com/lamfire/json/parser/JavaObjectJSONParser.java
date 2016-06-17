@@ -20,7 +20,7 @@ import com.lamfire.json.deserializer.StringDeserializer;
 import com.lamfire.json.util.TypeConverters;
 
 @SuppressWarnings("unchecked")
-public class DefaultExtJSONParser extends DefaultJSONParser {
+public class JavaObjectJSONParser extends DefaultJSONParser {
 
     private DefaultObjectDeserializer  derializer       = new DefaultObjectDeserializer();
 
@@ -47,19 +47,19 @@ public class DefaultExtJSONParser extends DefaultJSONParser {
         primitiveClasses.add(String.class);
     }
 
-    public DefaultExtJSONParser(String input){
+    public JavaObjectJSONParser(String input){
         this(input, ParserConfig.getGlobalInstance());
     }
 
-    public DefaultExtJSONParser(String input, ParserConfig mapping){
+    public JavaObjectJSONParser(String input, ParserConfig mapping){
         super(input, mapping);
     }
 
-    public DefaultExtJSONParser(String input, ParserConfig mapping, int features){
+    public JavaObjectJSONParser(String input, ParserConfig mapping, int features){
         super(input, mapping, features);
     }
 
-    public DefaultExtJSONParser(char[] input, int length, ParserConfig mapping, int features){
+    public JavaObjectJSONParser(char[] input, int length, ParserConfig mapping, int features){
         super(input, length, mapping, features);
     }
 

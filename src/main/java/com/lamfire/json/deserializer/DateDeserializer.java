@@ -3,7 +3,7 @@ package com.lamfire.json.deserializer;
 import java.lang.reflect.Type;
 
 import com.lamfire.json.JSONException;
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.parser.JSONScanner;
 import com.lamfire.json.parser.JSONToken;
 
@@ -12,7 +12,7 @@ public class DateDeserializer implements ObjectDeserializer {
     public final static DateDeserializer instance = new DateDeserializer();
 
     @SuppressWarnings("unchecked")
-    public <T> T deserialze(DefaultExtJSONParser parser, Type clazz) {
+    public <T> T deserialze(JavaObjectJSONParser parser, Type clazz) {
         Object val = parser.parse();
 
         if (val == null) {

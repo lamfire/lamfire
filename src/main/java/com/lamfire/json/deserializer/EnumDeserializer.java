@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.lamfire.json.JSONException;
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.parser.JSONLexer;
 import com.lamfire.json.parser.JSONToken;
 
@@ -34,7 +34,7 @@ public class EnumDeserializer implements ObjectDeserializer {
         }
     }
  
-    public <T> T deserialze(DefaultExtJSONParser parser, Type type) {
+    public <T> T deserialze(JavaObjectJSONParser parser, Type type) {
         try {
             Object value;
             final JSONLexer lexer = parser.getLexer();

@@ -4,7 +4,7 @@ import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicLongArray;
 
 import com.lamfire.json.JSONArray;
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.parser.JSONToken;
 
 public class AtomicLongArrayDeserializer implements ObjectDeserializer {
@@ -12,7 +12,7 @@ public class AtomicLongArrayDeserializer implements ObjectDeserializer {
     public final static AtomicLongArrayDeserializer instance = new AtomicLongArrayDeserializer();
 
     @SuppressWarnings("unchecked")
-    public <T> T deserialze(DefaultExtJSONParser parser, Type clazz) {
+    public <T> T deserialze(JavaObjectJSONParser parser, Type clazz) {
         if (parser.getLexer().token() == JSONToken.NULL) {
             parser.getLexer().nextToken(JSONToken.COMMA);
             return null;

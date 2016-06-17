@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.parser.DefaultJSONParser;
 import com.lamfire.json.parser.Feature;
 import com.lamfire.json.parser.ParserConfig;
@@ -149,7 +149,7 @@ abstract class JSONParser{
             featureValues = Feature.config(featureValues, featrue, true);
         }
 
-        DefaultExtJSONParser parser = new DefaultExtJSONParser(input, ParserConfig.getGlobalInstance(), featureValues);
+        JavaObjectJSONParser parser = new JavaObjectJSONParser(input, ParserConfig.getGlobalInstance(), featureValues);
         T value = (T) parser.parseObject(clazz);
 
         parser.close();
@@ -158,8 +158,7 @@ abstract class JSONParser{
     }
 
     @SuppressWarnings("unchecked")
-    protected static final <T> T parseObject(String input, Type clazz, ParserConfig config, int featureValues,
-                                          Feature... features) {
+    protected static final <T> T parseObject(String input, Type clazz, ParserConfig config, int featureValues, Feature... features) {
         if (input == null) {
             return null;
         }
@@ -168,7 +167,7 @@ abstract class JSONParser{
             featureValues = Feature.config(featureValues, featrue, true);
         }
 
-        DefaultExtJSONParser parser = new DefaultExtJSONParser(input, config, featureValues);
+        JavaObjectJSONParser parser = new JavaObjectJSONParser(input, config, featureValues);
         T value = (T) parser.parseObject(clazz);
 
         if (clazz != JSONArray.class) {
@@ -214,7 +213,7 @@ abstract class JSONParser{
             featureValues = Feature.config(featureValues, featrue, true);
         }
 
-        DefaultExtJSONParser parser = new DefaultExtJSONParser(input, length, ParserConfig.getGlobalInstance(),
+        JavaObjectJSONParser parser = new JavaObjectJSONParser(input, length, ParserConfig.getGlobalInstance(),
                                                                featureValues);
         T value = (T) parser.parseObject(clazz);
 
@@ -238,7 +237,7 @@ abstract class JSONParser{
 
         List<T> list = new ArrayList<T>();
 
-        DefaultExtJSONParser parser = new DefaultExtJSONParser(text, ParserConfig.getGlobalInstance());
+        JavaObjectJSONParser parser = new JavaObjectJSONParser(text, ParserConfig.getGlobalInstance());
         parser.parseArray(clazz, list);
 
         parser.close();
@@ -253,7 +252,7 @@ abstract class JSONParser{
 
         List<Object> list;
 
-        DefaultExtJSONParser parser = new DefaultExtJSONParser(text, ParserConfig.getGlobalInstance());
+        JavaObjectJSONParser parser = new JavaObjectJSONParser(text, ParserConfig.getGlobalInstance());
         list = Arrays.asList(parser.parseArray(types));
 
         parser.close();

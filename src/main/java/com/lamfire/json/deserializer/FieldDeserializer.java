@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import com.lamfire.json.JSONException;
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.util.FieldInfo;
 
 public abstract class FieldDeserializer {
@@ -30,7 +30,7 @@ public abstract class FieldDeserializer {
 		return fieldInfo.getFieldType();
 	}
 
-	public abstract void parseField(DefaultExtJSONParser parser, Object object);
+	public abstract void parseField(JavaObjectJSONParser parser, Object object);
 
 	public abstract int getFastMatchToken();
 

@@ -6,11 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.lamfire.json.JSONException;
-import com.lamfire.json.parser.DefaultExtJSONParser;
-import com.lamfire.json.parser.Feature;
-import com.lamfire.json.parser.JSONLexer;
-import com.lamfire.json.parser.JSONToken;
-import com.lamfire.json.parser.ParserConfig;
+import com.lamfire.json.parser.*;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.util.FieldInfo;
 
 @SuppressWarnings({ "unchecked"})
@@ -32,7 +29,7 @@ public class ArrayListTypeFieldDeserializer extends FieldDeserializer {
     }
 
     @Override
-    public void parseField(DefaultExtJSONParser parser, Object object) {
+    public void parseField(JavaObjectJSONParser parser, Object object) {
         if (parser.getLexer().token() == JSONToken.NULL) {
             setValue(object, null);
             return;
@@ -46,7 +43,7 @@ public class ArrayListTypeFieldDeserializer extends FieldDeserializer {
     }
 
 
-    public final void parseArray(DefaultExtJSONParser parser, Collection array) {
+    public final void parseArray(JavaObjectJSONParser parser, Collection array) {
         final JSONLexer lexer = parser.getLexer();
 
         if (lexer.token() != JSONToken.LBRACKET) {

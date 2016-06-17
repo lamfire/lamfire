@@ -1,6 +1,6 @@
 package com.lamfire.json.deserializer;
 
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.parser.JSONLexer;
 import com.lamfire.json.parser.JSONToken;
 import com.lamfire.json.parser.ParserConfig;
@@ -14,7 +14,7 @@ public class BooleanFieldDeserializer extends FieldDeserializer {
     }
 
     @Override
-    public void parseField(DefaultExtJSONParser parser, Object object) {
+    public void parseField(JavaObjectJSONParser parser, Object object) {
         Boolean value;
 
         final JSONLexer lexer = parser.getLexer();

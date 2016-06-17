@@ -5,7 +5,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import com.lamfire.json.JSONException;
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.parser.JSONToken;
 
 public class InetAddressDeserializer implements ObjectDeserializer {
@@ -13,7 +13,7 @@ public class InetAddressDeserializer implements ObjectDeserializer {
     public final static InetAddressDeserializer instance = new InetAddressDeserializer();
 
     @SuppressWarnings("unchecked")
-    public <T> T deserialze(DefaultExtJSONParser parser, Type clazz) {
+    public <T> T deserialze(JavaObjectJSONParser parser, Type clazz) {
 
         String host = (String) parser.parse();
 

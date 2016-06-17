@@ -11,11 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.lamfire.json.JSONException;
-import com.lamfire.json.parser.DefaultExtJSONParser;
-import com.lamfire.json.parser.Feature;
-import com.lamfire.json.parser.JSONScanner;
-import com.lamfire.json.parser.JSONToken;
-import com.lamfire.json.parser.ParserConfig;
+import com.lamfire.json.parser.*;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.util.FieldInfo;
 import com.lamfire.json.util.JSONField;
 
@@ -129,7 +126,7 @@ public class JavaBeanDeserializer implements ObjectDeserializer {
         }
     }
 
-    public Object createInstance(DefaultExtJSONParser parser, Type type) {
+    public Object createInstance(JavaObjectJSONParser parser, Type type) {
 
         Object object;
         try {
@@ -142,7 +139,7 @@ public class JavaBeanDeserializer implements ObjectDeserializer {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T deserialze(DefaultExtJSONParser parser, Type type) {
+    public <T> T deserialze(JavaObjectJSONParser parser, Type type) {
         JSONScanner lexer = (JSONScanner) parser.getLexer(); // xxx
 
         if (lexer.token() == JSONToken.NULL) {
@@ -200,7 +197,7 @@ public class JavaBeanDeserializer implements ObjectDeserializer {
         return (T) object;
     }
 
-    public boolean parseField(DefaultExtJSONParser parser, String key, Object object) {
+    public boolean parseField(JavaObjectJSONParser parser, String key, Object object) {
         JSONScanner lexer = (JSONScanner) parser.getLexer(); // xxx
 
         FieldDeserializer fieldDeserializer = setters.get(key);

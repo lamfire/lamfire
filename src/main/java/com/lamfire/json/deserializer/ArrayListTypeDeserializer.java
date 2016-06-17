@@ -3,8 +3,9 @@ package com.lamfire.json.deserializer;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.parser.JSONToken;
+
 @SuppressWarnings({ "unchecked"})
 public class ArrayListTypeDeserializer implements ObjectDeserializer {
 
@@ -14,7 +15,7 @@ public class ArrayListTypeDeserializer implements ObjectDeserializer {
         this.itemType = type;
     }
 
-    public <T> T deserialze(DefaultExtJSONParser parser, Type type) {
+    public <T> T deserialze(JavaObjectJSONParser parser, Type type) {
         ArrayList list = new ArrayList();
 
         parser.parseArray(itemType, list);

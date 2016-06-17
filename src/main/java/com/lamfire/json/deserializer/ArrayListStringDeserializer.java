@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.lamfire.json.JSONException;
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.parser.Feature;
 import com.lamfire.json.parser.JSONLexer;
 import com.lamfire.json.parser.JSONToken;
@@ -16,7 +16,7 @@ public class ArrayListStringDeserializer implements ObjectDeserializer {
     public final static ArrayListStringDeserializer instance = new ArrayListStringDeserializer();
 
     
-    public <T> T deserialze(DefaultExtJSONParser parser, Type type) {
+    public <T> T deserialze(JavaObjectJSONParser parser, Type type) {
         ArrayList list = new ArrayList();
 
         parseArray(parser, list);
@@ -24,7 +24,7 @@ public class ArrayListStringDeserializer implements ObjectDeserializer {
         return (T) list;
     }
 
-    public static void parseArray(DefaultExtJSONParser parser, Collection array) {
+    public static void parseArray(JavaObjectJSONParser parser, Collection array) {
         JSONLexer lexer = parser.getLexer();
 
         if (lexer.token() != JSONToken.LBRACKET) {

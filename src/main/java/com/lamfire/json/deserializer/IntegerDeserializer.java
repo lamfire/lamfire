@@ -3,7 +3,7 @@ package com.lamfire.json.deserializer;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 
-import com.lamfire.json.parser.DefaultExtJSONParser;
+import com.lamfire.json.parser.JavaObjectJSONParser;
 import com.lamfire.json.parser.JSONLexer;
 import com.lamfire.json.parser.JSONToken;
 import com.lamfire.json.util.TypeConverters;
@@ -12,12 +12,12 @@ public class IntegerDeserializer implements ObjectDeserializer {
     public final static IntegerDeserializer instance = new IntegerDeserializer();
 
     @SuppressWarnings("unchecked")
-    public <T> T deserialze(DefaultExtJSONParser parser, Type clazz) {
+    public <T> T deserialze(JavaObjectJSONParser parser, Type clazz) {
         return (T) deserialze(parser);
     }
     
     @SuppressWarnings("unchecked")
-    public static <T> T deserialze(DefaultExtJSONParser parser) {
+    public static <T> T deserialze(JavaObjectJSONParser parser) {
         final JSONLexer lexer = parser.getLexer();
         if (lexer.token() == JSONToken.LITERAL_INT) {
             int val = lexer.intValue();
