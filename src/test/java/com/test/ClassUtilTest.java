@@ -3,10 +3,8 @@ package com.test;
 import com.lamfire.utils.*;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,7 +19,10 @@ public class ClassUtilTest {
     HashSet<Integer> c = Sets.newHashSet();
     HashMap<String,String> d = Maps.newHashMap();
 
-    public static void main(String[] args) {
+    List<?> list ;
+    List oList;
+
+    public static void a(String[] args) {
         Field aField = ClassUtils.getField(ClassUtilTest.class,"a");
         Asserts.equalsAssert(ClassUtils.isGenericNumberType(aField.getType()),true);
 
@@ -37,5 +38,11 @@ public class ClassUtilTest {
         Asserts.equalsAssert(ClassUtils.isMapType(dField.getType()),true);
 
         Asserts.equalsAssert(ClassUtils.isAssignable(bField.getType(), Collection.class),true);
+    }
+
+    public static void main(String[] args) {
+        Field listField = ClassUtils.getField(ClassUtilTest.class,"oList");
+        Type type = listField.getGenericType();
+        System.out.println(type.getClass());
     }
 }

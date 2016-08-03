@@ -6,6 +6,7 @@ import com.lamfire.code.RSAAlgorithm;
 import com.lamfire.utils.*;
 
 import java.math.BigInteger;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -184,21 +185,49 @@ public class RSAAlgorithmTest {
         Asserts.equalsAssert(source,des);
     }
 
+    public static void testDecode(String source,byte[] encodeBytes){
+        RSAAlgorithm rsa = new RSAAlgorithm(keyBits);
+        //System.out.println(source);
+        byte[] bytes = source.getBytes();
+
+        byte[] deBytes = rsa.decode(encodeBytes,publicKey,modulus);
+
+        String des = new String(deBytes);
+        //System.out.println(des);
+        Asserts.equalsAssert(source,des);
+    }
+
     static void performance()throws Exception{
-        OPSMonitor m = new OPSMonitor("rsa-001");
+        final OPSMonitor m = new OPSMonitor("rsa-001");
         m.startup();
-        while(true){
-            String text = RandomUtils.randomText(1000,10000);
-            test(text);
-            m.done();
-            counter.incrementAndGet();
+        ThreadPoolExecutor executor = Threads.newFixedThreadPool(8);
+        for(int i=0;i<8;i++){
+            executor.submit(new PerformanceTask(m));
+        }
+    }
+
+    static class PerformanceTask implements Runnable{
+        OPSMonitor monitor;
+        public PerformanceTask(OPSMonitor monitor){
+            this.monitor = monitor;
+        }
+        @Override
+        public void run() {
+            RSAAlgorithm rsa = new RSAAlgorithm(keyBits);
+            String source = "{\"apppkg\":\"com.sharesdk.cn.App\",\"appver\":\"2.01\",\"plat\":1,\"network\":\"wifi\",\"deviceinfo\":{\"udid\":\"534b9af8e4b00675af367632\",\"adsid\":\"adsid1234556677\",\"imei\":\"652487889215035\",\"serialno\":\"52245787\",\"mac\":\"EA:00:45:23:A5:FF\",\"model\":\"Note II\",\"factory\":\"sumsung\",\"carrier\":4600,\"screensize\":\"480x960\",\"sysver\":\"4.03\",\"androidid\":\"froyo\"}}";//RandomUtils.randomTextWithFixedLength(64);
+            byte[] encodeBytes = rsa.encode(source.getBytes(),privateKey,modulus);
+            while(true){
+                testDecode(source, encodeBytes);
+                monitor.done();
+                counter.incrementAndGet();
+            }
         }
     }
 
     public static void main(String[] args) throws Exception {
         //testFile();
         //testGenKey();
-        test();
-        //performance();
+        //test();
+        performance();
     }
 }

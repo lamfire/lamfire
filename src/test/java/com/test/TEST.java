@@ -13,12 +13,8 @@ import java.util.List;
 
 public class TEST {
 
-	public static void main(String[] args) throws Exception {
-        Byte[] a = new Byte[10];
-        Type type = a.getClass();
-        System.out.println(type);
 
-        a = (Byte[])ClassUtils.newComponentTypeArray(Byte.class, 10);
-        System.out.println("instance : " + a);
+	public static void main(String[] args) throws Exception {
+
 	}
 }
