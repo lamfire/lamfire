@@ -23,8 +23,18 @@ public class DES {
         this.paramSpec = new IvParameterSpec(initializationVectorBytes);
     }
 
+    public DES(String padding) {
+        this.padding = padding;
+        this.paramSpec = new IvParameterSpec(initializationVectorBytes);
+    }
+
     public DES(String padding, byte[] initializationVectorBytes) {
         this.padding = padding;
+        this.initializationVectorBytes = initializationVectorBytes;
+        this.paramSpec = new IvParameterSpec(initializationVectorBytes);
+    }
+
+    public DES(byte[] initializationVectorBytes) {
         this.initializationVectorBytes = initializationVectorBytes;
         this.paramSpec = new IvParameterSpec(initializationVectorBytes);
     }
