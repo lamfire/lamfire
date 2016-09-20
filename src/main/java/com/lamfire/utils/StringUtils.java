@@ -1,6 +1,8 @@
 package com.lamfire.utils;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1742,4 +1744,14 @@ public class StringUtils {
 		String startBy = source.substring(source.length()-end.length());
 		return end.equalsIgnoreCase(startBy);
 	}
+
+    public static String dumpStackTraceAsString(Throwable t){
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(bao);
+        t.printStackTrace(ps);
+        String stringStackTrace = bao.toString();
+        IOUtils.closeQuietly(ps);
+        IOUtils.closeQuietly(bao);
+        return stringStackTrace;
+    }
 }
