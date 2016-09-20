@@ -11,8 +11,8 @@ import com.lamfire.utils.GpsCorrect;
  */
 public class GpsCorrectTest {
     public static void main(String[] args) {
-        double lat = 23.17011;
-        double lon = 113.39768;
+        double lat =29.52282;   //106.52400,29.52282
+        double lon =106.52400;
         double[] latlon = GpsCorrect.transform(lat, lon);
         System.out.println(latlon[0] +"," + latlon[1]);
     }
