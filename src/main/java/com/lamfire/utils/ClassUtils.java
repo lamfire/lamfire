@@ -515,6 +515,24 @@ public class ClassUtils {
 		return null;
 	}
 
+    public static Method[] getDeclaredMethods(Class<?> inClass) {
+        try {
+            return inClass.getDeclaredMethods();
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
+    public static Method[] getMethods(Class<?> inClass) {
+        try {
+            return inClass.getMethods();
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
 	public static Class<?> getGenericActualType(Class<?> inClass, int index) {
 		String key = inClass.getName() + "_" + index;
 		Class<?> result = genericActualTypeCacheMap.get(key);
