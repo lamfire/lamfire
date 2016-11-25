@@ -21,6 +21,15 @@ public class ClassUtils {
 	private static final Map<String, String> abbreviationMap = new HashMap<String, String>();
     private static final Map<Class<?>, List<Class<?>>> allSupperClassMap = new HashMap<Class<?>,List<Class<?>>>();
     private static final Map<Class<?>, List<Class<?>>> allInterfacesMap = new HashMap<Class<?>,List<Class<?>>>();
+    private static final Map<Class<?>, Set<Method>> allDeclaredMethodMap = new HashMap<Class<?>, Set<Method>>();
+
+    public static boolean isSameClass(Class<?> source , Class<?> target){
+        return source == target;
+    }
+
+    public static boolean equals(Class<?> source , Class<?> target){
+        return source == target;
+    }
 
 	public static String getShortClassName(Object object, String valueIfNull) {
 		if (object == null) {
@@ -524,6 +533,64 @@ public class ClassUtils {
         return null;
     }
 
+    public static Set<Method> getDeclaredMethodsByAnnotation(Class<?> inClass,final Class<? extends Annotation> annoClass) {
+        Set<Method> result = Sets.newHashSet();
+        try {
+            Method[] methods =  inClass.getDeclaredMethods();
+            for(Method m : methods){
+                Annotation[] annos = m.getDeclaredAnnotations();
+                for(Annotation a : annos){
+                    if(a.annotationType().isAssignableFrom(annoClass)){
+                        result.add(m);
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return result;
+    }
+
+    public static Set<Method> getAllDeclaredMethodsByAnnotation(Class<?> inClass,final Class<? extends Annotation> annoClass) {
+        Set<Method> result = Sets.newHashSet();
+        try {
+            Set<Method> methods =  getAllDeclaredMethods(inClass);
+            for(Method m : methods){
+                Annotation[] annos = m.getDeclaredAnnotations();
+                for(Annotation a : annos){
+                    if(a.annotationType().isAssignableFrom(annoClass)){
+                        result.add(m);
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return result;
+    }
+
+    public static Set<Method>  getAllDeclaredMethods(Class<?> inClass) {
+        Set<Method> methods = allDeclaredMethodMap.get(inClass);
+        if(methods != null){
+            return methods;
+        }
+        methods = Sets.newHashSet(inClass.getDeclaredMethods());
+        try {
+            List<Class<?>> superClasses = getAllSuperclasses(inClass);
+            for(Class<?> c : superClasses){
+                if(!equals(c,Object.class)){
+                    Sets.addAll(methods,c.getDeclaredMethods());
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        allDeclaredMethodMap.put(inClass,methods);
+        return methods;
+    }
+
     public static Method[] getMethods(Class<?> inClass) {
         try {
             return inClass.getMethods();
@@ -532,6 +599,8 @@ public class ClassUtils {
         }
         return null;
     }
+
+
 
 	public static Class<?> getGenericActualType(Class<?> inClass, int index) {
 		String key = inClass.getName() + "_" + index;

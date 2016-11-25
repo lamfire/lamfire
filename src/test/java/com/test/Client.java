@@ -11,6 +11,7 @@ import com.lamfire.utils.ClassLoaderUtils;
 import com.lamfire.utils.FileUtils;
 import com.lamfire.utils.IOUtils;
 import com.lamfire.utils.OPSMonitor;
+import com.test.anno.TESTANNO;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -20,6 +21,7 @@ import java.util.Iterator;
 
 public class Client {
 
+    @TESTANNO(path = "1")
 	public static void testRijndael(){
 		String key = "1234567890123456";
 		String data = "1234567890123456";
