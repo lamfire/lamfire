@@ -1,12 +1,6 @@
 package com.lamfire.pool;
 
-/**
- * Created with IntelliJ IDEA.
- * User: lamfire
- * Date: 15-2-27
- * Time: 上午9:56
- * To change this template use File | Settings | File Templates.
- */
+
 public interface PoolableObjectFactory<E> {
     public E make();
 

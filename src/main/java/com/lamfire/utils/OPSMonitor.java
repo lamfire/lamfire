@@ -2,6 +2,7 @@ package com.lamfire.utils;
 
 import com.lamfire.logger.Logger;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,6 +17,7 @@ public class OPSMonitor{
     private static final Logger LOGGER = Logger.getLogger(OPSMonitor.class);
 
     private final AtomicInteger counter = new AtomicInteger(0);
+    private ScheduledThreadPoolExecutor executor;
     private String id;
     private int ops = 0;
     private int prevCount = 0;
@@ -129,10 +131,11 @@ public class OPSMonitor{
     }
 
     public void startup(){
-        Threads.scheduleWithFixedDelay(worker,interval,interval, TimeUnit.SECONDS);
+        executor = Threads.newSingleThreadScheduledExecutor();
+        executor.scheduleWithFixedDelay(worker, interval, interval, TimeUnit.SECONDS);
     }
 
     public void shutdown(){
-        Threads.removeScheduledTask(worker);
+        executor.shutdown();
     }
 }

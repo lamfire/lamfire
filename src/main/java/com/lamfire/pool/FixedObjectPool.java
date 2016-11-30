@@ -1,12 +1,6 @@
 package com.lamfire.pool;
 
-/**
- * Created with IntelliJ IDEA.
- * User: lamfire
- * Date: 15-2-27
- * Time: 上午10:24
- * To change this template use File | Settings | File Templates.
- */
+
 public class FixedObjectPool<E> extends ObjectPool<E> {
     private int maxInstances = 8;
 
