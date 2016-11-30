@@ -20,28 +20,21 @@ public class PerformanceTracker {
         this.workThreadPool = workThreadPool;
     }
 
-    private class TaskProxy implements Runnable {
-        Runnable real;
-
-        public TaskProxy(Runnable real) {
-            this.real = real;
-        }
-
-        public void run() {
-            real.run();
-            monitor.done();
-        }
+    public PerformanceTracker(ThreadPoolExecutor workThreadPool) {
+        this.workThreadPool = workThreadPool;
     }
+
+
 
     private final Runnable producer = new Runnable() {
         @Override
         public void run() {
             while (running) {
-                if (workThreadPool.getActiveCount() > maxIdle) {
+                while (workThreadPool.getTaskCount() - workThreadPool.getCompletedTaskCount() > maxIdle) {
                     Threads.sleep(100);
                 }
                 try {
-                    workThreadPool.submit(new TaskProxy(taskClass.newInstance()));
+                    workThreadPool.submit(new PerformanceTrackerTask(monitor, taskClass.newInstance()));
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
                 }
@@ -50,8 +43,14 @@ public class PerformanceTracker {
     };
 
     public void startup() {
-        producerThread.submit(producer);
+        if (taskClass != null) {
+            producerThread.submit(producer);
+        }
         monitor.startup();
+    }
+
+    public void submitTask(Runnable task) {
+        workThreadPool.submit(new PerformanceTrackerTask(monitor, task));
     }
 
     public void shutdown() {
@@ -71,5 +70,9 @@ public class PerformanceTracker {
 
     public void setMonitorI(int second) {
         this.monitor.setInterval(second);
+    }
+
+    public void setDebug(boolean debug) {
+        this.monitor.debug(debug);
     }
 }

@@ -22,7 +22,7 @@ public class OPSMonitor{
     private int ops = 0;
     private int prevCount = 0;
     private int interval = 1;
-
+    private boolean debug = false;
     private long prevTime = System.nanoTime();
     private long lastExpendTime = 0;
 
@@ -35,7 +35,7 @@ public class OPSMonitor{
             int thisCount = counter.get();
             ops = Math.abs(thisCount - prevCount);
             prevCount = thisCount;
-            if(LOGGER.isDebugEnabled()){
+            if (LOGGER.isDebugEnabled() && debug) {
                 LOGGER.debug("["+id+"]count=" + thisCount +",ops=" + ops + "/" + interval +"s");
             }
         }
@@ -133,6 +133,10 @@ public class OPSMonitor{
     public void startup(){
         executor = Threads.newSingleThreadScheduledExecutor();
         executor.scheduleWithFixedDelay(worker, interval, interval, TimeUnit.SECONDS);
+    }
+
+    public void debug(boolean debug) {
+        this.debug = debug;
     }
 
     public void shutdown(){
