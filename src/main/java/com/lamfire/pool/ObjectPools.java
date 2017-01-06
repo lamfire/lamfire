@@ -1,12 +1,6 @@
 package com.lamfire.pool;
 
-/**
- * Created with IntelliJ IDEA.
- * User: lamfire
- * Date: 15-2-27
- * Time: 上午10:38
- * To change this template use File | Settings | File Templates.
- */
+
 public class ObjectPools {
 
     public static <E> ObjectPool<E> makeObjectPool(PoolableObjectFactory<E> objectFactory,int maxInstance,int idleInstance){
