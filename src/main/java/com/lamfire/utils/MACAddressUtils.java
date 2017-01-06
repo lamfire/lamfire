@@ -30,6 +30,25 @@ public class MACAddressUtils {
 	public static long asLongAddress(String macAddress){
 		return Hex.toLong("0000"+macAddress);
 	}
+
+    public static String clearFormat(String macAddress){
+        String result = StringUtils.remove(macAddress,':');
+        result = StringUtils.remove(result,'-');
+        return result;
+    }
+
+    public static String format(String macAddress,char split){
+       StringBuffer buffer = new StringBuffer();
+        char[] chars = macAddress.toCharArray();
+        for(int i=0;i<chars.length;i+=2){
+            buffer.append(chars[i]);
+            buffer.append(chars[i+1]);
+            if(i < chars.length -2){
+                buffer.append(split);
+            }
+        }
+        return buffer.toString();
+    }
 	
 	public static String asStringAddress(long macAddress){
 		return Hex.encode(Bytes.toBytes(macAddress)).substring(4);
