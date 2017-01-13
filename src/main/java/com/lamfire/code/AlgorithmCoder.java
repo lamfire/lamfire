@@ -1,16 +1,15 @@
 package com.lamfire.code;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.AlgorithmParameterSpec;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.AlgorithmParameterSpec;
 
 public class AlgorithmCoder {
 	
@@ -82,7 +81,7 @@ public class AlgorithmCoder {
 		Cipher cipher = Cipher.getInstance(transformation);
 
 		if(initializationVector == null){
-			cipher.init(Cipher.ENCRYPT_MODE, sksSpec);
+			cipher.init(Cipher.DECRYPT_MODE, sksSpec);
 		}else{
 			AlgorithmParameterSpec iv = new IvParameterSpec(initializationVector);
 			cipher.init(Cipher.DECRYPT_MODE, sksSpec, iv);
