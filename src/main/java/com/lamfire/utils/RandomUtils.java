@@ -1,9 +1,12 @@
 package com.lamfire.utils;
 
-import java.math.BigInteger;
-import java.util.Random;
-
 import com.lamfire.code.Yarrow;
+
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 public class RandomUtils {
 	private static final String STRINGS = "1234567890poiuytrewqasdfghjklmnbvcxzQWERTYUIOPLKJHGFDSAZXCVBNM";
@@ -95,5 +98,73 @@ public class RandomUtils {
 			chars[i] = STRINGS.charAt(nextInt(STRINGS.length()));
 		}
 		return String.valueOf(chars);
+	}
+
+	public static <T> void randomList(List<T> list) {
+		int len = list.size();
+		for (int i = 0; i < len; i++) {
+			T e = list.get(i);
+			int r = nextInt(len);
+			if (r == i) {
+				continue;
+			}
+			T o = list.get(r);
+			list.set(i, o);
+			list.set(r, e);
+		}
+	}
+
+
+	public static <T> void randomCollection(Collection<T> list) {
+		List<T> result = Lists.newArrayList(list);
+		int len = result.size();
+		for (int i = 0; i < len; i++) {
+			T e = result.get(i);
+			int r = nextInt(len);
+			if (r == i) {
+				continue;
+			}
+			T o = result.get(r);
+			result.set(i, o);
+			result.set(r, e);
+		}
+		list.clear();
+		list.addAll(result);
+		result.clear();
+	}
+
+	public static void randomArray(Object[] arr) {
+		int len = arr.length;
+		for (int i = 0; i < len; i++) {
+			Object e = arr[i];
+			int r = nextInt(len);
+			if (r == i) {
+				continue;
+			}
+			Object o = arr[r];
+			arr[i] = o;
+			arr[r] = e;
+		}
+	}
+
+	public static <T> T randomGet(List<T> list) {
+		if (list == null && list.isEmpty()) {
+			return null;
+		}
+		return list.get(nextInt(list.size()));
+	}
+
+	public static <T> T randomGet(Collection<T> col) {
+		if (col == null && col.isEmpty()) {
+			return null;
+		}
+		T result = null;
+		Iterator<T> iterator = col.iterator();
+		int r = nextInt(col.size());
+
+		for (int i = 0; i < r; i++) {
+			result = iterator.next();
+		}
+		return result;
 	}
 }
