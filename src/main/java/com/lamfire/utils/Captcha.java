@@ -10,9 +10,9 @@ import java.util.Random;
 
 public class Captcha {
 
-    public static String SESSION_KEY = "_CAPTCHA_";
+    public static final String SESSION_KEY = "_CAPTCHA_";
 
-    private static Random random = new Random(System.currentTimeMillis());
+    private static final Random random = new Random(System.currentTimeMillis());
 
     private String[] fontTypes = {"\u5b8b\u4f53", "\u65b0\u5b8b\u4f53", "\u9ed1\u4f53", "\u6977\u4f53", "\u96b6\u4e66"};
 
@@ -59,7 +59,7 @@ public class Captcha {
     }
 
 
-    public void write(OutputStream output) {
+    public String genAndwrite(OutputStream output) {
 
 //		 备选汉字的长度
         int length = baseText.length();
@@ -69,8 +69,6 @@ public class Captcha {
         // 获取图形上下文
         Graphics g = image.getGraphics();
 
-        // 创建随机类的实例
-        Random random = new Random();
 
         // 设定图像背景色(因为是做背景，所以偏淡)
         g.setColor(getRandColor(200, 250));
@@ -115,6 +113,7 @@ public class Captcha {
             ImageIO.write(image, imageFormatName, output);
         } catch (IOException e) {
         }
+        return captchaCode;
     }
 
     public void setFontCount(int count) {
