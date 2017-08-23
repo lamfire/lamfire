@@ -1,48 +1,54 @@
 package com.lamfire.code;
 
-import java.security.InvalidKeyException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.SignatureException;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 public class AlgorithmSignature {
+	public static final String RSA_SIGN_ALGORITHMS = "SHA1WithRSA";
+	public static final String DSA_SIGN_ALGORITHMS = "SHA1withDSA";
 
 	public static byte[] signSHA1WithDSA(PrivateKey privateKey,byte[] data) throws SignatureException, InvalidKeyException, NoSuchAlgorithmException{
-		Signature signature = Signature.getInstance("SHA1withDSA");
+		Signature signature = Signature.getInstance(DSA_SIGN_ALGORITHMS);
 		signature.initSign(privateKey);
 		signature.update(data);
 		return signature.sign();
 	}
 	
 	public static boolean verifySHA1WithDSA(PublicKey pubkey,byte[] data,byte[] signature) throws SignatureException, InvalidKeyException, NoSuchAlgorithmException{
-		Signature sign = Signature.getInstance("SHA1withDSA");
+		Signature sign = Signature.getInstance(DSA_SIGN_ALGORITHMS);
 		sign.initVerify(pubkey);
 		sign.update(data);
 		return sign.verify(signature);
 	}
-	
-	
 
-	public static void main(String[] args) throws Exception {
 
-		KeyPairGenerator keygen = KeyPairGenerator.getInstance("DSA");
-		keygen.initialize(512);
-		KeyPair keypair = keygen.generateKeyPair();
-		PublicKey pubKey = keypair.getPublic();
-		PrivateKey privKey = keypair.getPrivate();
-		
-		
-		byte[] signature = AlgorithmSignature.signSHA1WithDSA(privKey, "admin".getBytes());
-		
-		System.out.println(Hex.encode(signature));
-		
-		boolean ret = AlgorithmSignature.verifySHA1WithDSA(pubKey, "admin".getBytes(), signature);
-		
-		System.out.println(ret);
-		
+	public static byte[] signSHA1WithRSA(PrivateKey privateKey,byte[] data) throws SignatureException, InvalidKeyException, NoSuchAlgorithmException{
+		Signature signature = Signature.getInstance(RSA_SIGN_ALGORITHMS);
+		signature.initSign(privateKey);
+		signature.update(data);
+		return signature.sign();
 	}
+
+	public static boolean verifySHA1WithRSA(PublicKey pubkey,byte[] data,byte[] signature) throws SignatureException, InvalidKeyException, NoSuchAlgorithmException{
+		Signature sign = Signature.getInstance(RSA_SIGN_ALGORITHMS);
+		sign.initVerify(pubkey);
+		sign.update(data);
+		return sign.verify(signature);
+	}
+
+	public static byte[] signSHA1WithRSA(byte[] privateKey,byte[] data) throws SignatureException, InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException {
+		PKCS8EncodedKeySpec pksc8 = new PKCS8EncodedKeySpec(privateKey);
+		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+		PrivateKey priKey = keyFactory.generatePrivate(pksc8);
+		return signSHA1WithRSA(priKey,data);
+	}
+
+	public static boolean verifySHA1WithRSA(byte[] pubkeyBytes,byte[] data,byte[] signature) throws SignatureException, InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException {
+		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+		PublicKey pubKey = keyFactory.generatePublic(new X509EncodedKeySpec(pubkeyBytes));
+		return verifySHA1WithRSA(pubKey,data,signature);
+	}
+
 }
