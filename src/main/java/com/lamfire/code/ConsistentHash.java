@@ -1,16 +1,12 @@
 package com.lamfire.code;
 
-import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import com.lamfire.utils.Maps;
 
+import java.nio.charset.Charset;
+import java.util.*;
+
 public class ConsistentHash<T extends ConsistentHash.Node> {
-	private static final Integer VIRTUAL_NODE_COUNT = 160;
+	private static final Integer VIRTUAL_NODE_COUNT = 256;
 	private static final byte[] NULL_DIGEST = MD5.digest("".getBytes());
 	private final TreeMap<Long,T> virtualNodes = Maps.newTreeMap();
 	
