@@ -20,7 +20,7 @@ public class RSA {
 	/**
 	 * 加密算法RSA
 	 */
-    public static final String KEY_ALGORITHM = "RSA/ECB/PKCS1Padding";
+    public static final String KEY_ALGORITHM = "RSA";
 
 	/**
 	 * 签名算法
