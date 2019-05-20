@@ -1,26 +1,14 @@
 package com.lamfire.code;
 
+import com.lamfire.utils.IOUtils;
+
+import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Signature;
+import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
-import com.lamfire.utils.IOUtils;
 
 /**
  * RSA算法工具
@@ -32,7 +20,7 @@ public class RSA {
 	/**
 	 * 加密算法RSA
 	 */
-	public static final String KEY_ALGORITHM = "RSA";
+    public static final String KEY_ALGORITHM = "RSA/ECB/PKCS1Padding";
 
 	/**
 	 * 签名算法
