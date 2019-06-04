@@ -57,7 +57,7 @@ public class RSATester {
         System.out.println("加密前文字：\n" + source);
         byte[] data = source.getBytes();
 
-        RSA rsa = new RSA(keySize,Base64.decode(privateKey),Base64.decode(publicKey));
+        RSA rsa = new RSA(keySize, Base64.decode(privateKey), Base64.decode(publicKey), RSA.KEY_ALGORITHM);
 
         byte[] encodedData = rsa.encodeByPublicKey(data);
         System.err.println("加密后文字：\n" +  Base64.encode(encodedData));
@@ -77,7 +77,7 @@ public class RSATester {
 
     static void testSign() throws Exception {
         System.err.println("\n\n=======================私钥签名——公钥验证签名=======================");
-        RSA rsa = new RSA(keySize,Base64.decode(privateKey),Base64.decode(publicKey));
+        RSA rsa = new RSA(keySize, Base64.decode(privateKey), Base64.decode(publicKey), RSA.KEY_ALGORITHM);
 
         String sign = rsa.signatureAsBase64(source.getBytes());
         System.err.println("签名:\n" + sign);
@@ -91,7 +91,7 @@ public class RSATester {
         System.out.println("加密前文字：\n" + source);
         byte[] data = source.getBytes();
 
-        RSA rsa = new RSA(keySize,Base64.decode(privateKey),Base64.decode(publicKey));
+        RSA rsa = new RSA(keySize, Base64.decode(privateKey), Base64.decode(publicKey), RSA.KEY_ALGORITHM);
 
         byte[] encodedData = rsa.encodeByPublicKey(data);
         System.err.println("加密后文字：\n" + Base64.encode(encodedData));

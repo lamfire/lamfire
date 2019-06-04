@@ -33,10 +33,11 @@ public class RSA {
     private int keySize = 1024;
     private PrivateKey privateKey;
     private PublicKey publicKey;
-    private String algorithm = KEY_ALGORITHM;
+    private String algorithm;
 
     public RSA(int keySize)throws Exception {
         this.keySize = keySize;
+        this.algorithm = KEY_ALGORITHM;
         KeyPair keyPair = genKeyPair(keySize, algorithm);
         this.privateKey = keyPair.getPrivate();
         this.publicKey = keyPair.getPublic();
@@ -50,14 +51,18 @@ public class RSA {
         this.algorithm = algorithm;
     }
 
-    public RSA(int keySize, byte[] privateKey, byte[] publicKey) throws Exception {
+
+    public RSA(int keySize, byte[] privateKey, byte[] publicKey, String algorithm) throws Exception {
         this.keySize = keySize;
-        this.privateKey = toPrivateKey(privateKey);
-        this.publicKey = toPublicKey(publicKey);
+        this.algorithm = algorithm;
+        this.privateKey = toPrivateKey(privateKey, algorithm);
+        this.publicKey = toPublicKey(publicKey, algorithm);
     }
 
-    public RSA(int keySize, PrivateKey privateKey,PublicKey publicKey) {
+
+    public RSA(int keySize, PrivateKey privateKey, PublicKey publicKey, String algorithm) {
         this.keySize = keySize;
+        this.algorithm = algorithm;
         this.privateKey = privateKey;
         this.publicKey = publicKey;
     }
