@@ -42,6 +42,14 @@ public class RSA {
         this.publicKey = keyPair.getPublic();
     }
 
+    public RSA(int keySize, String algorithm) throws Exception {
+        this.keySize = keySize;
+        KeyPair keyPair = genKeyPair(keySize, algorithm);
+        this.privateKey = keyPair.getPrivate();
+        this.publicKey = keyPair.getPublic();
+        this.algorithm = algorithm;
+    }
+
     public RSA(int keySize, byte[] privateKey, byte[] publicKey) throws Exception {
         this.keySize = keySize;
         this.privateKey = toPrivateKey(privateKey);
