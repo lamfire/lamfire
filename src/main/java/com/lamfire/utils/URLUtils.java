@@ -1,17 +1,13 @@
 package com.lamfire.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import com.lamfire.logger.Logger;
+
+import java.io.*;
 import java.net.*;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.lamfire.logger.Logger;
 
 public class URLUtils {
 	private static final Logger logger = Logger.getLogger(URLUtils.class.getName());
@@ -126,5 +122,27 @@ public class URLUtils {
             logger.error("[host name to host address failed] : " + e.getMessage(),e);
             return urlAddr;
         }
+    }
+
+    public static String concat(String baseUrl, String fullFilenameToAdd) {
+        if (StringUtils.isBlank(baseUrl)) {
+            return fullFilenameToAdd;
+        }
+        if (StringUtils.isBlank(fullFilenameToAdd)) {
+            return baseUrl;
+        }
+        char ch = baseUrl.charAt(baseUrl.length() - 1);
+        char ch1 = fullFilenameToAdd.charAt(0);
+        if (ch1 == '/') {
+            fullFilenameToAdd = StringUtils.substring(fullFilenameToAdd, 1);
+        }
+        String result;
+        if (ch == '/') {
+            result = baseUrl + fullFilenameToAdd;
+        } else {
+            result = baseUrl + '/' + fullFilenameToAdd;
+        }
+
+        return result;
     }
 }
