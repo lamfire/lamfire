@@ -33,10 +33,11 @@ public class RSA {
     private int keySize = 1024;
     private PrivateKey privateKey;
     private PublicKey publicKey;
+    private String algorithm = KEY_ALGORITHM;
 
     public RSA(int keySize)throws Exception {
         this.keySize = keySize;
-        KeyPair keyPair = genKeyPair(keySize);
+        KeyPair keyPair = genKeyPair(keySize, algorithm);
         this.privateKey = keyPair.getPrivate();
         this.publicKey = keyPair.getPublic();
     }
@@ -66,7 +67,7 @@ public class RSA {
     }
 
     public void setPrivateKey(byte[] privateKey)throws Exception {
-        this.privateKey = toPrivateKey(privateKey);
+        this.privateKey = toPrivateKey(privateKey, algorithm);
     }
 
     public void setPrivateKey(PrivateKey privateKey){
@@ -78,7 +79,7 @@ public class RSA {
     }
 
     public void setPublicKey(byte[] publicKey) throws Exception{
-        this.publicKey = toPublicKey(publicKey);
+        this.publicKey = toPublicKey(publicKey, algorithm);
     }
 
     public void setPublicKey(PublicKey publicKey){
@@ -123,7 +124,7 @@ public class RSA {
      */
 
     public byte[] decodeByPrivateKey(byte[] data) throws Exception {
-        return decode(data, privateKey,keySize);
+        return decode(data, privateKey, keySize, algorithm);
     }
 
     /**
@@ -133,7 +134,7 @@ public class RSA {
      * @throws Exception
      */
     public byte[] decodeByPublicKey(byte[] data) throws Exception {
-        return decode(data, publicKey,keySize);
+        return decode(data, publicKey, keySize, algorithm);
     }
 
 
@@ -145,7 +146,7 @@ public class RSA {
      * @throws Exception
      */
     public  byte[] encodeByPublicKey(byte[] data) throws Exception {
-        return encode(data, publicKey,keySize);
+        return encode(data, publicKey, keySize, algorithm);
     }
 
     /**
@@ -155,7 +156,22 @@ public class RSA {
      * @throws Exception
      */
     public byte[] encodeByPrivateKey(byte[] data) throws Exception {
-        return encode(data, privateKey,keySize);
+        return encode(data, privateKey, keySize, algorithm);
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public static KeyPair genKeyPair(int keySize, String algorithm) throws Exception {
+        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(algorithm);
+        keyPairGen.initialize(keySize);
+        KeyPair keyPair = keyPairGen.generateKeyPair();
+        return keyPair;
     }
 
     /**
@@ -164,10 +180,7 @@ public class RSA {
      * @throws Exception
      */
     public static KeyPair genKeyPair(int keySize) throws Exception {
-        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(KEY_ALGORITHM);
-        keyPairGen.initialize(keySize);
-        KeyPair keyPair = keyPairGen.generateKeyPair();
-        return keyPair;
+        return genKeyPair(keySize, KEY_ALGORITHM);
     }
 
     /**
@@ -215,6 +228,9 @@ public class RSA {
 	}
 
 
+    public static byte[] decode(byte[] data, Key key, int keySize) throws Exception {
+        return decode(data, key, keySize, KEY_ALGORITHM);
+    }
 
 	/**
 	 * 解密函数
@@ -224,8 +240,8 @@ public class RSA {
 	 * @return
 	 * @throws Exception
 	 */
-	public static byte[] decode(byte[] data, Key key,int keySize) throws Exception {
-		Cipher cipher = Cipher.getInstance(KEY_ALGORITHM);
+    public static byte[] decode(byte[] data, Key key, int keySize, String algorithm) throws Exception {
+        Cipher cipher = Cipher.getInstance(algorithm);
 		cipher.init(Cipher.DECRYPT_MODE, key);
 
         int blockSize = keySize / 8;
@@ -256,6 +272,9 @@ public class RSA {
 
 	}
 
+    public static byte[] encode(byte[] data, Key key, int keySize) throws Exception {
+        return encode(data, key, keySize, KEY_ALGORITHM);
+    }
 
 	/**
 	 * 加密函数
@@ -265,8 +284,8 @@ public class RSA {
 	 * @return
 	 * @throws Exception
 	 */
-	public static byte[] encode(byte[] data, Key key,int keySize) throws Exception {
-		Cipher cipher = Cipher.getInstance(KEY_ALGORITHM);
+    public static byte[] encode(byte[] data, Key key, int keySize, String algorithm) throws Exception {
+        Cipher cipher = Cipher.getInstance(algorithm);
 		cipher.init(Cipher.ENCRYPT_MODE, key);
 
         int blockSize = keySize / 8 - 11;
@@ -353,12 +372,16 @@ public class RSA {
 	 * @return
 	 * @throws Exception
 	 */
-	public static RSAPrivateKey toPrivateKey(byte[] keyBytes)throws Exception{
+    public static RSAPrivateKey toPrivateKey(byte[] keyBytes, String algorithm) throws Exception {
 		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
-		KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
 		RSAPrivateKey key = (RSAPrivateKey)keyFactory.generatePrivate(keySpec);
 		return key;
 	}
+
+    public static RSAPrivateKey toPrivateKey(byte[] keyBytes) throws Exception {
+        return toPrivateKey(keyBytes, KEY_ALGORITHM);
+    }
 	
 	/**
 	 * 解码公钥
@@ -366,12 +389,16 @@ public class RSA {
 	 * @return
 	 * @throws Exception
 	 */
-	public static RSAPublicKey toPublicKey(byte[] keyBytes)throws Exception{
+    public static RSAPublicKey toPublicKey(byte[] keyBytes, String algorithm) throws Exception {
 		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-		KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
 		RSAPublicKey key = (RSAPublicKey)keyFactory.generatePublic(keySpec);
 		return key;
 	}
+
+    public static RSAPublicKey toPublicKey(byte[] keyBytes) throws Exception {
+        return toPublicKey(keyBytes, KEY_ALGORITHM);
+    }
 
 
 }
