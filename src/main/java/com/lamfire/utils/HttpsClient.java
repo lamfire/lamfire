@@ -4,7 +4,6 @@ import com.lamfire.logger.Logger;
 
 import javax.net.ssl.*;
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -192,9 +191,17 @@ public class HttpsClient {
 		if(content == null)return null;
 		return new String(content,encoding);
 	}
+
+    public List<String> getResponseHeaders(String key) {
+        return conn.getHeaderFields().get(key);
+    }
 	
 	public String getResponseHeader(String key) {
-		return conn.getHeaderField(key);
+        List<String> list = getResponseHeaders(key);
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
 	}
 
 	public Map<String, List<String>> getResponseHeaders() {
