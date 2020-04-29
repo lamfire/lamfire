@@ -1,22 +1,20 @@
 package com.lamfire.utils;
 
+import com.lamfire.logger.Logger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 @SuppressWarnings("unchecked")
 public class ClassLoaderUtils {
+    private static final Logger LOGGER = Logger.getLogger(ClassLoaderUtils.class);
 	public static Iterator<URL> getResources(String resourceName, Class callingClass, boolean aggregate) throws IOException {
 		AggregateIterator iterator = new AggregateIterator();
 
@@ -197,8 +195,19 @@ public class ClassLoaderUtils {
 	}
 
 	public static Set<Class<?>> getClasses(final String packageName) throws IOException, ClassNotFoundException {
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		return getClasses(loader, packageName);
+        Set<Class<?>> set = new HashSet<>();
+        try {
+            set.addAll(getClasses(getStandardClassLoader(), packageName));
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage(), e);
+            try {
+                set.addAll(getClasses(getFallbackClassLoader(), packageName));
+            } catch (Exception e2) {
+                LOGGER.warn(e.getMessage(), e2);
+            }
+        }
+
+        return set;
 	}
 
 
@@ -245,8 +254,12 @@ public class ClassLoaderUtils {
 				String fileName = file.getName();
 				if (fileName.endsWith(".class")) {
 					String name = packageName + '.' + stripFilenameExtension(fileName);
-					Class<?> clazz = loadClass(name);
-					classes.add(clazz);
+                    try {
+                        Class<?> clazz = loadClass(name);
+                        classes.add(clazz);
+                    } catch (Throwable e) {
+                        //LOGGER.warn(e.getMessage(),e);
+                    }
 				}
 			}
 		}
@@ -271,7 +284,11 @@ public class ClassLoaderUtils {
 				if (className.endsWith(".class")) {
 					className = stripFilenameExtension(className);
 					if (className.startsWith(packageName)) {
-						classes.add(loadClass(className.replace('/', '.')));
+                        try {
+                            classes.add(loadClass(className.replace('/', '.')));
+                        } catch (Throwable e) {
+                            //LOGGER.warn(e.getMessage(),e);
+                        }
 					}
 				}
 			}
