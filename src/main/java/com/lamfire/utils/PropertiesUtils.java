@@ -5,16 +5,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.lang.reflect.Field;
+import java.util.*;
 
+import com.lamfire.anno.PROP_BOUND;
 import com.lamfire.logger.Logger;
 
 public class PropertiesUtils {
 
 	private static final Logger LOGGER = Logger.getLogger(PropertiesUtils.class.getName());
+	private static final Map<String,Properties> caches = new HashMap<>();
 
 	public static Map<String, String> loadAsMap(InputStream input) {
 		if (input == null) {
@@ -44,29 +44,34 @@ public class PropertiesUtils {
 	}
 
 	public static Properties load(String resource, Class<?> callingClass) {
-		InputStream input = ClassLoaderUtils.getResourceAsStream(resource, callingClass);
-		return load(input);
+		File file = ClassLoaderUtils.getResourceAsFile(resource, callingClass);
+		String cacheKey = file.getAbsolutePath();
+		if(caches.containsKey(cacheKey)){
+			return caches.get(caches);
+		}
+		return load(file);
 	}
 
 	public static Properties load(File file) {
+		String cacheKey = file.getAbsolutePath();
+		if(caches.containsKey(cacheKey)){
+			return caches.get(caches);
+		}
 		try {
-			return load(new FileInputStream(file));
+			Properties prop =  load(new FileInputStream(file));
+			caches.put(cacheKey,prop);
+			return prop;
 		} catch (FileNotFoundException e) {
 			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 	}
 
 	public static Map<String, String> loadAsMap(File file) {
-		try {
-			return loadAsMap(new FileInputStream(file));
-		} catch (FileNotFoundException e) {
-			throw new IllegalArgumentException(e.getMessage(), e);
-		}
+		return toMap(load(file));
 	}
 
 	public static Map<String, String> loadAsMap(String resource,Class<?> callingClass) {
-		InputStream input = ClassLoaderUtils.getResourceAsStream(resource, callingClass);
-		return loadAsMap(input);
+		return toMap(load(resource,callingClass));
 	}
 
 	public static Map<String, String> toMap(Properties properties) {
@@ -83,4 +88,14 @@ public class PropertiesUtils {
 		return map;
 	}
 
+	public static void boundByAnnotation(Object instance){
+		Set<Field> fields = AnnotationUtils.getAnnotationFields(instance.getClass(), PROP_BOUND.class);
+		for(Field f : fields){
+			PROP_BOUND b  = f.getAnnotation(PROP_BOUND.class);
+			String prop = b.prop();
+			String key = b.key();
+			Properties p = load(prop , instance.getClass());
+			ObjectUtils.setFieldValue(instance,f,p.get(key));
+		}
+	}
 }

@@ -126,6 +126,21 @@ public class ClassUtils {
 		}
 		return null;
 	}
+	public static Set<Field> getAnnotationFields(Class<?> target, Class<? extends Annotation> annotationClass) {
+		if (annotationClass == null || target == null){
+			throw new NullPointerException();
+		}
+		Set<Field> set = new HashSet<>();
+		Map<String, Field> fields = ClassUtils.getAllFieldsAsMap(target);
+		for (Map.Entry<String, Field> e : fields.entrySet()) {
+			Field field = e.getValue();
+			Annotation ann = field.getAnnotation(annotationClass);
+			if (ann != null) {
+				set.add(field);
+			}
+		}
+		return set;
+	}
 
 	public static List<Class<?>> getAllSuperclasses(Class<?> cls) {
 		if (cls == null) {
