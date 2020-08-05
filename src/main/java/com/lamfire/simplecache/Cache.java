@@ -30,4 +30,8 @@ public interface Cache<K, V> {
 	public Collection<Item<K, V>> items();
 
 	public boolean isEmpty();
+
+	public OnCacheRemovedListener getOnCacheRemovedListener() ;
+
+	public void setOnCacheRemovedListener(OnCacheRemovedListener onCacheRemovedListener) ;
 }
