@@ -8,6 +8,8 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOError;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -179,6 +181,29 @@ class FileQueueImpl implements FileQueue,Closeable{
         } finally {
             lock.unlock();
         }
+    }
+    public List<byte[]> pull(int size){
+        List<byte[]> result = new ArrayList<>();
+        if (isEmpty()) {
+            return result;
+        }
+        try {
+            lock.lock();
+            reader.moveTo(0);
+            for(int i=0;i< size;i++) {
+                if (!reader.hashMore()) {
+                    break;
+                }
+                result.add(reader.read());
+                reader.moveNext();
+            }
+            reader.commit();
+        } catch (IOException e) {
+            throw new IOError(e);
+        } finally {
+            lock.unlock();
+        }
+        return result;
     }
 
     public void skip(int number){

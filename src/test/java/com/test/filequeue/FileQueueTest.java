@@ -5,6 +5,8 @@ import com.lamfire.filequeue.FileQueueBuilder;
 import com.lamfire.utils.Asserts;
 import com.lamfire.utils.Bytes;
 
+import java.util.List;
+
 
 /**
  * Tests for QueueFile.
@@ -63,6 +65,28 @@ public class FileQueueTest {
         System.out.println("[size]:"+queue.size());
         Asserts.equalsAssert(0,queue.size());
 
+        //poll(size)
+        count = 10000;
+        for(int i=0;i<count;i++) {
+            queue.push(Bytes.toBytes(i));
+        }
+
+
+        int n = 0;
+        while(!queue.isEmpty()) {
+            List<byte[]> result = queue.pull(100);
+            int i = 100 * n;
+            for (byte[] b : result) {
+                int v = Bytes.toInt(b);
+                Asserts.equalsAssert(i++, v);
+            }
+            System.out.println("[size]:" + queue.size());
+            Asserts.equalsAssert(count - (100 * ++n), queue.size());
+        }
+
+
+        System.out.println("[size]:"+queue.size());
+        Asserts.equalsAssert(0,queue.size());
         System.exit(0);
 	}
 }
