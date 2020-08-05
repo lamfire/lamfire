@@ -10,11 +10,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class AbstractCache<K, V> implements Cache<K, V> {
-	static final Logger LOGGER = Logger.getLogger(AbstractCache.class);
+	static final Logger LOGGER = Logger.getLogger("SimpleCache");
 	protected final Lock lock = new ReentrantLock();
 	private final Map<K, Item<K, V>> items;
 	private int maxElementsInCache = 10000;
 	private long timeToLiveMillis = 60 * 1000;
+	private OnItemExpiredListener onItemExpiredListener;
 
 	protected AbstractCache(Map<K, Item<K, V>> items, int maxElementsInCache, long timeToLiveMillis) {
 		this.maxElementsInCache = maxElementsInCache;
@@ -46,7 +47,7 @@ public class AbstractCache<K, V> implements Cache<K, V> {
 				return null;
 			}
 			if(item.isExpired(this.timeToLiveMillis)){
-				this.items.remove(item.getKey());
+				doCleanExpiredItem(item.getKey());
 				return null;
 			}
 			return item.getValue();
@@ -134,6 +135,16 @@ public class AbstractCache<K, V> implements Cache<K, V> {
 		}
 	}
 
+	protected synchronized void doCleanExpiredItem(K k){
+		Item<K,V>  item = items.remove(k);
+		if(onItemExpiredListener != null){
+			onItemExpiredListener.onItemExpired(item);
+		}
+		if(LOGGER.isDebugEnabled()){
+			LOGGER.info("clean expired key : " + k);
+		}
+	}
+
     protected synchronized void cleanExpired(){
         lock.lock();
         try {
@@ -146,17 +157,22 @@ public class AbstractCache<K, V> implements Cache<K, V> {
                 }
             }
             for(K k : expired){
-                items.remove(k);
-                if(LOGGER.isDebugEnabled()){
-                    LOGGER.debug("clean expired key : " + k);
-                }
+				doCleanExpiredItem(k);
             }
         } finally {
             lock.unlock();
         }
     }
 
-    private Runnable cleanTask = new Runnable() {
+	public OnItemExpiredListener getOnItemExpiredListener() {
+		return onItemExpiredListener;
+	}
+
+	public void setOnItemExpiredListener(OnItemExpiredListener onItemExpiredListener) {
+		this.onItemExpiredListener = onItemExpiredListener;
+	}
+
+	private Runnable cleanTask = new Runnable() {
         @Override
         public void run() {
             cleanExpired();
