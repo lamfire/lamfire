@@ -45,17 +45,13 @@ public class PropertiesUtils {
 
 	public static Properties load(String resource, Class<?> callingClass) {
 		File file = ClassLoaderUtils.getResourceAsFile(resource, callingClass);
-		String cacheKey = file.getAbsolutePath();
-		if(caches.containsKey(cacheKey)){
-			return caches.get(caches);
-		}
 		return load(file);
 	}
 
 	public static Properties load(File file) {
 		String cacheKey = file.getAbsolutePath();
 		if(caches.containsKey(cacheKey)){
-			return caches.get(caches);
+			return caches.get(cacheKey);
 		}
 		try {
 			Properties prop =  load(new FileInputStream(file));
@@ -95,7 +91,8 @@ public class PropertiesUtils {
 			String prop = b.prop();
 			String key = b.key();
 			Properties p = load(prop , instance.getClass());
-			ObjectUtils.setFieldValue(instance,f,p.get(key));
+			String value = p.getProperty(key);
+			ObjectUtils.setPropertyValue(instance,f.getName(),value);
 		}
 	}
 }
