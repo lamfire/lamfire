@@ -153,7 +153,11 @@ public class Base64 {
 	}
 	
 	public static String encode(byte[] source) {
-		return encodeBytes(source, 0, source.length, 0);
+		return encodeBytes(source, 0, source.length, 0x8);
+	}
+
+	public static String encode(byte[] source,int options) {
+		return encodeBytes(source, 0, source.length, options);
 	}
 
 	public static String encodeBytes(byte[] source) {
