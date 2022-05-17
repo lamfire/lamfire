@@ -48,6 +48,10 @@ public class PropertiesUtils {
 		return load(file);
 	}
 
+	public static void loadToObject(Object instance){
+		boundByAnnotation(instance);
+	}
+
 	public static Properties load(File file) {
 		String cacheKey = file.getAbsolutePath();
 		if(caches.containsKey(cacheKey)){
@@ -87,12 +91,22 @@ public class PropertiesUtils {
 	public static void boundByAnnotation(Object instance){
 		Set<Field> fields = AnnotationUtils.getAnnotationFields(instance.getClass(), PROP_BOUND.class);
 		for(Field f : fields){
-			PROP_BOUND b  = f.getAnnotation(PROP_BOUND.class);
+			PROP_BOUND b = f.getAnnotation(PROP_BOUND.class);
+			if(b == null){
+				continue;
+			}
 			String prop = b.prop();
 			String key = b.key();
-			Properties p = load(prop , instance.getClass());
+			Properties p = load(prop, instance.getClass());
+			if(p == null){
+				continue;
+			}
 			String value = p.getProperty(key);
-			ObjectUtils.setPropertyValue(instance,f.getName(),value);
+			try {
+				ObjectUtils.setPropertyValue(instance, f.getName(), value);
+			}catch (Exception e){
+				LOGGER.warn(instance.getClass().getName() + "." + f.getName() + " set value : " + value +" error." + e.getMessage(),e );
+			}
 		}
 	}
 }
