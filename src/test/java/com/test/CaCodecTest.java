@@ -1,5 +1,6 @@
 package com.test;
 
+import com.lamfire.code.Base64;
 import com.lamfire.code.CaCodec;
 import com.lamfire.code.RSA;
 import com.lamfire.json.JSON;
@@ -11,9 +12,10 @@ public class CaCodecTest {
 
         JSON data = new JSON();
         data.put("id","U9802342388G");
-        data.put("memo", "111");
-        data.put("date",456115454);
+        data.put("memo", RandomUtils.randomTextWithFixedLength(28));
+        data.put("date",System.currentTimeMillis());
         System.out.println("Data : " + data);
+        System.out.println("Base64 : " + Base64.encode(data.toBytes()));
 
         byte[] dataBytes = data.toBytes();
         System.out.println("Data Len : " +dataBytes.length);

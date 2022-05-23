@@ -18,10 +18,7 @@ public class CaCodec {
         byte[] dataHash = SHA1.digest(data);
         String hash = Hex.encode(dataHash);
         AES aes = new AES(key.getBytes());
-        String data2Str = Base64.encode(data);
-        byte[] dataStrBytes = data2Str.getBytes();
-        byte[] enBytes = aes.encode(dataStrBytes);
-
+        byte[] enBytes = aes.encode(data);
 
         Key rsaPrivateKey = RSA.toPrivateKey(privateKey);
         byte[] enKeyBytes = RSA.encode(key.getBytes(),rsaPrivateKey,KEY_BITS);
@@ -29,8 +26,8 @@ public class CaCodec {
         long time = System.currentTimeMillis();
 
         JSON json = new JSON();
-        json.put("data",Base64.encodeBytes(enBytes));
-        json.put("key",Base64.encodeBytes(enKeyBytes));
+        json.put("data",Base64.encode(enBytes));
+        json.put("key",Base64.encode(enKeyBytes));
         json.put("hash",hash);
         json.put("date",time);
         json.put("version",VERSION);
@@ -49,23 +46,22 @@ public class CaCodec {
         }
         String hash = json.getString("hash");
         String key = json.getString("key");
+        String data = json.getString("data");
 
         Key rsaPublicKey = RSA.toPublicKey(publicKey);
         byte[] aesKeyBytes = RSA.decode(Base64.decode(key),rsaPublicKey,KEY_BITS);
         AES aes = new AES(aesKeyBytes);
-        byte[] data = aes.decode(Base64.decode(json.getString("data")));
-        String data2str = new String(data).trim();
-        byte[] srcData = Base64.decode(data2str);
+        byte[] srcData = aes.decode(Base64.decode(data));
         String encodedDataHash = Hex.encode(SHA1.digest(srcData));
         if(!StringUtils.equalsIgnoreCase(hash,encodedDataHash)){
             throw new Exception("Tha ca hash mismatch:" +encodedDataHash +" - " +hash);
         }
-        json.put("data",Base64.encodeBytes(srcData));
+        json.put("data",srcData);
         return json;
     }
 
     public static byte[] decode(byte[] zipCaBytes,byte[] publicKey)throws Exception{
         JSON caJSON = decodeCa(zipCaBytes,publicKey);
-        return Base64.decode(caJSON.getString("data"));
+        return caJSON.getByteArray("data");
     }
 }

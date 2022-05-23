@@ -7,14 +7,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.lamfire.json.JSONException;
 import com.lamfire.json.deserializer.FieldDeserializer;
@@ -54,6 +47,10 @@ public class TypeConverters {
     public static final byte[] castToByteArray(Object value){
         if (value == null) {
             return null;
+        }
+
+        if(value instanceof byte[]){
+            return (byte[])value;
         }
 
         if (value instanceof Collection) {
