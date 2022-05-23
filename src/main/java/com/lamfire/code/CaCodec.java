@@ -2,20 +2,27 @@ package com.lamfire.code;
 
 import com.lamfire.json.JSON;
 import com.lamfire.utils.RandomUtils;
+import com.lamfire.utils.StringUtils;
 import com.lamfire.utils.ZipUtils;
 
 import java.security.Key;
 
-public class FireCa {
-    public static final int VERSION = 1;
+public class CaCodec {
+    public static final int VERSION = 2;
     public static final int KEY_BITS = 1024;
 
-    private FireCa(){}
+    private CaCodec(){}
 
-    public static byte[] encode(byte[] data,byte[] privateKey) throws Exception {
+    public static byte[] encode(final byte[] data,final byte[] privateKey) throws Exception {
         String key = RandomUtils.randomTextWithFixedLength(16);//aes key
+        byte[] dataHash = SHA1.digest(data);
+        String hash = Hex.encode(dataHash);
         AES aes = new AES(key.getBytes());
-        byte[] enBytes = aes.encode(data);
+        String data2Str = Base64.encode(data);
+        byte[] dataStrBytes = data2Str.getBytes();
+        byte[] enBytes = aes.encode(dataStrBytes);
+
+
         Key rsaPrivateKey = RSA.toPrivateKey(privateKey);
         byte[] enKeyBytes = RSA.encode(key.getBytes(),rsaPrivateKey,KEY_BITS);
         String id = PUID.makeAsString();
@@ -24,6 +31,7 @@ public class FireCa {
         JSON json = new JSON();
         json.put("data",Base64.encodeBytes(enBytes));
         json.put("key",Base64.encodeBytes(enKeyBytes));
+        json.put("hash",hash);
         json.put("date",time);
         json.put("version",VERSION);
         json.put("id",id);
@@ -39,11 +47,20 @@ public class FireCa {
         if(json.getInteger("version") != VERSION){
             throw new Exception("Tha ca version mismatch");
         }
+        String hash = json.getString("hash");
+        String key = json.getString("key");
+
         Key rsaPublicKey = RSA.toPublicKey(publicKey);
-        byte[] aesKeyBytes = RSA.decode(Base64.decode(json.getString("key")),rsaPublicKey,KEY_BITS);
+        byte[] aesKeyBytes = RSA.decode(Base64.decode(key),rsaPublicKey,KEY_BITS);
         AES aes = new AES(aesKeyBytes);
         byte[] data = aes.decode(Base64.decode(json.getString("data")));
-        json.put("data",Base64.encodeBytes(data));
+        String data2str = new String(data).trim();
+        byte[] srcData = Base64.decode(data2str);
+        String encodedDataHash = Hex.encode(SHA1.digest(srcData));
+        if(!StringUtils.equalsIgnoreCase(hash,encodedDataHash)){
+            throw new Exception("Tha ca hash mismatch:" +encodedDataHash +" - " +hash);
+        }
+        json.put("data",Base64.encodeBytes(srcData));
         return json;
     }
 
