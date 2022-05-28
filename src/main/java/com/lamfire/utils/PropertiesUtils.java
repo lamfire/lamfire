@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.*;
 
 import com.lamfire.anno.PROP_BOUND;
@@ -48,8 +49,46 @@ public class PropertiesUtils {
 		return load(file);
 	}
 
-	public static void loadToObject(Object instance){
-		boundByAnnotation(instance);
+	public static void loadToObjectFields(String resource,Object instance){
+		Properties properties = load(resource,instance.getClass());
+		Field[] fields = ClassUtils.getAllFields(instance.getClass());
+		for(Field field : fields){
+			String name = field.getName();
+			String value = properties.getProperty(name);
+			Class<?> type = field.getType();
+			if(StringUtils.isBlank(value)){
+				continue;
+			}
+			try {
+				field.setAccessible(true);
+				field.set(instance, TypeConvertUtils.convert(value, type));
+			}catch (IllegalAccessException e) {
+				LOGGER.error("Set field value field : " +instance.getClass().getName() +"."+ field.getName(),e);
+			}finally {
+				field.setAccessible(false);
+			}
+		}
+	}
+
+	/**
+	 * 加载资源文件到一个静态fields
+	 */
+	public static void loadToStaticFields(String resource, Class<?> classes) {
+			Properties properties = load(resource,classes);
+			Field[] fields = classes.getDeclaredFields();
+			for (Field field : fields) {
+				field.setAccessible(true);
+				String value = properties.getProperty(field.getName());
+				if (StringUtils.isBlank(value)) {
+					continue;
+				}
+				try {
+					Class<?> type = field.getType();
+					field.set(null,TypeConvertUtils.convert(value,type));
+				} catch (IllegalAccessException e) {
+					LOGGER.error("Not a static field : " +classes.getName() +"."+ field.getName());
+				}
+			}
 	}
 
 	public static Properties load(File file) {
@@ -88,7 +127,7 @@ public class PropertiesUtils {
 		return map;
 	}
 
-	public static void boundByAnnotation(Object instance){
+	public static void loadByAnnotation(Object instance){
 		Set<Field> fields = AnnotationUtils.getAnnotationFields(instance.getClass(), PROP_BOUND.class);
 		for(Field f : fields){
 			PROP_BOUND b = f.getAnnotation(PROP_BOUND.class);
