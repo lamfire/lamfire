@@ -89,7 +89,7 @@
         <repository>
             <id>lamfire</id>
             <name>lamfire-mirror</name>
-            <url>http://m2.lamfire.com:8081/nexus/content/repositories/lamfire/</url>
+            <url>http://m2.avator.cn:8081/nexus/content/repositories/lamfire/</url>
         </repository>
     </distributionManagement>
 </project>

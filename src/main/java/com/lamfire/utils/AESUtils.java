@@ -1,14 +1,12 @@
 package com.lamfire.utils;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.lamfire.logger.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 public class AESUtils {
-    private static final Logger log = LoggerFactory.getLogger(AESUtils.class);
+    private static final Logger log = Logger.getLogger(AESUtils.class);
     public static final String AES_ALGORITHM = "AES";
 
     private AESUtils() {
