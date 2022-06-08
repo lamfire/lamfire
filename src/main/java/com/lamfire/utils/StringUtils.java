@@ -22,6 +22,18 @@ public class StringUtils {
 		return !isEmpty(str);
 	}
 
+	public static boolean isBlank(Object ... objs){
+		for(Object o : objs){
+			if(o == null){
+				return true;
+			}
+			if(isBlank(o.toString())){
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static boolean isBlank(String str) {
 		int strLen;
 		if ((str == null) || ((strLen = str.length()) == 0)) {
