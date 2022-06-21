@@ -2,7 +2,9 @@ package com.lamfire.utils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Random;
@@ -25,10 +27,10 @@ public class Captcha {
     private int interfereCount = 16;
 
     // 最大字体
-    private int maxFontSize = 30;
+    private int maxFontSize = 32;
 
     // 最小字体
-    private int minFontSize = 18;
+    private int minFontSize = 16;
 
     // 保存生成的汉字字符串
     private String captchaCode = "";
@@ -59,7 +61,7 @@ public class Captcha {
     }
 
 
-    public String genAndwrite(OutputStream output) {
+    public String make(OutputStream output) {
 
 //		 备选汉字的长度
         int length = baseText.length();
@@ -67,7 +69,7 @@ public class Captcha {
         // 创建内存图像
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         // 获取图形上下文
-        Graphics g = image.getGraphics();
+        Graphics2D g = image.createGraphics();
 
 
         // 设定图像背景色(因为是做背景，所以偏淡)
@@ -89,7 +91,8 @@ public class Captcha {
         }
 
         // 取随机产生的认证码
-        int perFontX = width / fontCount;
+        int padding = width - width * 4 / 5;
+        int perFontX = (width - padding)/ fontCount;
         for (int i = 0; i < this.fontCount; i++) {
             int start = random.nextInt(length);
             String rand = baseText.substring(start, start + 1);
@@ -99,10 +102,15 @@ public class Captcha {
             g.setColor(getRandColor(10, 150));
             // 设置字体
             int fontSize = minFontSize + random.nextInt(maxFontSize - minFontSize);
-            g.setFont(new Font(fontTypes[random.nextInt(fontTypesLength)], random.nextInt(2), fontSize));
-            // 将此汉字画到图片上
-            int x = 5 + i * perFontX + (perFontX > fontSize ? random.nextInt(perFontX - fontSize) : 0);
-            int y = fontSize + random.nextInt(height - fontSize);
+            Font font = new Font(fontTypes[random.nextInt(fontTypesLength)], random.nextInt(2),fontSize);
+            //旋转
+            AffineTransform affineTransform = new AffineTransform();
+            affineTransform.rotate(Math.toRadians(-50 + RandomUtils.nextInt(90)));
+            g.setFont(font.deriveFont(affineTransform));
+
+            // 将此字符画到图片上
+            int x = padding/2 + i * perFontX + RandomUtils.nextInt((perFontX/2));
+            int y = (fontSize + height)/2;
             g.drawString(rand, x, y);
         }
 
@@ -114,6 +122,13 @@ public class Captcha {
         } catch (IOException e) {
         }
         return captchaCode;
+    }
+
+    public byte[] makeAsBytes(){
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        make(outputStream);
+        byte[] bytes = outputStream.toByteArray();
+        return bytes;
     }
 
     public void setFontCount(int count) {
