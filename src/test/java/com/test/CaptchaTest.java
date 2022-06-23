@@ -15,6 +15,6 @@ public class CaptchaTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         String capcode = c.make(outputStream);
         byte[] bytes = outputStream.toByteArray();
-        FileUtils.writeByteArrayToFile(new File("/data/captcha.jpeg"),bytes);
+        FileUtils.writeByteArrayToFile(new File("/data/captcha.png"),bytes);
     }
 }

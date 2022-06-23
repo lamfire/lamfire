@@ -33,9 +33,9 @@ public class PictureMarker {
 	/**
 	 * 把图片印刷到图片上
 	 * 
-	 * @param pressImg
+	 * @param source
 	 *            -- 水印文件
-	 * @param targetImg
+	 * @param target
 	 *            -- 目标文件
 	 * @param right
 	 * @param bottom
@@ -60,15 +60,7 @@ public class PictureMarker {
 			g.dispose();
 			
 			
-			ImageIO.write(image, "JPEG", target);
-			
-			/**
-			//输出到文件流
-			FileOutputStream out=new FileOutputStream(target);
-			JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-			encoder.encode(image);//近JPEG编码	
-	        out.close();
-	        **/
+			ImageIO.write(image, "PNG", target);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -77,12 +69,6 @@ public class PictureMarker {
 	
 	public static void markImage(File source,File target){
 		markImage(source,target,RIGHT,BOTTOM);
-	}
-
-	public static void main(String[] args) {
-		File source = new File("D:\\data\\source.jpg");
-		File target = new File("D:\\data\\target.jpg");
-		markImage(source, target);
 	}
 
 }

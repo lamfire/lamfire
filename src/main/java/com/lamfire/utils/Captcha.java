@@ -11,9 +11,6 @@ import java.util.Random;
 
 
 public class Captcha {
-
-    public static final String SESSION_KEY = "_CAPTCHA_";
-
     private static final Random random = new Random(System.currentTimeMillis());
 
     private String[] fontTypes = {"\u5b8b\u4f53", "\u65b0\u5b8b\u4f53", "\u9ed1\u4f53", "\u6977\u4f53", "\u96b6\u4e66"};
@@ -38,7 +35,7 @@ public class Captcha {
     // 设置图片的长宽
     private int width = 120, height = 30;
 
-    private String imageFormatName = "JPEG";
+    private String imageFormatName = "PNG";
 
     public Captcha() {
 
