@@ -18,6 +18,9 @@ public class ClassPathScanner {
 
     private static final Logger logger = Logger.getLogger("ClassPathScanner");
 
+    public static Set<Class> scan(String basePackage){
+        return scan(basePackage, true, false, false, null);
+    }
     /**
      * 扫描包
      *
