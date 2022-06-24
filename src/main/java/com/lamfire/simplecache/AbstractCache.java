@@ -141,7 +141,7 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
 		if(onCacheRemovedListener != null){
             onCacheRemovedListener.onRemoved(this,item.getKey(),item.getValue());
 		}
-		LOGGER.info("[expired] : " + item);
+		LOGGER.debug("[expired] : " + item);
 	}
 
     protected synchronized void cleanExpired(){

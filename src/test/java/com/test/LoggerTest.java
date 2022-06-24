@@ -6,6 +6,6 @@ public class LoggerTest {
 	static Logger LOGGER = Logger.getLogger(LoggerTest.class);
 
 	public static void main(String[] args) {
-		LOGGER.info("11111111111111");
+		LOGGER.info(LOGGER.getClass().getName());
 	}
 }
