@@ -4,7 +4,7 @@ package com.lamfire.logger;
 
 public class Log4jLogger extends com.lamfire.logger.Logger{
 
-    private org.apache.log4j.Logger logger ;
+    private final org.apache.log4j.Logger logger ;
     
     public Log4jLogger(Class<?> cls){
         this.logger = org.apache.log4j.Logger.getLogger(cls);
@@ -13,7 +13,11 @@ public class Log4jLogger extends com.lamfire.logger.Logger{
     public Log4jLogger(String name){
         this.logger = org.apache.log4j.Logger.getLogger(name);
     }
-    
+
+    public org.apache.log4j.Logger getLogger() {
+        return logger;
+    }
+
     @Override
     public void debug(String msg) {
         logger.debug(msg);

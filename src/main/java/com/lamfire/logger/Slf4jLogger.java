@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory;
 
 public class Slf4jLogger extends Logger{
 
-    private org.slf4j.Logger logger ;
+    private final org.slf4j.Logger logger ;
     
     public Slf4jLogger(Class<?> cls){
         this.logger = LoggerFactory.getLogger(cls);
@@ -13,7 +13,11 @@ public class Slf4jLogger extends Logger{
     public Slf4jLogger(String name){
         this.logger = LoggerFactory.getLogger(name);
     }
-    
+
+    public org.slf4j.Logger getLogger() {
+        return logger;
+    }
+
     @Override
     public void debug(String msg) {
         logger.debug(msg);

@@ -24,6 +24,10 @@ class JdkLogger extends com.lamfire.logger.Logger {
     	logger = Logger.getLogger(name);
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
+
     public void debug(String msg) {
         logger.logp(Level.FINE, loggerName, null, msg);
     }
