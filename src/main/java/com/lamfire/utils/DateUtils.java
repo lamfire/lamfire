@@ -225,11 +225,7 @@ public class DateUtils {
 		lastMillis = time;
 		return lastMillis;
 	}
-	
-	public static Date parse(long millis){
-		return new Date(millis);
-	}
-	
+
 	/**
 	 * 获得一整天的时间毫秒数
 	 * @param millis
@@ -419,14 +415,6 @@ public class DateUtils {
 			}
 		}
 		throw new ParseException("Unable to parse the date: " + str, -1);
-	}
-	
-	public static Date parse(String dateText,String pattern) throws ParseException{
-		if ((dateText == null) || (pattern == null)) {
-			throw new IllegalArgumentException("Date and Pattern must not be null");
-		}
-		SimpleDateFormat parser = new SimpleDateFormat(pattern);
-		return parser.parse(dateText);
 	}
 
 	public static Date addYears(Date date, int amount) {
@@ -754,5 +742,26 @@ public class DateUtils {
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
+	}
+
+
+	public static Date parse(long millis){
+		return new Date(millis);
+	}
+
+
+	public static Date parse(String dateText,String pattern) throws ParseException{
+		return parse(dateText,pattern,null);
+	}
+
+	public static Date parse(String dateText,String pattern,TimeZone timeZone) throws ParseException{
+		if ((dateText == null) || (pattern == null)) {
+			throw new IllegalArgumentException("Date and Pattern must not be null");
+		}
+		SimpleDateFormat parser = new SimpleDateFormat(pattern);
+		if(timeZone != null) {
+			parser.setTimeZone(timeZone);
+		}
+		return parser.parse(dateText);
 	}
 }
