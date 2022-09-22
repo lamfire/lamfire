@@ -7,11 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created with IntelliJ IDEA.
- * User: linfan
- * Date: 15-9-30
- * Time: 下午12:02
- * To change this template use File | Settings | File Templates.
+ *操作频率统计器
  */
 public class OPSMonitor{
     private static final Logger LOGGER = Logger.getLogger(OPSMonitor.class);
