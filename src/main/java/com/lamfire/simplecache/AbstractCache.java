@@ -11,7 +11,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<K, V>{
 	static final Logger LOGGER = Logger.getLogger("SimpleCache");
-	protected final Lock lock = new ReentrantLock();
 	private final CacheMap<K, Item<K, V>> items;
 	private int maxElementsInCache = 10000;
 	private long timeToLiveMillis = 60 * 1000;
@@ -41,7 +40,6 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
 
 	@Override
 	public V get(K key) {
-		lock.lock();
 		try {
 			Item<K, V> item = items.get(key);
 			if (item == null) {
@@ -53,7 +51,6 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
 			}
 			return item.getValue();
 		} finally {
-			lock.unlock();
 		}
 	}
 
@@ -79,17 +76,14 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
 
 	@Override
 	public Item<K, V> remove(K key) {
-		lock.lock();
 		try {
 			return this.items.remove(key);
 		} finally {
-			lock.unlock();
 		}
 	}
 
 	@Override
 	public void set(K key, V val) {
-		lock.lock();
 		try {
 			Item<K, V> item = items.get(key);
 			if (item == null) {
@@ -99,7 +93,7 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
 			}
 			items.put(key, item);
 		} finally {
-			lock.unlock();
+
 		}
 	}
 
@@ -110,7 +104,6 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
 
 	@Override
 	public Collection<V> values() {
-		lock.lock();
 		try {
 			List<V> list = new ArrayList<V>();
 			for (Item<K, V> item : items.values()) {
@@ -118,13 +111,12 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
 			}
 			return list;
 		} finally {
-			lock.unlock();
+
 		}
 	}
 
 	@Override
 	public Map<K, V> asMap() {
-		lock.lock();
 		try {
 			Map<K,V> map = new LinkedHashMap<K,V>();
 			for (Map.Entry<K, Item<K,V>> e: items.entrySet()) {
@@ -132,7 +124,7 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
 			}
 			return map;
 		} finally {
-			lock.unlock();
+
 		}
 	}
 
@@ -145,7 +137,6 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
 	}
 
     protected synchronized void cleanExpired(){
-        lock.lock();
         try {
             Set<Map.Entry<K,Item<K,V>>>  entrys = items.entrySet();
             List<K> expired = Lists.newArrayList();
@@ -159,7 +150,7 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
 				doCleanExpiredItem(k);
             }
         } finally {
-            lock.unlock();
+
         }
     }
 

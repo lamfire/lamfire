@@ -90,7 +90,6 @@ public class MapSerializer implements ObjectSerializer {
             } else {
                 preClazz = clazz;
                 preWriter = serializer.getObjectWriter(clazz);
-
                 preWriter.write(serializer, value);
             }
         }
