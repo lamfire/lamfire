@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<K, V>{
+public class AbstractCache<K, V> implements Cache<K, V> {
 	static final Logger LOGGER = Logger.getLogger("SimpleCache");
 	private final CacheMap<K, Item<K, V>> items;
 	private int maxElementsInCache = 10000;
@@ -20,8 +20,7 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
 		this.maxElementsInCache = maxElementsInCache;
 		this.timeToLiveMillis = timeToLiveMillis;
 		this.items = items;
-		this.items.setRemoveEldestListener(this);
-        Threads.scheduleWithFixedDelay(cleanTask,5,5, TimeUnit.MINUTES);
+        Threads.scheduleWithFixedDelay(cleanExpiredTask,15,15, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -83,17 +82,17 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
 	}
 
 	@Override
-	public void set(K key, V val) {
-		try {
-			Item<K, V> item = items.get(key);
-			if (item == null) {
-				item = new Item<K, V>(key, val);
-			} else {
-				item.setValue(val);
-			}
-			items.put(key, item);
-		} finally {
+	public synchronized void set(K key, V val) {
+		Item<K, V> item = items.get(key);
+		if (item == null) {
+			item = new Item<K, V>(key, val);
+		} else {
+			item.setValue(val);
+		}
+		items.put(key, item);
 
+		if(size() > maxElementsInCache){
+			items.removeEldestEntry();
 		}
 	}
 
@@ -162,15 +161,10 @@ public class AbstractCache<K, V> implements Cache<K, V> ,OnRemoveEldestListener<
         this.onCacheRemovedListener = onCacheRemovedListener;
     }
 
-    private Runnable cleanTask = new Runnable() {
+    private Runnable cleanExpiredTask = new Runnable() {
         @Override
         public void run() {
             cleanExpired();
         }
     };
-
-    @Override
-    public void onRemoveEldest(K k, V v) {
-        doCleanExpiredItem(k);
-    }
 }
