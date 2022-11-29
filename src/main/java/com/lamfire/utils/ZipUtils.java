@@ -32,12 +32,8 @@ public class ZipUtils {
 			throw e;
 
 		} finally {
-			if (gzout != null) {
-				try {
-					gzout.close();
-				} catch (Exception ex) {
-				}
-			}
+			IOUtils.closeQuietly(gzout);
+			IOUtils.closeQuietly(bout);
 		}
 
 		return bout.toByteArray();
@@ -54,6 +50,7 @@ public class ZipUtils {
 			throw e;
 
 		} finally {
+			IOUtils.closeQuietly(gzin);
 		}
 
 	}
@@ -67,16 +64,15 @@ public class ZipUtils {
     }
 
 	public static byte[] zip(byte[] bs) throws Exception {
-
 		ByteArrayOutputStream o = null;
+		final Deflater compress = new Deflater();
 		try {
 			o = new ByteArrayOutputStream();
-			Deflater compresser = new Deflater();
-			compresser.setInput(bs);
-			compresser.finish();
+			compress.setInput(bs);
+			compress.finish();
 			byte[] output = new byte[1024];
-			while (!compresser.finished()) {
-				int got = compresser.deflate(output);
+			while (!compress.finished()) {
+				int got = compress.deflate(output);
 				o.write(output, 0, got);
 			}
 			o.flush();
@@ -85,19 +81,13 @@ public class ZipUtils {
 			throw ex;
 
 		} finally {
-			if (o != null) {
-				try {
-					o.close();
-				} catch (IOException e) {
-					throw e;
-				}
-			}
+			IOUtils.closeQuietly(o);
+			compress.end();
 		}
 
 	}
 
 	public static byte[] unzip(byte[] bs) throws Exception {
-
 		ByteArrayOutputStream o = null;
 		try {
 			o = new ByteArrayOutputStream();
@@ -115,24 +105,17 @@ public class ZipUtils {
 			throw ex;
 
 		} finally {
-			if (o != null) {
-				try {
-					o.close();
-				} catch (IOException e) {
-					throw e;
-				}
-			}
+			IOUtils.closeQuietly(o);
 		}
 
 	}
 
 	public static void zip(String[] fileNames, String outZipFileName) throws Exception {
 		ZipOutputStream zout = null;
+		FileOutputStream fout = null;
 		try {
-			FileOutputStream fout = new FileOutputStream(outZipFileName);
-
+			fout = new FileOutputStream(outZipFileName);
 			zout = new ZipOutputStream(fout);
-
 			BufferedOutputStream out = new BufferedOutputStream(zout);
 			for (int i = 0; i < fileNames.length; i++) {
 				ZipEntry ze = new ZipEntry(fileNames[i]);
@@ -151,8 +134,8 @@ public class ZipUtils {
 
 					}
 				} finally {
-					in.close();
-					out.flush();
+					IOUtils.closeQuietly(in);
+					IOUtils.closeQuietly(out);
 					zout.closeEntry();
 				}
 			}
@@ -160,8 +143,8 @@ public class ZipUtils {
 			throw ex;
 
 		} finally {
-			if (zout != null)
-				zout.close();
+			IOUtils.closeQuietly(fout);
+			IOUtils.closeQuietly(zout);
 		}
 	}
 
@@ -200,11 +183,11 @@ public class ZipUtils {
 				while ((readLen = is.read(buf, 0, 1024)) != -1) {
 					os.write(buf, 0, readLen);
 				}
-				is.close();
-				os.close();
+				IOUtils.closeQuietly(is);
+				IOUtils.closeQuietly(os);
 			}
 		}
-		zfile.close();
+		IOUtils.closeQuietly(zfile);
 	}
 
 }
