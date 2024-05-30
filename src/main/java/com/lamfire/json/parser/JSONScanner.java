@@ -19,6 +19,7 @@ import java.util.Calendar;
 
 import com.lamfire.json.JSON;
 import com.lamfire.json.JSONException;
+import com.lamfire.json.JSONThisParser;
 import com.lamfire.json.util.CharTypes;
 import com.lamfire.json.util.SymbolTable;
 
@@ -63,12 +64,12 @@ public class JSONScanner implements JSONLexer {
 
     private final static ThreadLocal<char[]> sbufRef  = new ThreadLocal<char[]>();
 
-    private int                              features = JSON.DEFAULT_PARSER_FEATURE;
+    private int                              features = JSONThisParser.DEFAULT_PARSER_FEATURE;
 
     private Calendar                         calendar = null;
 
     public JSONScanner(String input){
-        this(input, JSON.DEFAULT_PARSER_FEATURE);
+        this(input, JSONThisParser.DEFAULT_PARSER_FEATURE);
     }
 
     public JSONScanner(String input, int features){
@@ -76,7 +77,7 @@ public class JSONScanner implements JSONLexer {
     }
 
     public JSONScanner(char[] input, int inputLength){
-        this(input, inputLength, JSON.DEFAULT_PARSER_FEATURE);
+        this(input, inputLength, JSONThisParser.DEFAULT_PARSER_FEATURE);
     }
 
     public JSONScanner(char[] input, int inputLength, int features){

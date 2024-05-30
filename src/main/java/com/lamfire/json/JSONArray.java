@@ -18,7 +18,7 @@ import com.lamfire.json.util.TypeConverters;
 import com.lamfire.utils.Lists;
 
 
-public class JSONArray extends JSONParser implements List<Object>, JSONString, Cloneable, RandomAccess, Serializable {
+public class JSONArray implements List<Object>, JSONString, Cloneable, RandomAccess, Serializable {
 
     private static final long  serialVersionUID = 1L;
     private final List<Object> list;
@@ -129,22 +129,12 @@ public class JSONArray extends JSONParser implements List<Object>, JSONString, C
 
     public JSON getJSONObject(int index) {
         Object value = list.get(index);
-
-        if (value instanceof JSON) {
-            return (JSON) value;
-        }
-
-        return (JSON) toJSONObject(value);
+        return (JSON) value;
     }
 
     public JSONArray getJSONArray(int index) {
         Object value = list.get(index);
-
-        if (value instanceof JSONArray) {
-            return (JSONArray) value;
-        }
-
-        return (JSONArray) toJSONObject(value);
+        return (JSONArray) value;
     }
 
     public <T> T getObject(int index, Class<T> clazz) {
@@ -379,8 +369,5 @@ public class JSONArray extends JSONParser implements List<Object>, JSONString, C
             out.close();
         }
     }
-    
-    public static JSONArray fromJSONString(String json){
-		return parseArray(json);
-	}
+
 }

@@ -5,7 +5,7 @@ import com.lamfire.utils.NumberUtils;
 import com.lamfire.utils.StringUtils;
 
 public class Version {
-    public static final String VERSION = "2.3.36";
+    public static final String VERSION = "2.3.39";
 
     public static String getJavaVersion() {
         JvmInfo jvm = JvmInfo.getInstance();

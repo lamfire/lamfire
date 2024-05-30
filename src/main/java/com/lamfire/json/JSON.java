@@ -32,7 +32,7 @@ import com.lamfire.json.serializer.JSONSerializer;
 import com.lamfire.json.serializer.SerializeWriter;
 import com.lamfire.json.util.TypeConverters;
 
-public class JSON extends JSONParser implements Map<String, Object>, JSONString, Cloneable, Serializable {
+public class JSON implements Map<String, Object>, JSONString, Cloneable, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private static final int DEFAULT_INITIAL_CAPACITY = 16;
@@ -90,17 +90,12 @@ public class JSON extends JSONParser implements Map<String, Object>, JSONString,
 			return (JSON) value;
 		}
 
-		return (JSON) toJSONObject(value);
+		return fromJavaObject(value);
 	}
 
 	public JSONArray getJSONArray(String key) {
 		Object value = map.get(key);
-
-		if (value instanceof JSONArray) {
-			return (JSONArray) value;
-		}
-
-		return (JSONArray) toJSONObject(value);
+		return (JSONArray) value;
 	}
 
 	public <T> T getObject(String key, Class<T> clazz) {
@@ -369,7 +364,7 @@ public class JSON extends JSONParser implements Map<String, Object>, JSONString,
     }
     
     public <T> T toJavaObject(Class<T> clazz) {
-    	return parseObject(this.toJSONString(), clazz);
+    	return JSONParserFactory.getJSONParser().toJavaObject(this.toJSONString(), clazz);
     }
     
 	/////////////////////////////////////////////////////////////////////////
@@ -378,21 +373,18 @@ public class JSON extends JSONParser implements Map<String, Object>, JSONString,
         return json.toJavaObject(clazz);
     }
     
-    public static final <T> List<T> toJavaObjectArray(String json, Class<T> clazz) {
-    	return parseArray(json, clazz);
-    }
 
 	public static <T> T toJavaObject(String json,Class<T> clazz){
-		return parseObject(json, clazz);
+		return JSONParserFactory.getJSONParser().toJavaObject(json, clazz);
 	}
 
 	public static JSON fromJSONString(String json){
-		return parseObject(json);
+		return JSONParserFactory.getJSONParser().parse(json);
 	}
 	
 	public static JSON fromJavaObject(Object bean) {
-		String json =  toJSONString(bean);
-		return parseObject(json); 
+		String json = JSONParserFactory.getJSONParser().toJSONString(bean);
+		return JSONParserFactory.getJSONParser().parse(json);
 	}
 
     public static JSON fromBytes(byte[] bytes){
@@ -409,4 +401,12 @@ public class JSON extends JSONParser implements Map<String, Object>, JSONString,
         String js = new String(bytes,Charset.forName(charset));
         return fromJSONString(js);
     }
+
+	public static String toJSONString(Object bean){
+		return JSONParserFactory.getJSONParser().toJSONString(bean);
+	}
+
+	public static JSONArray toJSONArray(String json){
+		return JSONParserFactory.getJSONParser().parseArray(json);
+	}
 }

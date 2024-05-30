@@ -3,7 +3,6 @@ package com.test;
 import com.lamfire.code.Base62;
 import com.lamfire.code.MD5;
 import com.lamfire.utils.Bytes;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 public class Base62Test {
 	static String base64,base62;
@@ -12,10 +11,7 @@ public class Base62Test {
 		byte[] bytes = MD5.digest("4534569sdhge".getBytes());
 		int count = 0;
 		long start = System.currentTimeMillis();
-		for(int i=0;i<100000;i++){
-			base64 = Base64.encode(bytes);
-			count ++;
-		}
+
 		System.out.println("BASE64:" + (System.currentTimeMillis() - start));
 		
 		long s1 = Bytes.toLong(bytes);

@@ -6,6 +6,7 @@ import java.util.Map;
 import com.lamfire.json.JSONArray;
 import com.lamfire.json.JSONException;
 import com.lamfire.json.JSON;
+import com.lamfire.json.JSONThisParser;
 import com.lamfire.json.util.SymbolTable;
 
 public class DefaultJSONParser extends AbstractJSONParser {
@@ -16,11 +17,11 @@ public class DefaultJSONParser extends AbstractJSONParser {
     protected ParserConfig      config;
 
     public DefaultJSONParser(String input){
-        this(input, ParserConfig.getGlobalInstance(), JSON.DEFAULT_PARSER_FEATURE);
+        this(input, ParserConfig.getGlobalInstance(), JSONThisParser.DEFAULT_PARSER_FEATURE);
     }
 
     public DefaultJSONParser(final String input, final ParserConfig config){
-        this(input, new JSONScanner(input, JSON.DEFAULT_PARSER_FEATURE), config);
+        this(input, new JSONScanner(input, JSONThisParser.DEFAULT_PARSER_FEATURE), config);
     }
 
     public DefaultJSONParser(final String input, final ParserConfig config, int features){

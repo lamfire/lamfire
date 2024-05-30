@@ -29,10 +29,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
 import com.lamfire.logger.Logger;
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageDecoder;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
+
 
 public class Image {
 	private static final Logger LOGGER = Logger
@@ -156,8 +153,7 @@ public class Image {
 
 	/**
 	 * 将图片等比缩小到固定宽度,如果原图较小则不缩放.
-	 * 
-	 * @param data
+	 *
 	 * @param width
 	 * @return
 	 */
@@ -181,9 +177,8 @@ public class Image {
 
 	/**
 	 * 将图片等比缩小到固定宽度,如果原图较小则不缩放.
-	 * 
-	 * @param data
-	 * @param width
+	 *
+	 * @param fixHeight
 	 * @return
 	 */
 	public void zoomScaleHeight(int fixHeight) {
@@ -205,8 +200,7 @@ public class Image {
 
 	/**
 	 * 将图片缩放剪切到固定尺寸
-	 * 
-	 * @param data
+	 *
 	 * @param width
 	 * @param height
 	 * @return
@@ -252,11 +246,7 @@ public class Image {
 	public void saveAsJPEG(File file, float quality) throws IOException {
 		OutputStream bos = new FileOutputStream(file);
 		try {
-			JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(bos);
-			JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(image);
-			param.setQuality(quality, false);
-			encoder.setJPEGEncodeParam(param);
-			encoder.encode(image);
+			ImageIO.write(image,"JPEG",bos);
 			bos.flush();
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage());
@@ -283,7 +273,6 @@ public class Image {
 	 * @param markImage
 	 * @param right
 	 * @param bottom
-	 * @param alpha
 	 */
 	public void drawMarkImage(BufferedImage markImage, int right, int bottom,
 			int colorType, boolean transluceny) {
@@ -647,23 +636,8 @@ public class Image {
 	 * @return
 	 */
 	public static byte[] getJPEGBytes(BufferedImage image, float quality) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		try {
-			JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(bos);
-			JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(image);
-			param.setQuality(quality, false);
-			encoder.setJPEGEncodeParam(param);
-			encoder.encode(image);
-			return bos.toByteArray();
-		} catch (IOException e) {
-			throw new RuntimeException(e.getMessage());
-		} finally {
-			try {
-				bos.close();
-			} catch (IOException e) {
 
-			}
-		}
+			return getBytes(image,"JPEG");
 	}
 
 	/**
@@ -686,8 +660,7 @@ public class Image {
 	public static BufferedImage decodeJPEG(File file) throws IOException {
 		InputStream input = new FileInputStream(file);
 		try {
-			JPEGImageDecoder decoder = JPEGCodec.createJPEGDecoder(input);
-			BufferedImage image = decoder.decodeAsBufferedImage();
+			BufferedImage image =ImageIO.read(input);
 			return image;
 		} catch (IOException e) {
 			throw e;
@@ -719,9 +692,7 @@ public class Image {
 	 * @throws java.io.IOException
 	 */
 	public static BufferedImage decodeJPEG(InputStream input)  throws IOException{
-		JPEGImageDecoder decoder = JPEGCodec.createJPEGDecoder(input);
-		BufferedImage image = decoder.decodeAsBufferedImage();
-		return image;
+		return ImageIO.read(input);
 	}
 
 	/**

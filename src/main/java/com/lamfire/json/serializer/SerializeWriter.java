@@ -6,7 +6,7 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 
-import com.lamfire.json.JSON;
+import com.lamfire.json.JSONThisParser;
 import com.lamfire.json.util.CharTypes;
 import com.lamfire.json.util.CharUtils;
 
@@ -28,7 +28,7 @@ public final class SerializeWriter extends Writer {
 	private int features;
 
 	public SerializeWriter() {
-		this.features = JSON.DEFAULT_GENERATE_FEATURE;
+		this.features = JSONThisParser.DEFAULT_GENERATE_FEATURE;
 
 		buf = bufLocal.get(); // new char[1024];
 		if (buf == null) {
