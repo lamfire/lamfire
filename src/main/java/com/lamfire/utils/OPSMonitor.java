@@ -31,8 +31,8 @@ public class OPSMonitor{
             int thisCount = counter.get();
             ops = Math.abs(thisCount - prevCount);
             prevCount = thisCount;
-            if (LOGGER.isDebugEnabled() && debug) {
-                LOGGER.debug("["+id+"]count=" + thisCount +",ops=" + ops + "/" + interval +"s");
+            if (debug) {
+                LOGGER.info(OPSMonitor.this.toString());
             }
         }
     } ;
@@ -137,5 +137,9 @@ public class OPSMonitor{
 
     public void shutdown(){
         executor.shutdown();
+    }
+
+    public String toString(){
+        return "[" + this.id + "]count=" + counter.get() + ",ops=" + this.ops + "/" + OPSMonitor.this.interval + "s";
     }
 }
