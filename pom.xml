@@ -45,5 +45,10 @@
         </dependency>
     </dependencies>
 
-
+    <distributionManagement>
+        <repository>
+            <id>devnexus</id>
+            <url>http://192.168.1.212:8081/repository/maven-releases/</url>
+        </repository>
+    </distributionManagement>
 </project>

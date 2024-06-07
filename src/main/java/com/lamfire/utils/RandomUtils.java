@@ -2,7 +2,9 @@ package com.lamfire.utils;
 
 import com.lamfire.code.Yarrow;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -33,8 +35,16 @@ public class RandomUtils {
 		return nextLong(RANDOM);
 	}
 
+	public static long nextLong(long n) {
+		return nextLong(RANDOM,n);
+	}
+
 	public static long nextLong(Random random) {
 		return random.nextLong();
+	}
+
+	public static long nextLong(Random random,long n) {
+		return random.nextLong(n);
 	}
 
 	public static boolean nextBoolean() {
@@ -49,16 +59,32 @@ public class RandomUtils {
 		return nextFloat(RANDOM);
 	}
 
+	public static float nextFloat(float n) {
+		return nextFloat(RANDOM,n);
+	}
+
 	public static float nextFloat(Random random) {
 		return random.nextFloat();
+	}
+
+	public static float nextFloat(Random random,float n) {
+		return random.nextFloat(n);
 	}
 
 	public static double nextDouble() {
 		return nextDouble(RANDOM);
 	}
 
+	public static double nextDouble(double n) {
+		return nextDouble(RANDOM,n);
+	}
+
 	public static double nextDouble(Random random) {
 		return random.nextDouble();
+	}
+
+	public static double nextDouble(Random random,double n) {
+		return random.nextDouble(n);
 	}
 
 	public static String random(int bits, int radix) {
@@ -166,5 +192,23 @@ public class RandomUtils {
 			result = iterator.next();
 		}
 		return result;
+	}
+
+	public static double scale(double source,int dots){
+		return new BigDecimal(source).setScale(dots, RoundingMode.DOWN).doubleValue();
+	}
+
+	public static float scale(float source,int dots){
+		return new BigDecimal(source).setScale(dots, RoundingMode.DOWN).floatValue();
+	}
+
+	public static float randomFloat(float min,float max,int dots){
+		float val = min + RANDOM.nextFloat(max - min);
+		return scale(val,dots);
+	}
+
+	public static double randomDouble(double min,double max,int dots){
+		double val = min + RANDOM.nextDouble(max - min);
+		return scale(val,dots);
 	}
 }
