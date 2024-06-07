@@ -47,8 +47,9 @@
 
     <distributionManagement>
         <repository>
-            <id>devnexus</id>
-            <url>http://192.168.1.212:8081/repository/maven-releases/</url>
+            <id>github</id>
+            <name>GitHub lamfire Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/lamfire/lamfire</url>
         </repository>
     </distributionManagement>
 </project>
