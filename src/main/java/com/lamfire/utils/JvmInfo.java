@@ -61,20 +61,33 @@ public class JvmInfo {
 		this.vmName = runtimeMXBean.getVmName();
 		this.vmVendor = runtimeMXBean.getVmVendor();
 		this.vmVersion = runtimeMXBean.getVmVersion();
-		this.mem = new Mem();
-		this.mem.heapInit = memoryMXBean.getHeapMemoryUsage().getInit();
-		this.mem.heapMax = memoryMXBean.getHeapMemoryUsage().getMax();
-		this.mem.nonHeapInit = memoryMXBean.getNonHeapMemoryUsage().getInit();
-		this.mem.nonHeapMax = memoryMXBean.getNonHeapMemoryUsage().getMax();
+		this.classPath = runtimeMXBean.getClassPath();
+		this.systemProperties = runtimeMXBean.getSystemProperties();
+
+		try {
+			this.mem = new Mem();
+			this.mem.heapInit = memoryMXBean.getHeapMemoryUsage().getInit();
+			this.mem.heapMax = memoryMXBean.getHeapMemoryUsage().getMax();
+			this.mem.nonHeapInit = memoryMXBean.getNonHeapMemoryUsage().getInit();
+			this.mem.nonHeapMax = memoryMXBean.getNonHeapMemoryUsage().getMax();
+		}catch (Throwable t) {
+		}
+
 		try {
 			Class<?> vmClass = Class.forName("sun.misc.VM");
 			this.mem.directMemoryMax = ((Long) vmClass.getMethod("maxDirectMemory", new Class[0]).invoke(null, new Object[0])).longValue();
 		} catch (Throwable t) {
 		}
-		this.inputArguments = ((String[]) runtimeMXBean.getInputArguments().toArray(new String[runtimeMXBean.getInputArguments().size()]));
-		this.bootClassPath = runtimeMXBean.getBootClassPath();
-		this.classPath = runtimeMXBean.getClassPath();
-		this.systemProperties = runtimeMXBean.getSystemProperties();
+
+		try {
+			this.inputArguments = ((String[]) runtimeMXBean.getInputArguments().toArray(new String[runtimeMXBean.getInputArguments().size()]));
+
+		}catch (Throwable t) {
+		}
+
+		try {
+			this.bootClassPath = runtimeMXBean.getBootClassPath();
+		}catch (Throwable t){}
 
 		try {
 			this.getMaxFileDescriptorCountField = osMXBean.getClass().getDeclaredMethod("getMaxFileDescriptorCount", new Class[0]);
