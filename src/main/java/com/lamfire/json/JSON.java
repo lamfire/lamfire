@@ -19,13 +19,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 import com.lamfire.json.serializer.JSONSerializer;
 import com.lamfire.json.serializer.SerializeWriter;
@@ -94,13 +88,20 @@ public class JSON implements Map<String, Object>, JSONString, Cloneable, Seriali
 
 	public JSONArray getJSONArray(String key) {
 		Object value = map.get(key);
+		if(value == null){
+			return null;
+		}
 
 		if(value instanceof JSONArray){
 			return (JSONArray) value;
 		}
-		JSONArray result = new JSONArray();
-		result.addAll((Collection<? extends Object>) value);
-		return result;
+
+		if(value instanceof Iterable<?>) {
+			JSONArray result = new JSONArray();
+			result.addAll((Collection<? extends Object>) value);
+			return result;
+		}
+		return null;
 	}
 
 	public <T> T getObject(String key, Class<T> clazz) {

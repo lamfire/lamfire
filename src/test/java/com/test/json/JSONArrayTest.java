@@ -39,6 +39,8 @@ public class JSONArrayTest {
         JSONArray jarr = js.getJSONArray("users");
         System.out.println(jarr.size());
 
+        System.out.println(js.getJSONArray("**"));
+
 
     }
 }
