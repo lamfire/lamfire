@@ -25,5 +25,20 @@ public class JSONArrayTest {
         JSONArray arr = JSON.toJSONArray(json);
         System.out.println(arr);
 
+
+        Item item = new Item();
+        item.setUsers(list);
+        item.setKey("test");
+
+        json = JSON.toJSONString(item);
+        System.out.println(json);
+        item = JSON.toJavaObject(json,Item.class);
+
+        JSON js  = JSON.fromJSONString(json);
+
+        JSONArray jarr = js.getJSONArray("users");
+        System.out.println(jarr.size());
+
+
     }
 }
