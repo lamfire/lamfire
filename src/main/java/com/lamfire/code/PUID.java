@@ -137,7 +137,7 @@ public class PUID implements Comparable<PUID>, Serializable {
 		ByteBuffer bb = ByteBuffer.wrap(bytes);
 		bb.putInt(time);
 		bb.putInt(MACHINE_PROCESS_UNIQUE);
-		return Base62.encode(Bytes.toLong(bytes)) + Base62.encode(this.inc);
+		return Base62.encode(Bytes.toLong(bytes)) + Base62.encode(Math.abs(this.inc));
 	}
 
 	public int compareTo(PUID id) {
