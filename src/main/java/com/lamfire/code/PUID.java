@@ -95,6 +95,9 @@ public class PUID implements Comparable<PUID>, Serializable {
 		this.time = (int) (System.currentTimeMillis() / 1000L);
 		this.machine = MACHINE_PROCESS_UNIQUE;
 		this.inc = INC.getAndIncrement();
+		if(this.inc == Integer.MAX_VALUE){
+			INC.set(0);
+		}
 	}
 
 	public int hashCode() {
