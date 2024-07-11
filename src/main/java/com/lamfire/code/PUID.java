@@ -1,6 +1,7 @@
 package com.lamfire.code;
 
 import com.lamfire.logger.Logger;
+import com.lamfire.utils.Bytes;
 import com.lamfire.utils.MACAddressUtils;
 import com.lamfire.utils.RandomUtils;
 
@@ -14,7 +15,7 @@ public class PUID implements Comparable<PUID>, Serializable {
 	private static final long serialVersionUID = 8815279469780082174L;
 	private static final Logger LOGGER = Logger.getLogger(PUID.class);
 	private static final int MACHINE_PROCESS_UNIQUE;
-	private static final AtomicInteger INC = new AtomicInteger(RandomUtils.nextInt());
+	private static final AtomicInteger INC = new AtomicInteger(0);
 
 	static {
 		int macPiece = RandomUtils.nextInt();
@@ -128,6 +129,14 @@ public class PUID implements Comparable<PUID>, Serializable {
 		return bytes;
 	}
 
+	public String toBase62() {
+		byte[] bytes = new byte[8];
+		ByteBuffer bb = ByteBuffer.wrap(bytes);
+		bb.putInt(time);
+		bb.putInt(MACHINE_PROCESS_UNIQUE);
+		return Base62.encode(Bytes.toLong(bytes)) + Base62.encode(this.inc);
+	}
+
 	public int compareTo(PUID id) {
 		if (id == null) {
 			return -1;
@@ -177,6 +186,10 @@ public class PUID implements Comparable<PUID>, Serializable {
 
 	public static String makeAsString() {
 		return new PUID().toString();
+	}
+
+	public static String makeAsBase62() {
+		return new PUID().toBase62();
 	}
 
 	public static byte[] puidAsBytes() {

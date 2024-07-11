@@ -2,6 +2,7 @@ package com.test;
 
 import com.lamfire.code.MurmurHash;
 import com.lamfire.code.Radixes;
+import com.lamfire.utils.Asserts;
 import com.lamfire.utils.Bytes;
 
 public class Radix62Test {
@@ -14,14 +15,16 @@ public class Radix62Test {
 	}
 	
 	public static void main(String[] args) {
-		int radix = 37;
-		long number = 3720368l;
+		int radix = 61;
+		long number = -999999999;
 		String digest = Radixes.encode(number,radix);
+		long val = Radixes.decode(digest,radix);
+
 		
 		System.out.println(String.format("[EN] %d - %d -> %s", radix,number,digest));
-		System.out.println(String.format("[DE] %d - %s -> %d", radix,digest,Radixes.decode(digest,radix)));
-		
-		System.out.println(String.format("[DE] %d - %s -> %d", radix,digest.toUpperCase(),Radixes.decode(digest.toUpperCase(),radix)));
+		System.out.println(String.format("[DE] %d - %s -> %d", radix,digest,val));
+
+		Asserts.equalsAssert(number,val);
 	}
 
 }

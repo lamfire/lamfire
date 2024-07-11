@@ -20,47 +20,47 @@ public class Radixes {
 		if(radix > MAXRADIX){
 			throw new IllegalArgumentException("The parameter 'radix' cannot greater than [" + MAXRADIX +"]");
 		}
-		
-		boolean revert = false;
+		if(value ==0){
+			return "0";
+		}
+		boolean negative = false; //如果为负数
 		if(value < 0){
 			value = Math.abs(value);
-			revert = true;
+			negative = true;
+
 		}
-		
-		String result = value==0?"0":"";
+		StringBuilder buffer = new StringBuilder();
 		while(value > 0){
 			int v = (int)(value % radix);
 			value = value / radix;
-			result = revert?(SS.charAt(radix - v -1)) + result:(SS.charAt(v)) + result;
+			buffer.append(SS.charAt(v));
 		}
-		
-		return revert?SS.charAt(radix-1)+result:result;
+		if(negative){
+			buffer.append('-');
+		}
+		return buffer.reverse().toString();
 	}
 	
 	public static long decode(String text,int radix){
 		if(text == null){
 			return 0;
 		}
-		if(radix <= 36){
-			text = text.toLowerCase();
+		boolean negative = false; //如果为负数
+		char i0 = text.charAt(0);
+		if(i0 == '-'){
+			negative = true;
+			text = text.substring(1);
 		}
+		StringBuilder buffer = new StringBuilder(text);
+		String source = buffer.reverse().toString();
 		long result = 0,multiplier = 1;  
-        for (int pos = text.length(); pos > 0; pos--) {  
-            result += ((SS.indexOf(text.substring(pos - 1, pos))) * multiplier);  
+        for (int pos = 0; pos < source.length(); pos++) {
+            result += ((SS.indexOf(source.substring(pos, pos+1))) * multiplier);
             multiplier *= radix;  
-        }  
-        return result;  
-	}
-	
-	public static long decodeNegative (String text,int radix){
-		if(text == null){
-			return 0;
+        }
+		if(negative){
+			return  -result;
 		}
-		long result = 0,multiplier = 1;;  
-        for (int pos = text.length(); pos > 0; pos--) {  
-            result += ((SS.indexOf(text.substring(pos - 1, pos)) - radix +1) * multiplier);  
-            multiplier *= radix;  
-        }  
         return result;  
 	}
 }
