@@ -15,7 +15,7 @@ public class Radix62Test {
 	}
 	
 	public static void main(String[] args) {
-		int radix = 61;
+		int radix = 34;
 		long number = -999999999;
 		String digest = Radixes.encode(number,radix);
 		long val = Radixes.decode(digest,radix);
