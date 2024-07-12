@@ -119,6 +119,10 @@ public class PUID implements Comparable<PUID>, Serializable {
 	}
 
 	public String toString() {
+		return toBase62String();
+	}
+
+	public String toHexString() {
 		byte[] b = toBytes();
 		return Hex.encode(b);
 	}
@@ -132,7 +136,7 @@ public class PUID implements Comparable<PUID>, Serializable {
 		return bytes;
 	}
 
-	public String toBase62() {
+	public String toBase62String() {
 		byte[] bytes = new byte[8];
 		ByteBuffer bb = ByteBuffer.wrap(bytes);
 		bb.putInt(time);
@@ -191,8 +195,8 @@ public class PUID implements Comparable<PUID>, Serializable {
 		return new PUID().toString();
 	}
 
-	public static String makeAsBase62() {
-		return new PUID().toBase62();
+	public static String makeAsBase62String() {
+		return new PUID().toBase62String();
 	}
 
 	public static byte[] puidAsBytes() {
