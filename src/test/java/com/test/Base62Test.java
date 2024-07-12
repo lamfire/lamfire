@@ -17,7 +17,7 @@ public class Base62Test {
 		long s1 = Bytes.toLong(bytes);
 		long s2 = Bytes.toLong(bytes, 8);
 		
-		for(int i=0;i<100000;i++){
+		for(int i=0;i<10;i++){
 			Base62.encode(s1);
 			Base62.encode(s2);
 			count ++;

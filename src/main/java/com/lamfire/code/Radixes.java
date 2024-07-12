@@ -1,11 +1,17 @@
 package com.lamfire.code;
 
+import com.lamfire.utils.Bytes;
+
 public class Radixes {
-	static final String SS ="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	static final String SS ="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%*&=";
 	static final int MAXRADIX = SS.length();
-	
+
+	public static String digest64(long value){
+		return encode(value,64);
+	}
+
 	public static String digest62(long value){
-		return encode(value,MAXRADIX);
+		return encode(value,62);
 	}
 
 	public static String digest32(long value){
@@ -62,5 +68,20 @@ public class Radixes {
 			return  -result;
 		}
         return result;  
+	}
+
+	public static String toBaseXString(byte[] bytes,int radix){
+		StringBuilder buffer = new StringBuilder();
+		for(int i=0;i<bytes.length;i+=8){
+			byte[] b =  Bytes.subBytes(bytes,i,8);
+			if(b.length < 8){
+				byte[] n = new byte[8];
+				Bytes.putBytes(n,8-b.length,b,0,b.length);
+				b = n;
+			}
+			long val = Bytes.toLong(b);
+			buffer.append(encode(val,radix));
+		}
+		return buffer.toString();
 	}
 }

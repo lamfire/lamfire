@@ -13,17 +13,6 @@ public class Base62 {
 
 
     public static String toBase62String(byte[] bytes){
-        StringBuilder buffer = new StringBuilder();
-        for(int i=0;i<bytes.length;i+=8){
-            byte[] b =  Bytes.subBytes(bytes,i,8);
-            if(b.length < 8){
-                byte[] n = new byte[8];
-                Bytes.putBytes(n,8-b.length,b,0,b.length);
-                b = n;
-            }
-            long val = Bytes.toLong(b);
-            buffer.append(encode(val));
-        }
-        return buffer.toString();
+        return Radixes.toBaseXString(bytes,62);
     }
 }  
