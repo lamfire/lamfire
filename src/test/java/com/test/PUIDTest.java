@@ -10,7 +10,7 @@ public class PUIDTest {
     public static void main(String[] args) {
         for (int i = 0; i < 10; i++) {
             PUID p = PUID.make();
-            System.out.println(p.toBase62()  +"           " + Base62.toBase62String(p.toBytes())) ;
+            System.out.println(p.toBase62String()  +"           " + Base62.toBase62String(p.toBytes())) ;
         }
 
         long v = -9999111001l;

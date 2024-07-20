@@ -27,7 +27,7 @@ public class Radix62Test {
 
 		for(int i=0;i<10;i++){
 			PUID puid = new PUID();
-			String puidBase62 = puid.toBase62();
+			String puidBase62 = puid.toBase62String();
 			String puidRadix62 = Radixes.toBaseXString(puid.toBytes(), 62);
 			String puidRadix64 = Radixes.toBaseXString(puid.toBytes(), 70);
 			System.out.println(puidBase62  +"           " + puidRadix62 +"           " + puidRadix64) ;
