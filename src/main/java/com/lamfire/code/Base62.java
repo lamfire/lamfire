@@ -15,4 +15,8 @@ public class Base62 {
     public static String toBase62String(byte[] bytes){
         return Radixes.toBaseXString(bytes,62);
     }
+
+    public static byte[] decodeBase62String(String base62Str){
+        return Radixes.decodeBaseXString(base62Str,62);
+    }
 }  
