@@ -1724,6 +1724,9 @@ public class JSONScanner implements JSONLexer {
      */
     private final void putChar(char ch) {
         if (sp == sbuf.length) {
+            if(sp > JSON.MAX_JSON_BODY_LENGTH){
+                throw new RuntimeException("JSON body length is too long.");
+            }
             char[] newsbuf = new char[sbuf.length * 2];
             System.arraycopy(sbuf, 0, newsbuf, 0, sbuf.length);
             sbuf = newsbuf;

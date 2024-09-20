@@ -1,6 +1,7 @@
 package com.test.json;
 
 import com.lamfire.json.JSON;
+import com.lamfire.json.JSONParser;
 import com.lamfire.utils.Maps;
 
 import java.util.Date;
@@ -9,7 +10,7 @@ import java.util.Map;
 
 public class JSONTest {
 
-	public static void main(String[] args) {
+	public static void test1() {
 		Map<String,Object> map = Maps.newHashMap();
 		Map<String,Object> map1 = Maps.newHashMap();
 		map1.put("m","MMMM");
@@ -38,5 +39,11 @@ public class JSONTest {
 
 
 
+	}
+
+	public static void main(String[] args) {
+		String jsonStr = "{\"a\":\"\\x1111";
+		Object o = JSON.toJavaObject(jsonStr,Object.class);
+		System.out.println(o);
 	}
 }

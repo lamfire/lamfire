@@ -43,8 +43,19 @@ public class RandomUtils {
 		return random.nextLong();
 	}
 
-	public static long nextLong(Random random,long n) {
-		return random.nextLong(n);
+	public static long nextLong(Random rng,long bound) {
+		final long m = bound - 1;
+		long r = rng.nextLong();
+		if ((bound & m) == 0L) {
+			// The bound is a power of 2.
+			r &= m;
+		} else {
+			for (long u = r >>> 1;
+				 u + m - (r = u % bound) < 0L;
+				 u = rng.nextLong() >>> 1)
+				;
+		}
+		return r;
 	}
 
 	public static boolean nextBoolean() {
@@ -67,8 +78,12 @@ public class RandomUtils {
 		return random.nextFloat();
 	}
 
-	public static float nextFloat(Random random,float n) {
-		return random.nextFloat(n);
+	public static float nextFloat(Random rng,float bound) {
+		float r = rng.nextFloat();
+		r = r * bound;
+		if (r >= bound) // may need to correct a rounding problem
+			r = Float.intBitsToFloat(Float.floatToIntBits(bound) - 1);
+		return r;
 	}
 
 	public static double nextDouble() {
@@ -83,8 +98,12 @@ public class RandomUtils {
 		return random.nextDouble();
 	}
 
-	public static double nextDouble(Random random,double n) {
-		return random.nextDouble(n);
+	public static double nextDouble(Random rng,double bound) {
+		double r = rng.nextDouble();
+		r = r * bound;
+		if (r >= bound)  // may need to correct a rounding problem
+			r = Double.longBitsToDouble(Double.doubleToLongBits(bound) - 1);
+		return r;
 	}
 
 	public static String random(int bits, int radix) {
@@ -203,12 +222,12 @@ public class RandomUtils {
 	}
 
 	public static float randomFloat(float min,float max,int dots){
-		float val = min + RANDOM.nextFloat(max - min);
+		float val = min + nextFloat(max - min);
 		return scale(val,dots);
 	}
 
 	public static double randomDouble(double min,double max,int dots){
-		double val = min + RANDOM.nextDouble(max - min);
+		double val = min + nextDouble(max - min);
 		return scale(val,dots);
 	}
 }

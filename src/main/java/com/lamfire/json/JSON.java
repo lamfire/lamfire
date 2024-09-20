@@ -30,6 +30,9 @@ public class JSON implements Map<String, Object>, JSONString, Cloneable, Seriali
 	private static final long serialVersionUID = 1L;
 	private static final int DEFAULT_INITIAL_CAPACITY = 16;
 
+	//默认最大支持处理的JSON大小128Mb
+	public static final int MAX_JSON_BODY_LENGTH = 1024 * 1024 * 128;
+
 	private final Map<String, Object> map;
 
 	public JSON() {
